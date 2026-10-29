@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Поиск юзернеймов</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:var(--tg-theme-bg-color,#fff);--fg:var(--tg-theme-text-color,#14141a);--hint:var(--tg-theme-hint-color,#767680);--card:var(--tg-theme-secondary-bg-color,#f0f0f4);--btn:var(--tg-theme-button-color,#2481cc);--btnfg:var(--tg-theme-button-text-color,#fff);
+--common:#8a8a94;--rare:#3d8bfd;--epic:#a45cf0;--legendary:#e0a400}
+*{box-sizing:border-box}
+body{margin:0;padding:16px 16px calc(24px + env(safe-area-inset-bottom));background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1{font-size:22px;margin:0 0 14px}
+.l{margin:0 0 6px;color:var(--hint);font-size:14px}
+.seg{display:flex;gap:6px;margin-bottom:14px}
+.seg button{flex:1;padding:10px 4px;border:0;border-radius:10px;background:var(--card);color:var(--fg);font:inherit}
+.seg button.on{background:var(--btn);color:var(--btnfg)}
+button:focus-visible{outline:2px solid var(--btn);outline-offset:2px}
+.main{width:100%;padding:14px;border:0;border-radius:12px;background:var(--btn);color:var(--btnfg);font:600 16px system-ui,sans-serif}
+.main:disabled{opacity:.6}
+#out{margin-top:16px}
+.msg{color:var(--hint);text-align:center;padding:12px 0}
+.card{display:flex;align-items:center;gap:12px;padding:12px;margin-bottom:8px;border-radius:12px;background:var(--card);border-left:4px solid var(--c)}
+.card .u{font-size:20px;font-weight:650;letter-spacing:.3px}
+.card .m{font-size:13px;color:var(--hint)}
+.card .t{color:var(--c);font-weight:600}
+.card>div:first-child{flex:1;min-width:0}
+.card button{border:0;border-radius:10px;padding:9px 12px;background:var(--bg);color:var(--fg);font:inherit}
+.bar{height:4px;border-radius:2px;background:var(--bg);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c)}
+</style>
+</head>
+<body>
+<h1>Красивые юзернеймы</h1>
+
+<p class="l">Длина</p>
+<div class="seg" data-k="len">
+  <button data-v="6" class="on">6 символов</button>
+  <button data-v="5">5 символов (Pro)</button>
+</div>
+
+<p class="l">Какие</p>
+<div class="seg" data-k="mode">
+  <button data-v="free" class="on">Свободные</button>
+  <button data-v="paid">Платные (Fragment)</button>
+</div>
+
+<p class="l">Стиль</p>
+<div class="seg" data-k="style">
+  <button data-v="any" class="on">Любой</button>
+  <button data-v="pron">Читаемые</button>
+  <button data-v="word">Слова</button>
+  <button data-v="rep">Повторы</button>
+</div>
+
+<button class="main" id="go">Найти</button>
+<div id="out"></div>
+
+<script>
+const tg = Telegram.WebApp; tg.ready(); tg.expand();
+const S = {len: "6", mode: "free", style: "any"};
+const out = document.getElementById("out"), go = document.getElementById("go");
+const COLOR = {common: "--common", rare: "--rare", epic: "--epic", legendary: "--legendary"};
+const NAME = {common: "Обычный", rare: "Редкий", epic: "Эпический", legendary: "Легендарный"};
+
+document.querySelectorAll(".seg").forEach(g => g.onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  g.querySelectorAll("button").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); S[g.dataset.k] = b.dataset.v;
+});
+
+const api = (p, b) => fetch(p, {method: "POST", headers: {"Content-Type": "application/json"},
+  body: JSON.stringify({...b, initData: tg.initData})}).then(r => r.json());
+
+const say = t => { out.replaceChildren(Object.assign(document.createElement("div"), {className: "msg", textContent: t})); };
+
+function showPro() {
+  say("5 символов доступны в Pro.");
+  const b = Object.assign(document.createElement("button"), {className: "main", textContent: "Купить Pro на 30 дней"});
+  b.style.marginTop = "8px";
+  b.onclick = async () => {
+    const r = await api("/api/invoice", {});
+    if (r.link) tg.openInvoice(r.link, s => { if (s === "paid") go.click(); });
+  };
+  out.append(b);
+}
+
+function card(i) {
+  const d = document.createElement("div"); d.className = "card"; d.style.setProperty("--c", `var(${COLOR[i.tier]})`);
+  const info = document.createElement("div");
+  info.innerHTML = '<div class="u"></div><div class="m"><span class="t"></span> · <span class="p"></span></div><div class="bar"><i></i></div>';
+  info.querySelector(".u").textContent = "@" + i.u;
+  info.querySelector(".t").textContent = `${NAME[i.tier]} ${i.score}/100`;
+  info.querySelector(".p").textContent = i.price === "0" ? "бесплатно" : `${i.price} TON`;
+  info.querySelector(".bar i").style.width = i.score + "%";
+  const c = Object.assign(document.createElement("button"), {textContent: "Копировать"});
+  c.onclick = () => navigator.clipboard.writeText(i.u).then(() => { c.textContent = "Скопировано"; }, () => tg.showAlert("@" + i.u));
+  d.append(info, c); return d;
+}
+
+go.onclick = async () => {
+  go.disabled = true; say("Проверяю кандидатов, до 20 секунд.");
+  try {
+    const r = await api("/api/search", {...S, len: +S.len});
+    if (r.error === "pro") return showPro();
+    if (r.error === "wait") return say("Подожди 5 секунд и повтори.");
+    if (!r.items) return say("Не получилось. Повтори поиск.");
+    if (!r.items.length) return say("Ничего не нашлось. Повтори поиск.");
+    out.replaceChildren(...r.items.map(card));
+  } catch { say("Нет связи. Повтори поиск."); }
+  finally { go.disabled = false; }
+};
+</script>
+</body>
+</html>

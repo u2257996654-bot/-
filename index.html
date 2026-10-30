@@ -255,8 +255,14 @@ textarea::placeholder{color:#5c5e66}
 </nav>
 
 <script>
-// Адрес Edge Function «usernames» в твоём Supabase-проекте
-const API = "https://orbnmhcyrwfnphvaoorm.supabase.co/functions/v1/usernames";
+// Адрес Edge Function в твоём Supabase-проекте. Бот сам передаёт его в ссылке мини-аппа (?api=), эта строка — запасной вариант.
+const API = (() => {
+  const d = "https://orbnmhcyrwfnphvaoorm.supabase.co/functions/v1/swift-function";
+  try {
+    const a = new URLSearchParams(location.search).get("api") || "";
+    return /^https:\/\/[a-z0-9]+\.supabase\.co\/functions\/v1\/[\w-]+$/.test(a) ? a : d;
+  } catch { return d; }
+})();
 const tg = window.Telegram?.WebApp || {initData: "", ready() {}, expand() {}, onEvent() {}};
 tg.ready(); tg.expand();
 try { tg.setHeaderColor("#0a0a0c"); tg.setBackgroundColor("#0a0a0c"); } catch {}

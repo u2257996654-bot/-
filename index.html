@@ -109,7 +109,7 @@ textarea::placeholder{color:#5c5e66}
 .feat li::before{content:"";position:absolute;left:2px;top:19px;width:7px;height:7px;border-radius:50%;background:var(--or)}
 
 /* нижняя панель */
-.dock{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100vw - 16px),484px);display:grid;grid-template-columns:1fr 1fr 64px 1fr 1fr;gap:6px;align-items:center;z-index:20}
+.dock{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100vw - 16px),484px);display:grid;grid-template-columns:repeat(4,1fr);gap:6px;align-items:center;z-index:20}
 .dock::before{content:"";position:absolute;left:-12px;right:-12px;top:-26px;bottom:calc(-10px - env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg) 62%,transparent);z-index:-1;pointer-events:none}
 .nt{position:relative;height:62px;padding:8px 8px 8px 9px;border-radius:18px;border:1px solid var(--st);background:linear-gradient(180deg,var(--c2),var(--c1));text-align:left;display:flex;flex-direction:column;justify-content:space-between;transition:background .35s,color .35s,transform .2s var(--ease)}
 .nt i{align-self:flex-end;font-style:normal;font-size:11px;color:var(--hint);font-variant-numeric:tabular-nums;transition:color .3s}
@@ -129,6 +129,44 @@ textarea::placeholder{color:#5c5e66}
 .toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translate(-50%,-90px);padding:11px 18px;border-radius:999px;background:var(--white);color:#111;font-size:14px;font-weight:600;z-index:70;transition:transform .45s cubic-bezier(.3,1.4,.5,1);pointer-events:none;white-space:nowrap}
 .toast.on{transform:translate(-50%,0)}
 
+[hidden]{display:none!important}
+.hero>.gear{position:absolute;top:12px;right:12px;z-index:3}
+.inp{display:block;width:100%;margin-top:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--st);background:rgba(255,255,255,.04);color:var(--fg);font:inherit;font-size:15px;outline:none}
+.inp:focus{border-color:rgba(255,255,255,.25)}
+.box textarea.inp{min-height:84px;font-size:14px}
+.row2{display:flex;gap:8px;margin-top:10px}
+.go.sm{padding:13px;margin:10px 0 0;font-size:15px;border-radius:16px}
+.go.ghost{background:rgba(255,255,255,.07);color:var(--fg);border:1px solid var(--st)}
+.krow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--st);font-size:14px}
+.krow code{font-size:14px}.krow small{color:var(--hint)}
+.ok{color:#5fd38d}.off{color:#ff6b6b}.pause{color:var(--or)}
+.tile.stat{min-height:96px}
+/* без кольца вокруг центрального кружка */
+.core::before{display:none}
+/* загрузка: кольцо из точек */
+.ld{display:grid;justify-items:center;padding:18px 0 4px;animation:rise .4s var(--ease) both}
+.ld-r{position:relative;width:68px;height:68px;margin-bottom:6px}
+.ld-r i{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:var(--fg);--r:rotate(calc(var(--k)*30deg)) translateY(-28px);transform:var(--r);animation:ldp 1.2s ease-in-out infinite;animation-delay:calc(var(--k)*-100ms)}
+@keyframes ldp{0%,100%{opacity:.12;transform:var(--r) scale(.55)}50%{opacity:1;transform:var(--r) scale(1.25);background:var(--or)}}
+.ld-b{width:140px;height:3px;margin:4px 0 2px;border-radius:3px;background:var(--st);overflow:hidden}
+.ld-b::after{content:"";display:block;width:45%;height:100%;border-radius:3px;background:var(--or);animation:ldb 1.1s var(--ease) infinite}
+@keyframes ldb{from{transform:translateX(-100%)}to{transform:translateX(320%)}}
+.nt{height:60px}
+.nt .ni{position:absolute;top:9px;left:10px;display:block;width:17px;height:17px;color:var(--hint);transition:color .3s}
+.nt .ni svg{width:17px;height:17px;display:block}
+.nt.on .ni{color:#111}
+.bd{top:3px!important;left:22px!important}
+.go .ar{font-size:18px;transition:transform .3s var(--ease)}
+.go:hover .ar{transform:translateX(4px)}
+.go.busy .ar{display:none}
+.go.busy::before{content:"";width:16px;height:16px;border-radius:50%;border:2px solid rgba(17,17,17,.25);border-top-color:#111;animation:spin .7s linear infinite}
+#hl::before{content:"";display:inline-block;width:6px;height:6px;margin-right:7px;vertical-align:1px;border-radius:50%;background:#4a4c53;transition:background .4s,box-shadow .4s}
+#hl.live::before{background:#5fd38d;box-shadow:0 0 8px #5fd38d}
+.sum{display:flex;justify-content:space-between;align-items:center;margin:2px 4px 10px;font-size:12px;color:var(--hint);letter-spacing:.04em;animation:rise .4s var(--ease) both}
+.sum b{color:var(--fg);font-weight:600}
+.res .u{font-variant-ligatures:none}
+.res:active{transform:scale(.99)}
+.res .m i{font-style:normal;opacity:.6}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -139,6 +177,7 @@ textarea::placeholder{color:#5c5e66}
 <main>
   <section class="card hero">
     <div class="dots"></div>
+    <button class="ib gear" id="gear" hidden aria-label="Админка"><span data-ic="gear"></span></button>
     <span class="lab sw" id="hl"></span>
     <div>
       <h1 class="sw" id="ht">Поиск</h1>
@@ -148,7 +187,7 @@ textarea::placeholder{color:#5c5e66}
 
   <section class="page on" id="p-search">
     <div class="set" data-style="1"></div>
-    <button class="go" id="go"><span class="ico" data-ic="aperture"></span><span id="gol">Найти</span></button>
+    <button class="go" id="go"><span id="gol">Найти</span><b class="ar">→</b></button>
     <div id="out-search"></div>
   </section>
 
@@ -159,7 +198,7 @@ textarea::placeholder{color:#5c5e66}
       <div class="chips2" id="chips"></div>
     </div>
     <div class="set" data-style="0"></div>
-    <button class="go" id="goai"><span class="ico" data-ic="aperture"></span><span>Подобрать с ИИ</span></button>
+    <button class="go" id="goai"><span>Подобрать с ИИ</span><b class="ar">→</b></button>
     <p class="note" id="ainote"></p>
     <div id="out-ai"></div>
   </section>
@@ -181,14 +220,38 @@ textarea::placeholder{color:#5c5e66}
       <p class="note" id="pro-left" style="margin:12px 0 0"></p>
     </div>
   </section>
+  <section class="page" id="p-admin">
+    <div class="grid" id="ad-stats"></div>
+    <div class="card box">
+      <span class="lab">ИИ-провайдер</span>
+      <div class="chips2" id="ad-pre"></div>
+      <input class="inp" id="ad-model" placeholder="Модель" autocapitalize="off" autocomplete="off">
+      <input class="inp" id="ad-base" placeholder="Адрес API" autocapitalize="off" autocomplete="off">
+      <div class="row2"><button class="go sm" id="ad-save" style="flex:1"><span>Сохранить</span></button><button class="go sm ghost" id="ad-test" style="flex:1"><span>Проверить ИИ</span></button></div>
+      <p class="note" id="ad-testout" style="margin:10px 0 0"></p>
+    </div>
+    <div class="card box">
+      <span class="lab">Ключи API</span>
+      <textarea class="inp" id="ad-newkeys" placeholder="Вставь ключи, каждый с новой строки" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>
+      <p class="note" id="ad-cnt" style="margin:8px 0 0">Вставь от 1 до 50 ключей сразу</p>
+      <button class="go sm" id="ad-add"><span>Добавить ключи</span></button>
+      <div id="ad-keys" style="margin-top:8px"></div>
+      <div class="row2"><button class="go sm ghost" id="ad-rev" style="flex:1"><span>Оживить все</span></button><button class="go sm ghost" id="ad-del" style="flex:1"><span>Удалить все</span></button></div>
+    </div>
+    <div class="card box">
+      <span class="lab">Выдать Pro</span>
+      <input class="inp" id="ad-id" inputmode="numeric" placeholder="Telegram ID пользователя">
+      <input class="inp" id="ad-days" inputmode="numeric" placeholder="Дней (по умолчанию 30)">
+      <button class="go sm" id="ad-grant"><span>Выдать</span></button>
+    </div>
+  </section>
 </main>
 
 <nav class="dock" id="dock">
-  <button class="nt on" data-p="search"><i>01</i><span>Поиск</span></button>
-  <button class="nt" data-p="ai"><i>02</i><span>ИИ</span></button>
-  <button class="core" id="core" aria-label="Выполнить"><span data-ic="aperture"></span></button>
-  <button class="nt" data-p="fav"><em class="bd" id="bd"></em><i>03</i><span>Избранное</span></button>
-  <button class="nt" data-p="pro"><i>04</i><span>Pro</span></button>
+  <button class="nt on" data-p="search"><b class="ni" data-ic="search"></b><i>01</i><span>Поиск</span></button>
+  <button class="nt" data-p="ai"><b class="ni" data-ic="spark"></b><i>02</i><span>ИИ</span></button>
+  <button class="nt" data-p="fav"><b class="ni" data-ic="heart"></b><em class="bd" id="bd"></em><i>03</i><span>Избранное</span></button>
+  <button class="nt" data-p="pro"><b class="ni" data-ic="crown"></b><i>04</i><span>Pro</span></button>
 </nav>
 
 <script>
@@ -207,6 +270,9 @@ const IC = {
   heart: '<path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6.5 5 5 0 0 1 21.2 11C19 15.6 12 20 12 20z"/>',
   copy: '<rect x="9" y="9" width="11" height="11" rx="3"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
   ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  crown: '<path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/>',
   spark: '<path d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path d="M19 15l.7 1.8 1.8.7-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7z"/>'
 };
 const ic = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
@@ -276,7 +342,7 @@ function card(i, idx, o = {}) {
   d.innerHTML = '<div class="sc"><span class="n">0</span><small>/100</small></div><div class="info"><div class="tl"></div><div class="u"></div><div class="m"></div></div><div class="acts"></div><i class="bar"></i>';
   $(".tl", d).textContent = NAME[i.tier];
   $(".u", d).textContent = "@" + i.u;
-  $(".m", d).textContent = i.price === "0" ? "бесплатно" : i.price + " TON";
+  $(".m", d).innerHTML = (i.price === "0" ? "бесплатно" : i.price + " TON") + ` <i>· ${i.u.length} симв.</i>`;
   if (i.why) $(".info", d).append(el("div", "why", i.why));
   const acts = $(".acts", d);
   const b = (cls, icon, fn) => { const x = el("button", "ib " + cls); x.innerHTML = ic(icon); x.onclick = fn; acts.append(x); return x; };
@@ -291,17 +357,22 @@ function card(i, idx, o = {}) {
 /* вывод */
 let tm;
 const stop = () => clearInterval(tm);
-const busy = on => { $("#core").classList.toggle("busy", on); $$(".go").forEach(g => g.classList.toggle("busy", on)); };
+const busy = on => { const g = $("#gol"); if (g) g.textContent = on ? "Ищу…" : "Найти"; $$(".go").forEach(g => g.classList.toggle("busy", on)); };
 function say(out, t) { stop(); out.replaceChildren(el("div", "msg", t)); }
 function skeleton(out, ph) {
-  out.replaceChildren(el("div", "msg", ph[0]), ...[0, 1, 2, 3].map(() => el("div", "sk")));
-  const p = out.firstChild; let k = 0; stop();
+  const ld = el("div", "ld"), ring = el("div", "ld-r");
+  for (let k = 0; k < 12; k++) { const d = el("i"); d.style.setProperty("--k", k); ring.append(d); }
+  const p = el("div", "msg", ph[0]); p.style.padding = "4px 0";
+  ld.append(ring, p, el("div", "ld-b"));
+  out.replaceChildren(ld, ...[0, 1, 2].map(() => el("div", "sk")));
+  let k = 0; stop();
   tm = setInterval(() => { k = (k + 1) % ph.length; p.style.opacity = 0; setTimeout(() => { p.textContent = ph[k]; p.style.opacity = 1; }, 200); }, 2200);
 }
 function render(out, items, o) {
   stop();
   if (!items.length) return say(out, "Ничего не нашлось. Повтори поиск.");
   out.replaceChildren(...items.map((i, k) => card(i, k, o)));
+  if (!o?.fav) { const s = el("div", "sum"); s.innerHTML = `<span>Найдено <b>${items.length}</b></span><span>Лучший <b>${items[0].score}/100</b></span>`; out.prepend(s); }
   if (items.some(i => i.tier === "legendary")) { setTimeout(confetti, 350); hap("heavy"); } else hap();
 }
 function needPro(out) {
@@ -312,7 +383,9 @@ function needPro(out) {
 /* API */
 const api = (p, b = {}) => fetch(API + p, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({...b, initData: tg.initData})}).then(r => r.json());
 async function loadMe() {
-  try { me = {...me, ...await api("/me")}; } catch { return; }
+  try { me = {...me, ...await api("/me")}; } catch { $("#pro-stat").textContent = "Нет связи"; return; }
+  if (me.error) { $("#pro-stat").textContent = "Открой мини-апп через Telegram"; $("#pro-left").textContent = ""; return; }
+  $("#gear").hidden = !me.admin; $("#hl").classList.add("live");
   if (Array.isArray(me.favs)) { FAV = me.favs; badge(); }
   $("#pro-stat").textContent = me.pro ? (me.until > Date.now() / 1000 ? "Pro до " + new Date(me.until * 1000).toLocaleDateString("ru") : "Pro активен") : "Бесплатный план";
   $("#buy span").textContent = `Купить Pro на ${me.days || 30} дней за ${me.price} ★`;
@@ -372,12 +445,13 @@ function renderFav() {
 }
 
 /* навигация */
-const PAGES = ["search", "ai", "fav", "pro"];
+const PAGES = ["search", "ai", "fav", "pro", "admin"];
 const HERO = {
   search: ["Поиск", "Свободные и платные, с оценкой редкости"],
   ai: ["ИИ-подбор", "Опиши идею, ИИ придумает и проверит"],
   fav: ["Избранное", "Общий список с ботом"],
-  pro: ["Pro", "Подписка и лимиты"]
+  pro: ["Pro", "Подписка и лимиты"],
+  admin: ["Админка", "ИИ, ключи и выдача Pro"]
 };
 const day = new Date().toLocaleDateString("ru", {weekday: "long", day: "numeric", month: "long"});
 $("#hl").textContent = day.charAt(0).toUpperCase() + day.slice(1);
@@ -392,16 +466,39 @@ function nav(p) {
   $$(".page").forEach(s => s.classList.toggle("on", s.id === "p-" + p));
   if (p === "fav") renderFav();
   if (p === "pro" || p === "ai") loadMe();
+  if (p === "admin") loadAdmin();
   hap(); scrollTo({top: 0, behavior: "smooth"});
 }
 $$(".nt").forEach(b => b.onclick = () => nav(b.dataset.p));
-/* центральная кнопка выполняет главное действие текущего экрана */
-$("#core").onclick = () => {
-  if (CUR === "search") $("#go").click();
-  else if (CUR === "ai") $("#goai").click();
-  else if (CUR === "pro") $("#buy").click();
-  else { hap(); scrollTo({top: 0, behavior: "smooth"}); }
-};
+/* админка */
+const adm = (a, x = {}) => api("/admin", {a, ...x});
+const PRE = {Gemini: ["https://generativelanguage.googleapis.com/v1beta/openai", "gemini-2.5-flash"], Groq: ["https://api.groq.com/openai/v1", "llama-3.3-70b-versatile"], OpenAI: ["https://api.openai.com/v1", "gpt-4o-mini"]};
+Object.entries(PRE).forEach(([n, [b, m]]) => { const c = el("button", "ch idea", n); c.onclick = () => { $("#ad-base").value = b; $("#ad-model").value = m; hap(); }; $("#ad-pre").append(c); });
+const ST = {ok: "работает", pause: "пауза", off: "отключён"};
+async function loadAdmin() {
+  let r; try { r = await adm("state"); } catch { return toast("Нет связи"); }
+  if (!r.keys) return toast("Нет доступа");
+  const t = (l, v) => { const d = el("div", "card tile stat"); d.append(el("span", "lab", l), el("b", "val sm", String(v))); return d; };
+  $("#ad-stats").replaceChildren(t("Пользователи", r.users), t("Pro активно", r.pro), t("В избранном", r.favs), t("Рабочих ключей", r.alive));
+  $("#ad-base").value = r.base; $("#ad-model").value = r.model;
+  $("#ad-keys").replaceChildren(...(r.keys.length ? r.keys.map(k => {
+    const row = el("div", "krow"), l = el("div"), c = el("code", "", `${k.n}. ${k.k}`), s = el("small", k.st, " " + ST[k.st]);
+    l.append(c, s);
+    const x = el("button", "ib", "×"); x.onclick = async () => { await adm("delkey", {n: k.n}); loadAdmin(); };
+    row.append(l, x); return row;
+  }) : [el("div", "msg", "Ключей пока нет")]));
+}
+const act = (id, fn) => $(id).onclick = async () => { try { await fn(); } catch { toast("Ошибка связи"); } };
+act("#ad-save", async () => { const r = await adm("aiset", {base: $("#ad-base").value, model: $("#ad-model").value}); toast(r.ok ? "Сохранено" : "Проверь адрес (https://) и модель"); });
+act("#ad-test", async () => { const o = $("#ad-testout"); o.textContent = "Проверяю…"; const r = await adm("test"); o.textContent = (r.ok ? "Работает: " : "Ошибка: ") + (r.text || ""); });
+const KRE = /[A-Za-z0-9][A-Za-z0-9_\-.]{19,}/g;
+const kCount = () => [...new Set($("#ad-newkeys").value.match(KRE) || [])].length;
+$("#ad-newkeys").oninput = () => { const n = kCount(); $("#ad-cnt").textContent = n ? `Распознано ключей: ${Math.min(n, 50)}` : "Вставь от 1 до 50 ключей сразу"; $("#ad-add span").textContent = n ? `Добавить ключи (${Math.min(n, 50)})` : "Добавить ключи"; };
+act("#ad-add", async () => { const r = await adm("addkeys", {keys: $("#ad-newkeys").value}); $("#ad-newkeys").value = ""; $("#ad-newkeys").oninput(); toast(r.added ? `Добавлено: ${r.added}, всего в пуле: ${r.total}` : "Ключи не распознаны"); loadAdmin(); });
+act("#ad-rev", async () => { await adm("revive"); toast("Ключи снова в работе"); loadAdmin(); });
+act("#ad-del", async () => { if (confirm("Удалить все ключи?")) { await adm("delall"); loadAdmin(); } });
+act("#ad-grant", async () => { const r = await adm("grant", {id: $("#ad-id").value, days: $("#ad-days").value}); toast(r.ok ? "Pro выдан" : "Проверь ID"); });
+$("#gear").onclick = () => nav("admin");
 $("#hs").textContent = HERO.search[1]; badge(); loadMe();
 </script>
 </body>

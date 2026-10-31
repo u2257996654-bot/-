@@ -486,7 +486,7 @@ function vStreak() {
 function vPrem() {
   const u = S.me.user, P = S.me.plans;
   return `<div class="head"><h1>Premium</h1><span class="mu sm">${esc(premTxt(u))}</span></div>
-  <div class="feat">${["Больше запросов к AI", "Модели мощнее", "Архив хранится до 90 дней"].map(x => `<div><i>${ic("check", 14)}</i><span>${x}</span></div>`).join("")}</div>
+  <div class="feat">${["Больше запросов к AI", "Архив хранится до 90 дней"].map(x => `<div><i>${ic("check", 14)}</i><span>${x}</span></div>`).join("")}</div>
   <div style="margin-top:14px">${Object.entries(P).map(([s, d]) => `<button class="pl ${d === 30 ? "best" : ""}" data-a="buy" data-s="${s}"><div>${d === 30 ? "<small>Выгоднее всего</small>" : ""}<b>${d} ${plural(d, "день", "дня", "дней")}</b><div class="mu sm">${(s / d).toFixed(1)} ⭐ в день</div></div><b>${s} ⭐</b></button>`).join("")}</div>
   ${!u.trial_used ? '<button class="btn ghost full" style="margin-top:20px" data-a="trial">Попробовать 7 дней бесплатно</button>' : ""}`;
 }

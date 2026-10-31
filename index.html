@@ -130,6 +130,10 @@ h2{font:600 15px/1.2 var(--fd);letter-spacing:-.01em;margin:30px 0 4px}
 .b .m .x{color:var(--rs)} .b .m u{text-decoration:none;color:var(--br);cursor:pointer}
 .b .ed{margin-top:6px;padding:8px 10px;border-radius:8px;background:var(--pn2);font-size:13px;color:var(--mu)}
 .b img{display:block;max-width:100%;border-radius:10px;margin-top:6px}
+.b .am{margin-top:6px;min-width:200px}
+.b video{display:block;max-width:100%;border-radius:10px}
+.b video.vn{width:210px;height:210px;border-radius:50%;object-fit:cover;background:var(--pn2)}
+.b .rt{padding:7px 12px;font-size:13px}
 /* восстановленное сообщение: чёрная плашка уезжает при появлении в зоне видимости */
 .rd{position:relative;display:inline-block}
 .rd::after{content:"";position:absolute;inset:-1px -3px;background:var(--rs);border-radius:3px;transform-origin:right;transition:transform .9s var(--ease)}
@@ -278,7 +282,8 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&am
 const hap = (t = "light") => { try { tg && tg.HapticFeedback.impactOccurred(t); } catch (e) {} };
 const tick = () => { try { tg && tg.HapticFeedback.selectionChanged(); } catch (e) {} };
 
-const S = { tab: "home", me: null, chats: null, chat: null, msgs: [], more: false, filter: "all", q: "", res: null, theme: localStorage.th || "auto", intro: false };
+const S = { tab: "home", me: null, chats: null, chat: null, msgs: [], more: false, filter: "all", q: "", res: null, theme: localStorage.th || "auto", intro: false, amode: "users", ao: null, aomore: false, aown: null, ach: null };
+const isAdm = () => !!(S.me && S.me.user && S.me.user.admin);
 
 /* ───────── иконки ───────── */
 const IC = {
@@ -411,9 +416,12 @@ function demo(a, p) {
     { chat_id: 3, chat_name: "Мама", msgs: 141, deleted: 20, last_at: iso(30), last_text: "Не забудь позвонить", cur: 0, best: 4, today_done: false, at_risk: false },
   ];
   const m = (id, me, t, h, x = {}) => ({ id, chat_id: p.chat_id || 1, chat_name: "Алина", from_id: me ? 1 : 9, from_name: me ? "Я" : "Алина", type: "text", text: t, edits: [], deleted_at: null, sent_at: iso(h), ...x });
-  if (a === "me") return { user: { id: 1, name: "Демо", premium: false, premium_until: null, trial_used: false, antidelete: true, notify: true, retention_days: 30, tz_min: 180 }, stats: { archive: 1284, deleted: 37, ai_today: 4, ai_limit: 15, connected: 1 }, plans: { 100: 10, 150: 15, 250: 30 }, recent_deleted: [{ id: 5, chat_id: 1, chat_name: "Алина", from_name: "Алина", text: "Я передумала, давай завтра", type: "text" }, { id: 6, chat_id: 2, chat_name: "Макс", from_name: "Макс", text: "", type: "photo" }] };
+  if (a === "me") return { user: { id: 1, name: "Демо", premium: false, premium_until: null, trial_used: false, antidelete: true, notify: true, retention_days: 30, tz_min: 180, admin: true }, stats: { archive: 1284, deleted: 37, connected: 1 }, plans: { 100: 10, 150: 15, 250: 30 }, recent_deleted: [{ id: 5, chat_id: 1, chat_name: "Алина", from_name: "Алина", text: "Я передумала, давай завтра", type: "text" }, { id: 6, chat_id: 2, chat_name: "Макс", from_name: "Макс", text: "", type: "photo" }] };
   if (a === "chats") return { chats };
-  if (a === "messages") return { more: false, messages: [m(4, 0, "Ты видел это?", .2), m(3, 1, "Привет! Как день?", 1), m(2, 0, "Я передумала, давай завтра", 2, { deleted_at: iso(1.5) }), m(1, 0, "Отлично, почти закончила проект", 3, { edits: [{ text: "Отлично, уже закончила", at: iso(3) }] })] };
+  if (a === "admin_owners") return { more: false, owners: [{ owner_id: 1, username: "demo", first_name: "Демо", cnt: 1284, deleted_cnt: 37, last_at: iso(.2) }, { owner_id: 2, username: "anna", first_name: "Анна", cnt: 540, deleted_cnt: 9, last_at: iso(7) }] };
+  if (a === "admin_chats") return { chats: [{ chat_id: 1, chat_name: "Алина", cnt: 842, deleted_cnt: 12, last_at: iso(.2) }, { chat_id: 2, chat_name: "Макс", cnt: 301, deleted_cnt: 5, last_at: iso(5) }] };
+  if (a === "admin_media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
+  if (a === "messages" || a === "admin_messages") return { more: false, messages: [m(6, 0, "", .1, { type: "video_note" }), m(5, 1, "", .15, { type: "photo" }), m(4, 0, "Ты видел это?", .2), m(3, 1, "Привет! Как день?", 1), m(2, 0, "Я передумала, давай завтра", 2, { deleted_at: iso(1.5) }), m(1, 0, "Отлично, почти закончила проект", 3, { edits: [{ text: "Отлично, уже закончила", at: iso(3) }] })] };
   if (a === "photo") return { src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
   return { ok: true };
 }
@@ -438,8 +446,7 @@ function vHome() {
   <div class="state"><i class="live ${on ? "" : "off"}"></i><span>${on ? "Архив ведётся" : "Бот не подключён к чатам"}</span>${on ? "" : '<button class="btn" style="padding:7px 14px;margin-left:6px" data-a="howto">Подключить</button>'}</div>
   </section>
   <div class="trio bento">
-    <button data-a="filter" data-f="deleted"><b data-n="${s.deleted}">0</b><span class="l"><i class="dot"></i>удалённых поймано</span></button>
-    <button data-a="tab" data-k="set"><b><span data-n="${s.ai_today}">0</span><em>из ${s.ai_limit}</em></b><span class="l">запросов к AI</span><i class="bar"><u style="width:${s.ai_limit ? Math.min(100, s.ai_today / s.ai_limit * 100) : 0}%"></u></i></button>
+    <button class="w" data-a="filter" data-f="deleted"><b data-n="${s.deleted}">0</b><span class="l"><i class="dot"></i>удалённых поймано</span></button>
     <button class="w" data-a="tab" data-k="streak">${flame(40)}<div class="grow"><b data-n="${active.length}">0</b><span class="l">${plural(active.length, "серия", "серии", "серий")} идёт</span></div></button>
   </div>
   ${top ? `<h2>Лучшая серия</h2><button class="lr" data-a="chat" data-id="${top.chat_id}">${flame(32)}<div class="grow"><b>${top.cur} ${plural(top.cur, "день", "дня", "дней")} с ${esc(top.chat_name)}</b>${top.at_risk ? '<div class="risk">Напишите друг другу сегодня, иначе серия прервётся</div>' : ""}</div></button>` : ""}
@@ -453,13 +460,39 @@ function chatRow(c) {
 function resRow(m) {
   return `<button class="lr" data-a="chat" data-id="${m.chat_id}">${mono(m.chat_name, m.chat_id)}<div class="grow"><div class="sm mu ell">${esc(m.from_name)} в чате ${esc(m.chat_name)}, ${ago(m.sent_at)}</div><div class="ell">${esc(m.text || "[" + (typeLbl[m.type] || m.type) + "]")}</div></div></button>`;
 }
+function admSeg() {
+  return isAdm() ? `<div class="seg">${[["users", "Все"], ["mine", "Мой"]].map(([v, l]) => `<button class="${S.amode === v ? "on" : ""}" data-a="amode" data-v="${v}">${l}</button>`).join("")}</div>` : "";
+}
+const ownName = o => o.first_name || (o.username ? "@" + o.username : o.owner_id);
+const cntTxt = (n, d) => `${num(n)} ${plural(n, "сообщение", "сообщения", "сообщений")}${d > 0 ? ` · <span style="color:var(--rs)">удалено ${num(d)}</span>` : ""}`;
+function vAdminArchive() {
+  const o = S.aown; let head, body;
+  if (!o) {
+    head = `<div class="head"><h1>Архив</h1>${admSeg()}</div>`;
+    body = S.ao === null ? skeleton() : S.ao.length
+      ? S.ao.map(r => `<button class="lr" data-a="aown" data-id="${r.owner_id}">${mono(ownName(r), r.owner_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(ownName(r))}</b><span class="mu sm">${ago(r.last_at)}</span></div><div class="mu sm ell">${r.username ? "@" + esc(r.username) + " · " : ""}${cntTxt(r.cnt, r.deleted_cnt)}</div></div></button>`).join("") + (S.aomore ? '<button class="btn ghost full" style="margin-top:12px" data-a="aomore">Показать ещё</button>' : "")
+      : '<div class="empty">Архивов пока нет.</div>';
+  } else {
+    head = `<div class="head" style="justify-content:flex-start;align-items:center;gap:12px"><button class="ib" data-a="aback" aria-label="Назад">${ic("back", 20)}</button><div class="grow"><h1 class="ell" style="font-size:20px">${esc(ownName(o))}</h1><div class="mu sm">чаты владельца</div></div></div>`;
+    body = S.ach === null ? skeleton() : S.ach.length
+      ? S.ach.map(c => `<button class="lr" data-a="achat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(c.chat_name || c.chat_id)}</b><span class="mu sm">${ago(c.last_at)}</span></div><div class="mu sm">${cntTxt(c.cnt, c.deleted_cnt)}</div></div></button>`).join("")
+      : '<div class="empty">Чатов нет.</div>';
+  }
+  return head + `<div id="ab">${body}</div>`;
+}
+async function loadOwners(more) {
+  try { const r = await api("admin_owners", { offset: more ? S.ao.length : 0 }); S.ao = more ? S.ao.concat(r.owners) : r.owners; S.aomore = r.more; }
+  catch (e) { if (S.ao === null) S.ao = []; toast("Не удалось загрузить"); }
+  if (S.tab === "archive" && S.amode === "users") render();
+}
 function archiveBody() {
   if (S.q || S.filter !== "all") return S.res === null ? skeleton() : S.res.length ? S.res.map(resRow).join("") : '<div class="empty">Ничего не найдено. Попробуй другое слово.</div>';
   return S.chats === null ? skeleton() : S.chats.length ? S.chats.map(chatRow).join("") : '<div class="empty">Архив пуст. Подключи бота в Telegram Business, и сообщения начнут сохраняться.</div>';
 }
 function vArchive() {
+  if (isAdm() && S.amode === "users") return vAdminArchive();
   const F = [["all", "Все"], ["deleted", "Удалённые"], ["edited", "Изменённые"]];
-  return `<div class="head"><h1>Архив</h1></div><div class="search"><div class="sb">${ic("search", 18)}<input id="q" placeholder="Поиск по сообщениям" value="${esc(S.q)}" autocomplete="off" enterkeyhint="search"></div>
+  return `<div class="head"><h1>Архив</h1>${admSeg()}</div><div class="search"><div class="sb">${ic("search", 18)}<input id="q" placeholder="Поиск по сообщениям" value="${esc(S.q)}" autocomplete="off" enterkeyhint="search"></div>
   <div class="fchips">${F.map(([k, l]) => `<button class="fc ${S.filter === k ? "on" : ""}" data-a="filter" data-f="${k}">${l}</button>`).join("")}</div></div><div id="ab">${archiveBody()}</div>`;
 }
 
@@ -486,7 +519,7 @@ function vStreak() {
 function vPrem() {
   const u = S.me.user, P = S.me.plans;
   return `<div class="head"><h1>Premium</h1><span class="mu sm">${esc(premTxt(u))}</span></div>
-  <div class="feat">${["Больше запросов к AI", "Архив хранится до 90 дней"].map(x => `<div><i>${ic("check", 14)}</i><span>${x}</span></div>`).join("")}</div>
+  <div class="feat">${["Повышенные лимиты", "Архив хранится до 90 дней"].map(x => `<div><i>${ic("check", 14)}</i><span>${x}</span></div>`).join("")}</div>
   <div style="margin-top:14px">${Object.entries(P).map(([s, d]) => `<button class="pl ${d === 30 ? "best" : ""}" data-a="buy" data-s="${s}"><div>${d === 30 ? "<small>Выгоднее всего</small>" : ""}<b>${d} ${plural(d, "день", "дня", "дней")}</b><div class="mu sm">${(s / d).toFixed(1)} ⭐ в день</div></div><b>${s} ⭐</b></button>`).join("")}</div>
   ${!u.trial_used ? '<button class="btn ghost full" style="margin-top:20px" data-a="trial">Попробовать 7 дней бесплатно</button>' : ""}`;
 }
@@ -517,11 +550,12 @@ function render(anim) {
 function go(k) {
   if (k === S.tab) return;
   const v = $("#view"); v.classList.add("sw"); hap();
-  setTimeout(() => { S.tab = k; v.scrollTop = 0; render(); v.classList.remove("sw"); if (["archive", "streak", "home"].includes(k)) loadChats(); }, 140);
+  setTimeout(() => { S.tab = k; v.scrollTop = 0; render(); v.classList.remove("sw"); if (["archive", "streak", "home"].includes(k)) loadChats(); if (k === "archive" && isAdm() && S.amode === "users") loadOwners(); }, 140);
 }
 
 /* ───────── данные ───────── */
 function refreshBody() {
+  if (S.tab === "archive" && isAdm() && S.amode === "users") return;
   if (S.tab === "archive") { const ab = $("#ab"); if (ab) ab.innerHTML = archiveBody(); }
   else if (S.tab === "streak" || (S.tab === "home" && S.intro)) render();
 }
@@ -551,10 +585,12 @@ function bubbles() {
   let last = "", h = "";
   S.msgs.forEach(m => {
     const d = dayLbl(m.sent_at); if (d !== last) { h += `<div class="day">${d}</div>`; last = d; }
-    const me = m.from_id === S.me.user.id, ed = m.edits && m.edits.length;
+    const adm = S.chat && S.chat.owner, me = m.from_id === (adm ? S.chat.owner : S.me.user.id), ed = m.edits && m.edits.length;
+    const who = adm ? `<div style="font-size:11px;font-weight:600;margin-bottom:2px;color:${me ? "var(--br)" : "var(--mu)"}">${me ? "Владелец" : esc(m.from_name || "Собеседник")}</div>` : "";
+    const rich = adm && ["photo", "video_note", "video", "animation"].includes(m.type);
     const txt = m.text ? (m.deleted_at ? `<span class="rd">${esc(m.text)}</span>` : esc(m.text)) : "";
-    const media = m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
-    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${txt}${media}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}</div></div>`;
+    const media = rich ? `<div class="am" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
+    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}</div></div>`;
   });
   return h || '<div class="empty">В этом чате пока нет сохранённых сообщений.</div>';
 }
@@ -562,20 +598,36 @@ function paintChat(keepScroll) {
   const cb = $("#cb"), prev = cb.scrollHeight;
   cb.innerHTML = (S.more ? '<button class="btn ghost" data-a="older">Загрузить ранее</button>' : "") + bubbles();
   cb.scrollTop = keepScroll ? cb.scrollHeight - prev : cb.scrollHeight;
-  observeRedacted();
+  observeRedacted(); observeMedia();
 }
-async function openChat(id) {
+let mio;
+function observeMedia() {
+  mio && mio.disconnect();
+  const els = $$(".am"); if (!els.length) return;
+  mio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { mio.unobserve(e.target); loadMedia(e.target); } }), { root: $("#cb"), rootMargin: "300px" });
+  els.forEach(n => mio.observe(n));
+}
+async function loadMedia(n) {
+  try {
+    const r = await api("admin_media", { id: +n.dataset.id });
+    n.innerHTML = r.kind === "video"
+      ? `<video ${n.dataset.t === "video_note" ? 'class="vn" loop ' : ""}src="${r.src}" controls playsinline preload="metadata"></video>`
+      : `<img alt="Фото из архива" src="${r.src}">`;
+  } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Не загрузилось, повторить</button>`; }
+}
+const chatApi = (x = {}) => S.chat.owner ? api("admin_messages", { owner_id: S.chat.owner, chat_id: S.chat.chat_id, limit: 60, ...x }) : api("messages", { chat_id: S.chat.chat_id, limit: 60, ...x });
+async function openChat(id, adm) {
   if (!id) return;
-  const c = (S.chats || []).find(x => String(x.chat_id) === String(id));
-  S.chat = c || { chat_id: id, chat_name: "Чат", cur: 0 }; hap();
+  const c = (adm ? S.ach || [] : S.chats || []).find(x => String(x.chat_id) === String(id));
+  S.chat = adm ? { chat_id: id, chat_name: c ? c.chat_name : "Чат", cur: 0, msgs: c ? c.cnt : 0, owner: adm.owner_id, owner_name: ownName(adm) } : (c || { chat_id: id, chat_name: "Чат", cur: 0 }); hap();
   const el = $("#chat");
-  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm">${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}</div><div class="ch-b" id="cb">${skeleton()}</div>`;
+  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}</div><div class="ch-b" id="cb">${skeleton()}</div>`;
   requestAnimationFrame(() => el.classList.add("open"));
-  try { const r = await api("messages", { chat_id: id, limit: 60 }); S.msgs = r.messages.slice().reverse(); S.more = r.more; } catch (e) { S.msgs = []; }
+  try { const r = await chatApi(); S.msgs = r.messages.slice().reverse(); S.more = r.more; } catch (e) { S.msgs = []; }
   paintChat(false);
   if (tg) { tg.BackButton.show(); tg.BackButton.onClick(closeChat); }
 }
-function closeChat() { $("#chat").classList.remove("open"); S.chat = null; io && io.disconnect(); if (tg) { tg.BackButton.hide(); tg.BackButton.offClick(closeChat); } }
+function closeChat() { $("#chat").classList.remove("open"); S.chat = null; io && io.disconnect(); mio && mio.disconnect(); if (tg) { tg.BackButton.hide(); tg.BackButton.offClick(closeChat); } }
 
 /* ───────── оверлеи ───────── */
 function sheet(html) {
@@ -601,9 +653,15 @@ function celebrate() {
 const A = {
   tab: d => go(d.k),
   chat: d => openChat(d.id),
+  amode: d => { S.amode = d.v; S.aown = null; render(); hap(); d.v === "users" ? loadOwners() : loadChats(); },
+  aown: async d => { S.aown = (S.ao || []).find(x => String(x.owner_id) === String(d.id)); S.ach = null; render(); $("#view").scrollTop = 0; hap(); try { S.ach = (await api("admin_chats", { owner_id: +d.id })).chats; } catch (e) { S.ach = []; toast("Не удалось загрузить"); } render(); },
+  aback: () => { S.aown = null; S.ach = null; render(); hap(); },
+  aomore: () => loadOwners(true),
+  achat: d => openChat(d.id, S.aown),
+  amedia: (d, el) => { const n = el.closest(".am"); n.innerHTML = '<div class="sk" style="height:120px;margin:0"></div>'; loadMedia(n); },
   back: closeChat,
   filter: d => {
-    if (S.tab !== "archive") { S.tab = "archive"; S.chats === null && loadChats(); }
+    if (S.tab !== "archive") { S.tab = "archive"; S.amode = "mine"; S.chats === null && loadChats(); }
     S.filter = S.filter === d.f ? "all" : d.f; render(); hap();
     (S.q || S.filter !== "all") ? search() : loadChats();
   },
@@ -613,7 +671,7 @@ const A = {
     try { t.innerHTML = `<img alt="Фото из архива" src="${(await api("photo", { id: +d.id })).src}">`; } catch (e) { t.innerHTML = ""; toast("Фото не загрузилось. Попробуй ещё раз"); }
   },
   older: async () => {
-    try { const r = await api("messages", { chat_id: S.chat.chat_id, before: S.msgs[0].id, limit: 60 }); S.msgs = r.messages.slice().reverse().concat(S.msgs); S.more = r.more; paintChat(true); }
+    try { const r = await chatApi({ before: S.msgs[0].id }); S.msgs = r.messages.slice().reverse().concat(S.msgs); S.more = r.more; paintChat(true); }
     catch (e) { toast("Не удалось загрузить. Попробуй ещё раз"); }
   },
   howto: () => sheet(`<h3>Подключение</h3><ol><li>Открой Настройки Telegram, раздел Business, затем Чат-боты.</li><li>Выбери этого бота.</li><li>Разреши доступ к нужным чатам.</li></ol><p class="mu sm" style="margin-bottom:16px">Для этого нужен Telegram Premium.</p><button class="btn full" data-close>Понятно</button>`),
@@ -632,7 +690,7 @@ const A = {
   },
   theme: d => { S.theme = d.v; localStorage.th = d.v; applyTheme(); render(); },
   wipe: () => {
-    const b = sheet(`<h3>Удалить все данные?</h3><p class="mu" style="margin-bottom:16px">Архив, серии и история AI будут стёрты без возможности восстановления. Платежи и Premium сохранятся.</p><button class="btn bad full" data-yes>Удалить данные</button><button class="btn ghost full" style="margin-top:8px" data-close>Отмена</button>`);
+    const b = sheet(`<h3>Удалить все данные?</h3><p class="mu" style="margin-bottom:16px">Архив и серии будут стёрты без возможности восстановления. Платежи и Premium сохранятся.</p><button class="btn bad full" data-yes>Удалить данные</button><button class="btn ghost full" style="margin-top:8px" data-close>Отмена</button>`);
     $("[data-yes]", b).onclick = async () => { b.remove(); try { await api("wipe"); toast("Данные удалены"); S.chats = []; refreshMe(); } catch (e) { toast("Не удалось удалить. Попробуй ещё раз"); } };
   },
 };

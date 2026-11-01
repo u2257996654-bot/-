@@ -315,6 +315,7 @@ const num = n => Number(n).toLocaleString("ru-RU");
 const plural = (n, a, b, c) => { const m = n % 100, k = n % 10; return m > 10 && m < 20 ? c : k === 1 ? a : k > 1 && k < 5 ? b : c; };
 function premTxt(u) {
   if (!u.premium) return "Free";
+  if (!u.premium_until) return "Premium";
   return new Date(u.premium_until).getUTCFullYear() >= 9999 ? "Premium навсегда" : "Premium до " + new Date(u.premium_until).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
 }
 function toast(t) { const e = $("#toast"); e.textContent = t; e.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("on"), 2200); }

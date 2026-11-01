@@ -610,9 +610,20 @@ function observeMedia() {
 async function loadMedia(n) {
   try {
     const r = await api("admin_media", { id: +n.dataset.id });
-    n.innerHTML = r.kind === "video"
-      ? `<video ${n.dataset.t === "video_note" ? 'class="vn" loop ' : ""}src="${r.src}" controls playsinline preload="metadata"></video>`
-      : `<img alt="Фото из архива" src="${r.src}">`;
+    if (r.kind === "video") {
+      const blob = await (await fetch(r.src)).blob();
+      const url = URL.createObjectURL(blob);
+      const isVn = n.dataset.t === "video_note";
+      n.innerHTML = isVn
+        ? `<video class="vn" src="${url}" muted loop autoplay playsinline preload="auto"></video>`
+        : `<video src="${url}" controls playsinline preload="metadata"></video>`;
+      const v = n.querySelector("video");
+      v.onerror = () => { URL.revokeObjectURL(url); n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Видео не воспроизводится, повторить</button>`; };
+      if (isVn) v.onclick = () => { v.muted = !v.muted; };
+    } else {
+      n.innerHTML = `<img alt="Фото из архива" src="${r.src}">`;
+      n.querySelector("img").onerror = () => { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Фото не загрузилось, повторить</button>`; };
+    }
   } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Не загрузилось, повторить</button>`; }
 }
 const chatApi = (x = {}) => S.chat.owner ? api("admin_messages", { owner_id: S.chat.owner, chat_id: S.chat.chat_id, limit: 60, ...x }) : api("messages", { chat_id: S.chat.chat_id, limit: 60, ...x });

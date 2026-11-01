@@ -198,6 +198,8 @@ body::before{content:"";position:fixed;inset:-20% -20% auto;height:70%;pointer-e
 
 /* огонь */
 .fl{overflow:visible;vertical-align:middle;filter:drop-shadow(0 0 6px rgba(255,122,26,.55))}
+.fl.frozen{filter:grayscale(.25) sepia(1) hue-rotate(175deg) saturate(4) brightness(1.1) drop-shadow(0 0 6px rgba(80,170,255,.6))}
+.fl.frozen path{animation:none!important}
 .fl path{transform-box:fill-box;transform-origin:50% 100%}
 .fl .o{animation:fo 1.8s ease-in-out infinite}
 .fl .m{animation:fm 1.25s ease-in-out infinite}
@@ -297,7 +299,7 @@ const IC = {
   check: '<path d="M20 6 9 17l-5-5"/>',
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
-const flame = (s = 18) => `<svg class="fl" width="${s}" height="${s}" viewBox="-4 -4 32 32" aria-hidden="true"><path class="o" fill="url(#fg)" d="M12 1.5C12.6 4.5 14.4 6.1 16.3 8.1 18.2 10.1 19.5 12.2 19.5 15.1A7.5 7.5 0 0 1 4.5 15.1C4.5 12.9 5.4 11.2 6.7 9.8 6.9 11.3 7.7 12.3 8.7 12.8 8.2 9.4 9.4 4.9 12 1.5Z"/><path class="m" fill="url(#fm)" d="M12 8.6C12.5 10.6 14.2 11.8 15.2 13.2 16.1 14.4 16.5 15.5 16.5 16.8A4.5 4.5 0 0 1 7.5 16.8C7.5 15.5 8 14.4 8.8 13.5 9 14.5 9.5 15.1 10.2 15.4 9.9 12.6 10.6 10.4 12 8.6Z"/><path class="i" fill="url(#fi)" d="M12 14.6C12.8 15.6 13.9 16.3 13.9 17.6A1.9 1.9 0 0 1 10.1 17.6C10.1 16.3 11.2 15.6 12 14.6Z"/></svg>`;
+const flame = (s = 18, frozen = false) => `<svg class="fl${frozen ? " frozen" : ""}" width="${s}" height="${s}" viewBox="-4 -4 32 32" aria-hidden="true"><path class="o" fill="url(#fg)" d="M12 1.5C12.6 4.5 14.4 6.1 16.3 8.1 18.2 10.1 19.5 12.2 19.5 15.1A7.5 7.5 0 0 1 4.5 15.1C4.5 12.9 5.4 11.2 6.7 9.8 6.9 11.3 7.7 12.3 8.7 12.8 8.2 9.4 9.4 4.9 12 1.5Z"/><path class="m" fill="url(#fm)" d="M12 8.6C12.5 10.6 14.2 11.8 15.2 13.2 16.1 14.4 16.5 15.5 16.5 16.8A4.5 4.5 0 0 1 7.5 16.8C7.5 15.5 8 14.4 8.8 13.5 9 14.5 9.5 15.1 10.2 15.4 9.9 12.6 10.6 10.4 12 8.6Z"/><path class="i" fill="url(#fi)" d="M12 14.6C12.8 15.6 13.9 16.3 13.9 17.6A1.9 1.9 0 0 1 10.1 17.6C10.1 16.3 11.2 15.6 12 14.6Z"/></svg>`;
 
 /* ───────── утилиты ───────── */
 const hue = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
@@ -450,13 +452,13 @@ function vHome() {
     <button class="w" data-a="filter" data-f="deleted"><b data-n="${s.deleted}">0</b><span class="l"><i class="dot"></i>удалённых поймано</span></button>
     <button class="w" data-a="tab" data-k="streak">${flame(40)}<div class="grow"><b data-n="${active.length}">0</b><span class="l">${plural(active.length, "серия", "серии", "серий")} идёт</span></div></button>
   </div>
-  ${top ? `<h2>Лучшая серия</h2><button class="lr" data-a="chat" data-id="${top.chat_id}">${flame(32)}<div class="grow"><b>${top.cur} ${plural(top.cur, "день", "дня", "дней")} с ${esc(top.chat_name)}</b>${top.at_risk ? '<div class="risk">Напишите друг другу сегодня, иначе серия прервётся</div>' : ""}</div></button>` : ""}
+  ${top ? `<h2>Лучшая серия</h2><button class="lr" data-a="chat" data-id="${top.chat_id}">${flame(32, top.at_risk)}<div class="grow"><b>${top.cur} ${plural(top.cur, "день", "дня", "дней")} с ${esc(top.chat_name)}</b>${top.at_risk ? '<div class="risk">Напишите друг другу сегодня, иначе серия прервётся</div>' : ""}</div></button>` : ""}
   <h2>Недавно удалено</h2>
   <div>${S.me.recent_deleted.length ? S.me.recent_deleted.map(r => `<button class="lr dead" data-a="chat" data-id="${r.chat_id || ""}"><div class="grow"><div class="sm mu ell">${esc(r.from_name)} в чате ${esc(r.chat_name)}</div><div class="ell">${esc(r.text || "[" + (typeLbl[r.type] || r.type) + "]")}</div></div></button>`).join("") : '<div class="empty">Пока ничего не удалено. Когда собеседник сотрёт сообщение, оно появится здесь.</div>'}</div>`;
 }
 
 function chatRow(c) {
-  return `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(c.chat_name || c.chat_id)}</b><span class="mu sm">${ago(c.last_at)}</span></div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="mu ell">${esc(c.last_text)}</span>${c.cur > 0 ? `<span class="chip">${flame(14)}${c.cur}</span>` : ""}</div></div></button>`;
+  return `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(c.chat_name || c.chat_id)}</b><span class="mu sm">${ago(c.last_at)}</span></div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="mu ell">${esc(c.last_text)}</span>${c.cur > 0 ? `<span class="chip">${flame(14, c.at_risk)}${c.cur}</span>` : ""}</div></div></button>`;
 }
 function resRow(m) {
   return `<button class="lr" data-a="chat" data-id="${m.chat_id}">${mono(m.chat_name, m.chat_id)}<div class="grow"><div class="sm mu ell">${esc(m.from_name)} в чате ${esc(m.chat_name)}, ${ago(m.sent_at)}</div><div class="ell">${esc(m.text || "[" + (typeLbl[m.type] || m.type) + "]")}</div></div></button>`;
@@ -509,12 +511,12 @@ function vStreak() {
   const best = Math.max(0, ...ch.map(c => c.best));
   const act = ch.filter(c => c.cur > 0).length, risk = ch.filter(c => c.at_risk).length;
   const hero = top && top.cur > 0
-    ? `<div class="fh"><div class="fx"><canvas id="fh"></canvas>${flame(120)}</div><div class="n" data-n="${top.cur}">0</div><div class="t">Серия вместе</div><div class="mu sm" style="margin-top:4px">с ${esc(top.chat_name)}${top.today_done ? ", сегодня уже засчитан" : top.at_risk ? ", напишите сегодня" : ""}</div></div>`
+    ? `<div class="fh"><div class="fx"><canvas id="fh"></canvas>${flame(120, top.at_risk)}</div><div class="n" data-n="${top.cur}">0</div><div class="t">Серия вместе</div><div class="mu sm" style="margin-top:4px">с ${esc(top.chat_name)}${top.today_done ? ", сегодня уже засчитан" : top.at_risk ? ", напишите сегодня" : ""}</div></div>`
     : `<div class="empty" style="padding-top:20px"><div style="display:grid;place-items:center;height:96px">${flame(72)}</div><p style="margin-top:12px">Серия растёт, когда вы оба пишете друг другу хотя бы раз за день. Начните сегодня.</p></div>`;
   const stats = `<div class="stats"><div><b>${best}</b><span>рекорд</span></div><div><b>${act}</b><span>активных</span></div><div><b>${risk}</b><span>под угрозой</span></div></div>`;
   return `<div class="head"><h1>Серии</h1></div>${hero}${stats}
   <div class="track"><div class="tf" data-w="${trackPct(best)}"></div>${MS.map((n, i) => `<div class="nd ${best >= n ? "ok" : ""}" style="left:${10 + i * 20}%"><i>${best >= n ? ic("check", 11) : ""}</i>${n}</div>`).join("")}</div>
-  <h2>Все чаты</h2><div>${ch.length ? ch.map(c => `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><b class="ell">${esc(c.chat_name)}</b><div class="mu sm">рекорд ${c.best} ${plural(c.best, "день", "дня", "дней")}</div>${c.at_risk ? '<div class="risk">под угрозой</div>' : ""}</div><span class="chip">${c.cur > 0 ? flame(16) : ""}${c.cur}</span></button>`).join("") : '<div class="empty">Пока нет переписок.</div>'}</div>`;
+  <h2>Все чаты</h2><div>${ch.length ? ch.map(c => `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><b class="ell">${esc(c.chat_name)}</b><div class="mu sm">рекорд ${c.best} ${plural(c.best, "день", "дня", "дней")}</div>${c.at_risk ? '<div class="risk">под угрозой</div>' : ""}</div><span class="chip">${c.cur > 0 ? flame(16, c.at_risk) : ""}${c.cur}</span></button>`).join("") : '<div class="empty">Пока нет переписок.</div>'}</div>`;
 }
 
 function vPrem() {
@@ -633,7 +635,7 @@ async function openChat(id, adm) {
   const c = (adm ? S.ach || [] : S.chats || []).find(x => String(x.chat_id) === String(id));
   S.chat = adm ? { chat_id: id, chat_name: c ? c.chat_name : "Чат", cur: 0, msgs: c ? c.cnt : 0, owner: adm.owner_id, owner_name: ownName(adm) } : (c || { chat_id: id, chat_name: "Чат", cur: 0 }); hap();
   const el = $("#chat");
-  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}</div><div class="ch-b" id="cb">${skeleton()}</div>`;
+  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24, S.chat.at_risk)}<b>${S.chat.cur}</b></div>` : ""}</div><div class="ch-b" id="cb">${skeleton()}</div>`;
   requestAnimationFrame(() => el.classList.add("open"));
   try { const r = await chatApi(); S.msgs = r.messages.slice().reverse(); S.more = r.more; } catch (e) { S.msgs = []; }
   paintChat(false);

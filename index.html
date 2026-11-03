@@ -593,9 +593,9 @@ function bubbles() {
     const d = dayLbl(m.sent_at); if (d !== last) { h += `<div class="day">${d}</div>`; last = d; }
     const adm = S.chat && S.chat.owner, me = m.from_id === (adm ? S.chat.owner : S.me.user.id), ed = m.edits && m.edits.length;
     const who = adm ? `<div style="font-size:11px;font-weight:600;margin-bottom:2px;color:${me ? "var(--br)" : "var(--mu)"}">${me ? "Владелец" : esc(m.from_name || "Собеседник")}</div>` : "";
-    const rich = adm && ["photo", "video_note", "video", "animation"].includes(m.type);
+    const rich = ["photo", "video_note", "video", "animation", "sticker"].includes(m.type);
     const txt = m.text ? (m.deleted_at ? `<span class="rd">${esc(m.text)}</span>` : esc(m.text)) : "";
-    const media = rich ? `<div class="am" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
+    const media = rich ? `<div class="am" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
     const vt = ["voice", "audio", "video_note"].includes(m.type) ? `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>` : "";
     h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}${vt}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}</div></div>`;
   });
@@ -611,7 +611,7 @@ const VT = {};
 let vio;
 function observeVoice() {
   vio && vio.disconnect();
-  const els = $$(".vt:not(:has(.vtt))"); if (!els.length) return;
+  const els = $$(".vt").filter(n => !n.querySelector(".vtt")); if (!els.length) return;
   vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); loadVoice(e.target); } }), { root: $("#cb"), rootMargin: "300px" });
   els.forEach(n => vio.observe(n));
 }
@@ -621,7 +621,7 @@ async function loadVoice(n) {
     const r = await api("voice_text", { id: +n.dataset.id, ...(S.chat && S.chat.owner ? { owner_id: S.chat.owner } : {}) });
     VT[n.dataset.id] = r.text || "Речи не найдено";
     n.innerHTML = `<div class="vtt">${esc(VT[n.dataset.id])}</div>`;
-  } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="vtext" data-id="${n.dataset.id}">Не расшифровалось, повторить</button>`; }
+  } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="vtext" data-id="${n.dataset.id}">Не расшифровалось, повторить</button><div class="mu sm">${esc(String(e && e.message || e).slice(0, 140))}</div>`; }
 }
 function paintPeople(r) {
   const el = $("#pp"); if (!el || !r) return;
@@ -638,19 +638,23 @@ function observeMedia() {
 }
 async function loadMedia(n) {
   try {
-    const r = await api("admin_media", { id: +n.dataset.id });
+    const r = await api("media", { id: +n.dataset.id });
+    if (r.kind === "tgs") { n.innerHTML = '<span class="mu">[Анимированный стикер]</span>'; return; }
     if (r.kind === "video") {
       const blob = await (await fetch(r.src)).blob();
       const url = URL.createObjectURL(blob);
       const isVn = n.dataset.t === "video_note";
+      const loop = ["animation", "sticker"].includes(n.dataset.t);
       n.innerHTML = isVn
         ? `<video class="vn" src="${url}" muted loop autoplay playsinline preload="auto"></video>`
+        : loop ? `<video src="${url}" muted loop autoplay playsinline preload="auto" style="max-width:${n.dataset.t === "sticker" ? 180 : 260}px"></video>`
         : `<video src="${url}" controls playsinline preload="metadata"></video>`;
       const v = n.querySelector("video");
       v.onerror = () => { URL.revokeObjectURL(url); n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Видео не воспроизводится, повторить</button>`; };
       if (isVn) v.onclick = () => { v.muted = !v.muted; };
     } else {
       n.innerHTML = `<img alt="Фото из архива" src="${r.src}">`;
+      if (n.dataset.t === "sticker") n.querySelector("img").style.maxWidth = "180px";
       n.querySelector("img").onerror = () => { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Фото не загрузилось, повторить</button>`; };
     }
   } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Не загрузилось, повторить</button>`; }

@@ -126,7 +126,8 @@ h2{font:600 15px/1.2 var(--fd);letter-spacing:-.01em;margin:30px 0 4px}
 .b.me{align-self:flex-end;border-radius:14px 14px 4px 14px;background:color-mix(in srgb,var(--br) 14%,var(--pn));border-color:color-mix(in srgb,var(--br) 35%,transparent)}
 .b.th{align-self:flex-start}
 .pp{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--ln);background:var(--pn)}
-.pp[hidden]{display:none} .pc{display:flex;align-items:center;gap:9px;flex:1;min-width:0} .pc b{display:block} .pp .mg{width:36px;height:36px;border-radius:10px;font-size:15px} .pa{flex:none;color:var(--mu)}
+.pp[hidden]{display:none} .pc{display:flex;align-items:center;gap:9px;flex:1;min-width:0} .pc b{display:block} .pp .mg{width:36px;height:36px;border-radius:10px;font-size:15px} .pa{flex:none;color:var(--mu)} button.pc{background:none;border:0;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer} .cp{text-decoration:underline dotted;text-underline-offset:3px}
+.ap{display:flex;align-items:center;gap:10px;width:240px;max-width:100%} .apb{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:var(--br);color:#0a0a0b;font-size:15px;cursor:pointer;display:grid;place-items:center} .apt{flex:1;min-width:0} .apl{display:flex;align-items:center;gap:2px;height:28px;cursor:pointer} .apl b{flex:1;min-width:2px;border-radius:2px;background:var(--mu);opacity:.45} .apl b.on{background:var(--br);opacity:1} .aps{flex:none;border:1px solid var(--ln);background:none;color:var(--tx);border-radius:8px;padding:3px 7px;font-size:12px;cursor:pointer}
 .vt{margin-top:6px;padding-top:6px;border-top:1px dashed var(--ln);font-size:14px} .vt .vtt{white-space:pre-wrap}
 .b.del{border-left:3px solid var(--rs)}
 .b .m{display:flex;gap:10px;margin-top:4px;font-size:11px;color:var(--mu);white-space:normal}
@@ -593,10 +594,10 @@ function bubbles() {
     const d = dayLbl(m.sent_at); if (d !== last) { h += `<div class="day">${d}</div>`; last = d; }
     const adm = S.chat && S.chat.owner, me = m.from_id === (adm ? S.chat.owner : S.me.user.id), ed = m.edits && m.edits.length;
     const who = adm ? `<div style="font-size:11px;font-weight:600;margin-bottom:2px;color:${me ? "var(--br)" : "var(--mu)"}">${me ? "Владелец" : esc(m.from_name || "Собеседник")}</div>` : "";
-    const rich = ["photo", "video_note", "video", "animation", "sticker"].includes(m.type);
+    const rich = ["photo", "video_note", "video", "animation", "sticker", "voice", "audio"].includes(m.type);
     const txt = m.text ? (m.deleted_at ? `<span class="rd">${esc(m.text)}</span>` : esc(m.text)) : "";
-    const media = rich ? `<div class="am" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
-    const vt = ["voice", "audio", "video_note"].includes(m.type) ? `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>` : "";
+    const media = rich ? `<div class="am" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : ["voice", "audio"].includes(m.type) ? 40 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
+    const vt = ["voice", "audio", "video_note", "video", "sticker", "animation"].includes(m.type) ? `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>` : "";
     h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}${vt}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}</div></div>`;
   });
   return h || '<div class="empty">В этом чате пока нет сохранённых сообщений.</div>';
@@ -625,9 +626,15 @@ async function loadVoice(n) {
 }
 function paintPeople(r) {
   const el = $("#pp"); if (!el || !r) return;
-  const card = (p, role) => `<div class="pc">${mono(p.name, p.id)}<div class="grow"><div class="mu sm">${role}</div><b class="ell">${esc(p.name || "Без имени")}</b><div class="mu sm ell">${p.username ? "@" + esc(p.username) + " · " : ""}ID ${esc(p.id)}</div></div></div>`;
-  el.innerHTML = card(r.peer, "Собеседник") + '<div class="pa" aria-hidden="true">⇄</div>' + card(r.owner, "Абонент");
+  S.pp = r;
+  const card = (p, role, k) => `<button class="pc" data-a="who" data-r="${k}">${mono(p.name, p.id)}<div class="grow"><div class="mu sm">${role}</div><b class="ell">${esc(p.name || "Без имени")}</b><div class="mu sm ell">${p.username ? `<span class="cp" data-a="copy" data-v="@${esc(p.username)}">@${esc(p.username)}</span> · ` : ""}<span class="cp" data-a="copy" data-v="${esc(p.id)}">ID ${esc(p.id)}</span></div></div></button>`;
+  el.innerHTML = card(r.peer, "Собеседник", "peer") + '<div class="pa" aria-hidden="true">⇄</div>' + card(r.owner, "Абонент", "owner");
   el.hidden = false;
+}
+async function copyText(v) {
+  try { await navigator.clipboard.writeText(v); }
+  catch (e) { const t = document.createElement("textarea"); t.value = v; t.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); } catch (_) {} t.remove(); }
+  toast("Скопировано: " + v); hap();
 }
 let mio;
 function observeMedia() {
@@ -639,6 +646,24 @@ function observeMedia() {
 async function loadMedia(n) {
   try {
     const r = await api("media", { id: +n.dataset.id });
+    if (r.kind === "audio") {
+      const url = URL.createObjectURL(await (await fetch(r.src)).blob());
+      const N = 32, seed = +n.dataset.id || 1;
+      const bars = Array.from({ length: N }, (_, i) => `<b style="height:${25 + Math.round(Math.abs(Math.sin(seed * 7.3 + i * 1.7)) * 75)}%"></b>`).join("");
+      n.innerHTML = `<div class="ap"><button class="apb" aria-label="Играть">▶</button><div class="apt"><div class="apl">${bars}</div><span class="mu sm apd">0:00</span></div><button class="aps">1×</button></div><audio src="${url}" preload="metadata"></audio>`;
+      const au = n.querySelector("audio"), btn = n.querySelector(".apb"), bs = [...n.querySelectorAll(".apl b")], dur = n.querySelector(".apd"), sp = n.querySelector(".aps");
+      const fmt = s => isFinite(s) ? Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0") : "0:00";
+      const paint = () => { const p = au.duration && isFinite(au.duration) ? au.currentTime / au.duration : 0; bs.forEach((b, i) => b.classList.toggle("on", i < p * N)); dur.textContent = au.currentTime > 0 || !au.paused ? fmt(au.currentTime) : fmt(au.duration); };
+      au.onloadedmetadata = paint; au.ontimeupdate = paint;
+      au.onplay = () => { btn.textContent = "❚❚"; $$("audio").forEach(a => a !== au && a.pause()); };
+      au.onpause = () => { btn.textContent = "▶"; };
+      au.onended = () => { au.currentTime = 0; btn.textContent = "▶"; paint(); };
+      au.onerror = () => { n.innerHTML = '<span class="mu sm">Это устройство не воспроизводит такой формат голосовых</span>'; };
+      btn.onclick = () => { au.paused ? au.play().catch(() => au.onerror()) : au.pause(); };
+      n.querySelector(".apl").onclick = e => { const rc = e.currentTarget.getBoundingClientRect(); if (au.duration && isFinite(au.duration)) au.currentTime = au.duration * (e.clientX - rc.left) / rc.width; };
+      sp.onclick = () => { const v = au.playbackRate >= 2 ? 1 : au.playbackRate >= 1.5 ? 2 : 1.5; au.playbackRate = v; sp.textContent = v + "×"; };
+      return;
+    }
     if (r.kind === "tgs") { n.innerHTML = '<span class="mu">[Анимированный стикер]</span>'; return; }
     if (r.kind === "video") {
       const blob = await (await fetch(r.src)).blob();
@@ -706,6 +731,14 @@ const A = {
   achat: d => openChat(d.id, S.aown),
   amedia: (d, el) => { const n = el.closest(".am"); n.innerHTML = '<div class="sk" style="height:120px;margin:0"></div>'; loadMedia(n); },
   back: closeChat,
+  copy: d => copyText(d.v),
+  who: d => {
+    const p = S.pp && S.pp[d.r]; if (!p) return;
+    const role = d.r === "peer" ? "Собеседник" : "Абонент", un = p.username ? "@" + p.username : "";
+    const row = (l, v) => `<div class="lr" style="cursor:default"><div class="grow"><div class="mu sm">${l}</div><div style="user-select:text">${esc(v)}</div></div><button class="btn ghost" style="padding:7px 12px" data-a="copy" data-v="${esc(v)}">Копировать</button></div>`;
+    const b = sheet(`<h3>${role}</h3><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${mono(p.name, p.id)}<b class="grow ell">${esc(p.name || "Без имени")}</b></div>${un ? row("Username", un) : '<div class="mu sm" style="margin-bottom:8px">Username не указан</div>'}${row("ID", String(p.id))}${un ? '<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="' + esc(p.username) + '">Открыть в Telegram</button>' : ""}`);
+  },
+  tglink: d => { const u = "https://t.me/" + d.u; tg && tg.openTelegramLink ? tg.openTelegramLink(u) : window.open(u, "_blank"); },
   vtext: (d, el) => loadVoice(el.closest(".vt")),
   filter: d => {
     if (S.tab !== "archive") { S.tab = "archive"; S.amode = "mine"; S.chats === null && loadChats(); }

@@ -125,6 +125,9 @@ h2{font:600 15px/1.2 var(--fd);letter-spacing:-.01em;margin:30px 0 4px}
 .b{max-width:80%;padding:9px 12px;background:var(--pn);border:1px solid var(--ln);border-radius:14px 14px 14px 4px;white-space:pre-wrap;word-wrap:break-word}
 .b.me{align-self:flex-end;border-radius:14px 14px 4px 14px;background:color-mix(in srgb,var(--br) 14%,var(--pn));border-color:color-mix(in srgb,var(--br) 35%,transparent)}
 .b.th{align-self:flex-start}
+.pp{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--ln);background:var(--pn)}
+.pp[hidden]{display:none} .pc{display:flex;align-items:center;gap:9px;flex:1;min-width:0} .pc b{display:block} .pp .mg{width:36px;height:36px;border-radius:10px;font-size:15px} .pa{flex:none;color:var(--mu)}
+.vt{margin-top:6px;padding-top:6px;border-top:1px dashed var(--ln);font-size:14px} .vt .vtt{white-space:pre-wrap}
 .b.del{border-left:3px solid var(--rs)}
 .b .m{display:flex;gap:10px;margin-top:4px;font-size:11px;color:var(--mu);white-space:normal}
 .b .m .x{color:var(--rs)} .b .m u{text-decoration:none;color:var(--br);cursor:pointer}
@@ -198,8 +201,6 @@ body::before{content:"";position:fixed;inset:-20% -20% auto;height:70%;pointer-e
 
 /* огонь */
 .fl{overflow:visible;vertical-align:middle;filter:drop-shadow(0 0 6px rgba(255,122,26,.55))}
-.fl.frozen{filter:grayscale(.25) sepia(1) hue-rotate(175deg) saturate(4) brightness(1.1) drop-shadow(0 0 6px rgba(80,170,255,.6))}
-.fl.frozen path{animation:none!important}
 .fl path{transform-box:fill-box;transform-origin:50% 100%}
 .fl .o{animation:fo 1.8s ease-in-out infinite}
 .fl .m{animation:fm 1.25s ease-in-out infinite}
@@ -299,7 +300,7 @@ const IC = {
   check: '<path d="M20 6 9 17l-5-5"/>',
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
-const flame = (s = 18, frozen = false) => `<svg class="fl${frozen ? " frozen" : ""}" width="${s}" height="${s}" viewBox="-4 -4 32 32" aria-hidden="true"><path class="o" fill="url(#fg)" d="M12 1.5C12.6 4.5 14.4 6.1 16.3 8.1 18.2 10.1 19.5 12.2 19.5 15.1A7.5 7.5 0 0 1 4.5 15.1C4.5 12.9 5.4 11.2 6.7 9.8 6.9 11.3 7.7 12.3 8.7 12.8 8.2 9.4 9.4 4.9 12 1.5Z"/><path class="m" fill="url(#fm)" d="M12 8.6C12.5 10.6 14.2 11.8 15.2 13.2 16.1 14.4 16.5 15.5 16.5 16.8A4.5 4.5 0 0 1 7.5 16.8C7.5 15.5 8 14.4 8.8 13.5 9 14.5 9.5 15.1 10.2 15.4 9.9 12.6 10.6 10.4 12 8.6Z"/><path class="i" fill="url(#fi)" d="M12 14.6C12.8 15.6 13.9 16.3 13.9 17.6A1.9 1.9 0 0 1 10.1 17.6C10.1 16.3 11.2 15.6 12 14.6Z"/></svg>`;
+const flame = (s = 18) => `<svg class="fl" width="${s}" height="${s}" viewBox="-4 -4 32 32" aria-hidden="true"><path class="o" fill="url(#fg)" d="M12 1.5C12.6 4.5 14.4 6.1 16.3 8.1 18.2 10.1 19.5 12.2 19.5 15.1A7.5 7.5 0 0 1 4.5 15.1C4.5 12.9 5.4 11.2 6.7 9.8 6.9 11.3 7.7 12.3 8.7 12.8 8.2 9.4 9.4 4.9 12 1.5Z"/><path class="m" fill="url(#fm)" d="M12 8.6C12.5 10.6 14.2 11.8 15.2 13.2 16.1 14.4 16.5 15.5 16.5 16.8A4.5 4.5 0 0 1 7.5 16.8C7.5 15.5 8 14.4 8.8 13.5 9 14.5 9.5 15.1 10.2 15.4 9.9 12.6 10.6 10.4 12 8.6Z"/><path class="i" fill="url(#fi)" d="M12 14.6C12.8 15.6 13.9 16.3 13.9 17.6A1.9 1.9 0 0 1 10.1 17.6C10.1 16.3 11.2 15.6 12 14.6Z"/></svg>`;
 
 /* ───────── утилиты ───────── */
 const hue = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
@@ -424,7 +425,9 @@ function demo(a, p) {
   if (a === "admin_owners") return { more: false, owners: [{ owner_id: 1, username: "demo", first_name: "Демо", cnt: 1284, deleted_cnt: 37, last_at: iso(.2) }, { owner_id: 2, username: "anna", first_name: "Анна", cnt: 540, deleted_cnt: 9, last_at: iso(7) }] };
   if (a === "admin_chats") return { chats: [{ chat_id: 1, chat_name: "Алина", cnt: 842, deleted_cnt: 12, last_at: iso(.2) }, { chat_id: 2, chat_name: "Макс", cnt: 301, deleted_cnt: 5, last_at: iso(5) }] };
   if (a === "admin_media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
-  if (a === "messages" || a === "admin_messages") return { more: false, messages: [m(6, 0, "", .1, { type: "video_note" }), m(5, 1, "", .15, { type: "photo" }), m(4, 0, "Ты видел это?", .2), m(3, 1, "Привет! Как день?", 1), m(2, 0, "Я передумала, давай завтра", 2, { deleted_at: iso(1.5) }), m(1, 0, "Отлично, почти закончила проект", 3, { edits: [{ text: "Отлично, уже закончила", at: iso(3) }] })] };
+  if (a === "messages" || a === "admin_messages") return { more: false, messages: [m(7, 0, "", .05, { type: "voice" }), m(6, 0, "", .1, { type: "video_note" }), m(5, 1, "", .15, { type: "photo" }), m(4, 0, "Ты видел это?", .2), m(3, 1, "Привет! Как день?", 1), m(2, 0, "Я передумала, давай завтра", 2, { deleted_at: iso(1.5) }), m(1, 0, "Отлично, почти закончила проект", 3, { edits: [{ text: "Отлично, уже закончила", at: iso(3) }] })] };
+  if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
+  if (a === "voice_text") return { text: "Привет! Короче, я сегодня освобожусь пораньше, давай встретимся в семь у метро." };
   if (a === "photo") return { src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
   return { ok: true };
 }
@@ -452,13 +455,13 @@ function vHome() {
     <button class="w" data-a="filter" data-f="deleted"><b data-n="${s.deleted}">0</b><span class="l"><i class="dot"></i>удалённых поймано</span></button>
     <button class="w" data-a="tab" data-k="streak">${flame(40)}<div class="grow"><b data-n="${active.length}">0</b><span class="l">${plural(active.length, "серия", "серии", "серий")} идёт</span></div></button>
   </div>
-  ${top ? `<h2>Лучшая серия</h2><button class="lr" data-a="chat" data-id="${top.chat_id}">${flame(32, top.at_risk)}<div class="grow"><b>${top.cur} ${plural(top.cur, "день", "дня", "дней")} с ${esc(top.chat_name)}</b>${top.at_risk ? '<div class="risk">Напишите друг другу сегодня, иначе серия прервётся</div>' : ""}</div></button>` : ""}
+  ${top ? `<h2>Лучшая серия</h2><button class="lr" data-a="chat" data-id="${top.chat_id}">${flame(32)}<div class="grow"><b>${top.cur} ${plural(top.cur, "день", "дня", "дней")} с ${esc(top.chat_name)}</b>${top.at_risk ? '<div class="risk">Напишите друг другу сегодня, иначе серия прервётся</div>' : ""}</div></button>` : ""}
   <h2>Недавно удалено</h2>
   <div>${S.me.recent_deleted.length ? S.me.recent_deleted.map(r => `<button class="lr dead" data-a="chat" data-id="${r.chat_id || ""}"><div class="grow"><div class="sm mu ell">${esc(r.from_name)} в чате ${esc(r.chat_name)}</div><div class="ell">${esc(r.text || "[" + (typeLbl[r.type] || r.type) + "]")}</div></div></button>`).join("") : '<div class="empty">Пока ничего не удалено. Когда собеседник сотрёт сообщение, оно появится здесь.</div>'}</div>`;
 }
 
 function chatRow(c) {
-  return `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(c.chat_name || c.chat_id)}</b><span class="mu sm">${ago(c.last_at)}</span></div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="mu ell">${esc(c.last_text)}</span>${c.cur > 0 ? `<span class="chip">${flame(14, c.at_risk)}${c.cur}</span>` : ""}</div></div></button>`;
+  return `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(c.chat_name || c.chat_id)}</b><span class="mu sm">${ago(c.last_at)}</span></div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="mu ell">${esc(c.last_text)}</span>${c.cur > 0 ? `<span class="chip">${flame(14)}${c.cur}</span>` : ""}</div></div></button>`;
 }
 function resRow(m) {
   return `<button class="lr" data-a="chat" data-id="${m.chat_id}">${mono(m.chat_name, m.chat_id)}<div class="grow"><div class="sm mu ell">${esc(m.from_name)} в чате ${esc(m.chat_name)}, ${ago(m.sent_at)}</div><div class="ell">${esc(m.text || "[" + (typeLbl[m.type] || m.type) + "]")}</div></div></button>`;
@@ -511,12 +514,12 @@ function vStreak() {
   const best = Math.max(0, ...ch.map(c => c.best));
   const act = ch.filter(c => c.cur > 0).length, risk = ch.filter(c => c.at_risk).length;
   const hero = top && top.cur > 0
-    ? `<div class="fh"><div class="fx"><canvas id="fh"></canvas>${flame(120, top.at_risk)}</div><div class="n" data-n="${top.cur}">0</div><div class="t">Серия вместе</div><div class="mu sm" style="margin-top:4px">с ${esc(top.chat_name)}${top.today_done ? ", сегодня уже засчитан" : top.at_risk ? ", напишите сегодня" : ""}</div></div>`
+    ? `<div class="fh"><div class="fx"><canvas id="fh"></canvas>${flame(120)}</div><div class="n" data-n="${top.cur}">0</div><div class="t">Серия вместе</div><div class="mu sm" style="margin-top:4px">с ${esc(top.chat_name)}${top.today_done ? ", сегодня уже засчитан" : top.at_risk ? ", напишите сегодня" : ""}</div></div>`
     : `<div class="empty" style="padding-top:20px"><div style="display:grid;place-items:center;height:96px">${flame(72)}</div><p style="margin-top:12px">Серия растёт, когда вы оба пишете друг другу хотя бы раз за день. Начните сегодня.</p></div>`;
   const stats = `<div class="stats"><div><b>${best}</b><span>рекорд</span></div><div><b>${act}</b><span>активных</span></div><div><b>${risk}</b><span>под угрозой</span></div></div>`;
   return `<div class="head"><h1>Серии</h1></div>${hero}${stats}
   <div class="track"><div class="tf" data-w="${trackPct(best)}"></div>${MS.map((n, i) => `<div class="nd ${best >= n ? "ok" : ""}" style="left:${10 + i * 20}%"><i>${best >= n ? ic("check", 11) : ""}</i>${n}</div>`).join("")}</div>
-  <h2>Все чаты</h2><div>${ch.length ? ch.map(c => `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><b class="ell">${esc(c.chat_name)}</b><div class="mu sm">рекорд ${c.best} ${plural(c.best, "день", "дня", "дней")}</div>${c.at_risk ? '<div class="risk">под угрозой</div>' : ""}</div><span class="chip">${c.cur > 0 ? flame(16, c.at_risk) : ""}${c.cur}</span></button>`).join("") : '<div class="empty">Пока нет переписок.</div>'}</div>`;
+  <h2>Все чаты</h2><div>${ch.length ? ch.map(c => `<button class="lr" data-a="chat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><b class="ell">${esc(c.chat_name)}</b><div class="mu sm">рекорд ${c.best} ${plural(c.best, "день", "дня", "дней")}</div>${c.at_risk ? '<div class="risk">под угрозой</div>' : ""}</div><span class="chip">${c.cur > 0 ? flame(16) : ""}${c.cur}</span></button>`).join("") : '<div class="empty">Пока нет переписок.</div>'}</div>`;
 }
 
 function vPrem() {
@@ -593,7 +596,8 @@ function bubbles() {
     const rich = adm && ["photo", "video_note", "video", "animation"].includes(m.type);
     const txt = m.text ? (m.deleted_at ? `<span class="rd">${esc(m.text)}</span>` : esc(m.text)) : "";
     const media = rich ? `<div class="am" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
-    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}</div></div>`;
+    const vt = ["voice", "audio", "video_note"].includes(m.type) ? `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>` : "";
+    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}${vt}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}</div></div>`;
   });
   return h || '<div class="empty">В этом чате пока нет сохранённых сообщений.</div>';
 }
@@ -601,7 +605,29 @@ function paintChat(keepScroll) {
   const cb = $("#cb"), prev = cb.scrollHeight;
   cb.innerHTML = (S.more ? '<button class="btn ghost" data-a="older">Загрузить ранее</button>' : "") + bubbles();
   cb.scrollTop = keepScroll ? cb.scrollHeight - prev : cb.scrollHeight;
-  observeRedacted(); observeMedia();
+  observeRedacted(); observeMedia(); observeVoice();
+}
+const VT = {};
+let vio;
+function observeVoice() {
+  vio && vio.disconnect();
+  const els = $$(".vt:not(:has(.vtt))"); if (!els.length) return;
+  vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); loadVoice(e.target); } }), { root: $("#cb"), rootMargin: "300px" });
+  els.forEach(n => vio.observe(n));
+}
+async function loadVoice(n) {
+  n.innerHTML = '<span class="mu sm">Расшифровываю…</span>';
+  try {
+    const r = await api("voice_text", { id: +n.dataset.id, ...(S.chat && S.chat.owner ? { owner_id: S.chat.owner } : {}) });
+    VT[n.dataset.id] = r.text || "Речи не найдено";
+    n.innerHTML = `<div class="vtt">${esc(VT[n.dataset.id])}</div>`;
+  } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="vtext" data-id="${n.dataset.id}">Не расшифровалось, повторить</button>`; }
+}
+function paintPeople(r) {
+  const el = $("#pp"); if (!el || !r) return;
+  const card = (p, role) => `<div class="pc">${mono(p.name, p.id)}<div class="grow"><div class="mu sm">${role}</div><b class="ell">${esc(p.name || "Без имени")}</b><div class="mu sm ell">${p.username ? "@" + esc(p.username) + " · " : ""}ID ${esc(p.id)}</div></div></div>`;
+  el.innerHTML = card(r.peer, "Собеседник") + '<div class="pa" aria-hidden="true">⇄</div>' + card(r.owner, "Абонент");
+  el.hidden = false;
 }
 let mio;
 function observeMedia() {
@@ -635,8 +661,10 @@ async function openChat(id, adm) {
   const c = (adm ? S.ach || [] : S.chats || []).find(x => String(x.chat_id) === String(id));
   S.chat = adm ? { chat_id: id, chat_name: c ? c.chat_name : "Чат", cur: 0, msgs: c ? c.cnt : 0, owner: adm.owner_id, owner_name: ownName(adm) } : (c || { chat_id: id, chat_name: "Чат", cur: 0 }); hap();
   const el = $("#chat");
-  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24, S.chat.at_risk)}<b>${S.chat.cur}</b></div>` : ""}</div><div class="ch-b" id="cb">${skeleton()}</div>`;
+  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}</div><div class="pp" id="pp" hidden></div><div class="ch-b" id="cb">${skeleton()}</div>`;
   requestAnimationFrame(() => el.classList.add("open"));
+  const cid = S.chat.chat_id;
+  api("chat_info", { chat_id: +cid, ...(S.chat.owner ? { owner_id: S.chat.owner } : {}) }).then(r => { if (S.chat && S.chat.chat_id === cid) paintPeople(r); }).catch(() => {});
   try { const r = await chatApi(); S.msgs = r.messages.slice().reverse(); S.more = r.more; } catch (e) { S.msgs = []; }
   paintChat(false);
   if (tg) { tg.BackButton.show(); tg.BackButton.onClick(closeChat); }
@@ -674,6 +702,7 @@ const A = {
   achat: d => openChat(d.id, S.aown),
   amedia: (d, el) => { const n = el.closest(".am"); n.innerHTML = '<div class="sk" style="height:120px;margin:0"></div>'; loadMedia(n); },
   back: closeChat,
+  vtext: (d, el) => loadVoice(el.closest(".vt")),
   filter: d => {
     if (S.tab !== "archive") { S.tab = "archive"; S.amode = "mine"; S.chats === null && loadChats(); }
     S.filter = S.filter === d.f ? "all" : d.f; render(); hap();

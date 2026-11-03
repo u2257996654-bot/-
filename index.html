@@ -496,7 +496,7 @@ async function loadOwners(more) {
 }
 /* ───────── канал (только админ) ───────── */
 const CH_ST = { scheduled: "в очереди", sent: "вышел", failed: "ошибка", sending: "отправляется" };
-const CH_ERR = { publish_failed: "Telegram не принял пост. Проверь, что бот админ канала с правом публикации", delete_failed: "Не удалось удалить пост", bad_time: "Время в прошлом", empty: "Напиши текст", too_long: "Слишком длинный текст", no_table: "Нет таблицы channel_posts", forbidden: "Нет доступа" };
+const CH_ERR = { publish_failed: "Telegram не принял пост. Проверь, что бот админ канала с правом публикации", delete_failed: "Не удалось удалить пост", bad_time: "Время в прошлом", empty: "Напиши текст", too_long: "Слишком длинный текст", no_table: "Нет таблицы channel_posts", forbidden: "Нет доступа", ai_empty: "ИИ не ответил, попробуй переформулировать", ai_failed: "ИИ недоступен. Проверь ключи AI в секретах функции" };
 const chErr = e => CH_ERR[e && e.message] || "Не получилось. Попробуй ещё раз";
 const chWhen = p => { const d = p.send_at || p.sent_at; return d ? new Date(d).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : ""; };
 function askYes(msg, fn) { tg && tg.showConfirm ? tg.showConfirm(msg, ok => ok && fn()) : confirm(msg) && fn(); }
@@ -764,11 +764,28 @@ const A = {
   chdel: d => askYes(d.s === "sent" ? "Удалить пост из канала?" : "Удалить пост?", () => chCall("ch_delete", { id: Number(d.id) }, "Удалено")),
   chnew: () => {
     const f = "width:100%;padding:12px;border-radius:12px;background:var(--pn2);border:1px solid var(--ln);color:var(--tx);font:inherit";
-    const b = sheet(`<h3>Новый пост</h3><textarea id="chtx" rows="6" maxlength="4096" placeholder="Текст поста" style="${f};resize:vertical"></textarea><div class="mu sm" style="margin:10px 0 6px">Запланировать (необязательно)</div><input id="chwh" type="datetime-local" style="${f}"><button class="btn full" style="margin-top:14px" id="chgo">Опубликовать</button><div class="mu sm" style="margin-top:10px">Фото, видео и форматирование — через бота: команда /post.</div>`);
-    const w = b.querySelector("#chwh"), go = b.querySelector("#chgo");
+    const b = sheet(`<h3>Новый пост</h3>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="chidea" placeholder="О чём пост? (для ИИ)" style="${f};flex:1" maxlength="300">
+        <button class="btn ghost" style="padding:0 14px;white-space:nowrap" id="chai">✨ Написать</button>
+      </div>
+      <textarea id="chtx" rows="6" maxlength="4096" placeholder="Текст поста" style="${f};resize:vertical"></textarea>
+      <div class="mu sm" style="margin:10px 0 6px">Запланировать (необязательно)</div>
+      <input id="chwh" type="datetime-local" style="${f}">
+      <button class="btn full" style="margin-top:14px" id="chgo">Опубликовать</button>
+      <div class="mu sm" style="margin-top:10px">Фото, видео и форматирование — через бота: команда /post.</div>`);
+    const w = b.querySelector("#chwh"), go = b.querySelector("#chgo"), ai = b.querySelector("#chai"), idea = b.querySelector("#chidea"), tx = b.querySelector("#chtx");
     w.addEventListener("input", () => { go.textContent = w.value ? "Запланировать" : "Опубликовать"; });
+    ai.addEventListener("click", async () => {
+      const prompt = idea.value.trim();
+      if (!prompt) return toast("Сначала напиши тему");
+      ai.disabled = true; ai.textContent = "Пишу…";
+      try { const r = await api("ch_gen", { prompt }); tx.value = r.text; hap(); }
+      catch (e) { toast(chErr(e)); }
+      ai.disabled = false; ai.textContent = "✨ Написать";
+    });
     go.addEventListener("click", async () => {
-      const text = b.querySelector("#chtx").value.trim();
+      const text = tx.value.trim();
       if (!text) return toast("Напиши текст");
       let when = "now";
       if (w.value) { const t = new Date(w.value); if (!(t > new Date())) return toast("Время в прошлом"); when = t.toISOString(); }

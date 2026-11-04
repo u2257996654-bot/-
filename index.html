@@ -255,6 +255,107 @@ body::before{opacity:.55}
 #tabs button.on{flex:2.5;background:var(--tx);color:var(--bg);border-color:var(--tx);box-shadow:0 8px 26px rgba(255,255,255,.14)}
 #tabs button.on span{display:block;margin-left:8px}
 #tabs .ind{display:none}
+
+/* ═══ v4: синее стекло, нижняя панель-таблетка ═══ */
+:root{--bg:#070c1b;--pn:#0e1630;--pn2:#18234a;--ln:#1d2a52;--tx:#eef2ff;--mu:#8190b5;--br:#4d9bff;--on-br:#03112b}
+:root[data-theme=light]{--bg:#eaf0fb;--pn:#fff;--pn2:#dfe8f8;--ln:#cdd8ee;--tx:#0c1733;--mu:#5a6a8c;--br:#1d6fe8;--on-br:#fff}
+body::before{opacity:1;background:radial-gradient(60% 50% at 18% 0,rgba(77,155,255,.20),transparent 70%),radial-gradient(40% 40% at 92% 8%,rgba(122,92,255,.13),transparent 70%)}
+.hero::after{display:none}
+.card{background:linear-gradient(180deg,color-mix(in srgb,var(--pn) 90%,#fff 4%),var(--pn));border-color:var(--ln)}
+.wp{background:linear-gradient(135deg,#6aaeff,#3d7dff);color:#fff;box-shadow:0 12px 28px rgba(61,125,255,.35)}
+#tabs{left:16px;right:16px;bottom:calc(var(--sab) + 14px);display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:7px;border-radius:32px;background:rgba(13,22,49,.78);border:1px solid rgba(120,160,255,.16);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);box-shadow:0 18px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
+#tabs button{flex:none;flex-direction:column;height:auto;gap:4px;padding:10px 0 9px;border-radius:25px;background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;color:#dfe6fb;font-size:11.5px;font-weight:600}
+#tabs button span,#tabs button.on span{display:block;margin:0}
+#tabs button.on{flex:none;background:none;border:0;box-shadow:none;color:var(--br)}
+#tabs button.on svg{fill:color-mix(in srgb,currentColor 22%,transparent)}
+#tabs .ind{display:block;top:7px;bottom:7px;left:7px;width:calc((100% - 14px)/4);border-radius:25px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.11);transform:translateX(calc(var(--i)*100%));transition:transform .45s var(--ease)}
+:root[data-theme=light] #tabs{background:rgba(255,255,255,.82);border-color:var(--ln);box-shadow:0 14px 34px rgba(20,40,90,.16)}
+:root[data-theme=light] #tabs button{color:var(--mu)}
+:root[data-theme=light] #tabs button.on{color:var(--br)}
+:root[data-theme=light] #tabs .ind{background:rgba(29,111,232,.1);box-shadow:inset 0 0 0 1px rgba(29,111,232,.2)}
+.fchips{gap:8px;margin-top:12px;overflow-x:auto;scrollbar-width:none}
+.fchips::-webkit-scrollbar{display:none}
+.fc{flex:none;padding:8px 15px;border-radius:99px;border:1px solid var(--ln);background:var(--pn);font-size:13.5px;white-space:nowrap}
+.fc.on{background:color-mix(in srgb,var(--br) 20%,var(--pn));border-color:color-mix(in srgb,var(--br) 55%,transparent);color:var(--tx)}
+.sheet{max-height:90vh;overflow-y:auto}
+/* профиль */
+.pf{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 20px 22px}
+.av{width:92px;height:92px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font:600 34px var(--fd);background:linear-gradient(135deg,var(--br),#7a5cff);color:#fff;box-shadow:0 0 0 4px var(--bg),0 0 0 6px color-mix(in srgb,var(--br) 50%,transparent)}
+.av.s{width:48px;height:48px;font-size:18px;box-shadow:none}
+.pf h1{margin-top:18px;font-size:22px}
+.bdg{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:6px 14px;border-radius:99px;border:1px solid var(--ln);font-size:13px;font-weight:600;color:var(--mu)}
+.bdg.pr{color:var(--br);border-color:color-mix(in srgb,var(--br) 55%,transparent);background:color-mix(in srgb,var(--br) 12%,transparent)}
+.ar{display:flex;align-items:center;gap:14px;width:100%;padding:15px 0;border-bottom:1px solid var(--ln);text-align:left}
+.ar:last-child{border-bottom:0} .ar:active{opacity:.6}
+.ar i{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--br) 16%,transparent);color:var(--br)}
+.ar .mu{margin-left:auto}
+/* карточка собеседника */
+.pi-h{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--ln);width:100%;text-align:left}
+.kv span:first-child{color:var(--mu);flex:none} .kv span:last-child{text-align:right;user-select:text;word-break:break-word}
+.note{margin:10px 0;padding:10px 12px;border-radius:12px;background:var(--pn2);color:var(--mu);font-size:13px}
+
+/* ═══ v5: всё круглое ═══ */
+.mark,.mg,.ib,.pp .mg,.ar i,.feat i,.apb{border-radius:50%}
+.mg{background:linear-gradient(135deg,#5a9bff,#7a5cff)!important;color:#fff!important}
+.btn,.btn.ghost,.btn.bad,.seg,.seg button,.sb,.cs,.fc,.st{border-radius:99px}
+.btn{padding:14px 24px}
+.sb{height:50px;padding:0 18px}
+.seg{padding:3px;gap:2px;background:var(--pn2);border-color:transparent}
+.seg button{padding:7px 14px}
+.seg button.on{background:var(--br);color:var(--on-br)}
+.tg{width:54px;height:32px;border-radius:99px}
+.tg::after{top:4px;left:4px;width:24px;height:24px;border-radius:50%}
+.tg.on::after{transform:translateX(22px)}
+.b{border-radius:22px 22px 22px 8px;padding:10px 15px}
+.b.me{border-radius:22px 22px 8px 22px}
+.b img,.b video,.b .ed,.sk,.note,.demo{border-radius:18px}
+.b .rt{border-radius:99px}
+.grp,.feat,.card,.bento>button{border-radius:30px}
+.stats>div{border-radius:24px}
+.sheet{border-radius:32px 32px 0 0}
+.empty{border-radius:24px}
+.dead,.pl.best,.demo{border-left-width:0}
+.dead{padding-left:0}
+.kv{border-radius:0}
+.ar{border-radius:0}
+.fchips .fc{padding:9px 16px}
+.ch-h{border-radius:0 0 28px 28px}
+.pp{border-radius:0 0 24px 24px}
+
+/* ═══ v6: финальная полировка ═══ */
+h2{font:600 13px var(--fb);color:var(--mu);margin:28px 6px 10px;letter-spacing:0}
+.head h1{font-size:27px}
+.btn{background:linear-gradient(135deg,#6aaeff,#3d7dff);color:#fff;box-shadow:0 8px 22px rgba(61,125,255,.28)}
+.btn.ghost,.btn.bad{background:none;box-shadow:none}
+.btn.ghost{color:var(--tx)}
+:root:not([data-theme=light]) .hero{background:radial-gradient(120% 90% at 0 0,rgba(77,155,255,.30),transparent 60%),linear-gradient(180deg,#15234f,#0c1431);border-color:rgba(120,160,255,.22)}
+.hero .hh{font-size:32px}
+/* список чатов — карточки */
+.lr{padding:12px 16px 12px 12px;border:1px solid var(--ln);border-radius:28px;background:var(--pn);margin-bottom:10px}
+.lr:last-child{border-bottom:1px solid var(--ln)}
+.lr .mg{width:50px;height:50px;font-size:18px}
+.dead,.lr.dead{border-left:1px solid color-mix(in srgb,var(--rs) 45%,var(--ln));padding-left:16px}
+.pl{border:1px solid var(--ln);border-radius:28px;padding:18px 20px;margin-bottom:10px;background:var(--pn)}
+.pl.best{border-left:1px solid var(--br);background:color-mix(in srgb,var(--br) 12%,var(--pn))}
+/* переписка */
+.ch-h{background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.ch-b{gap:6px}
+.day{padding:5px 14px;border-radius:99px;background:var(--pn);border:1px solid var(--ln)}
+.b.th{background:var(--pn2);border-color:transparent}
+.b.me{background:linear-gradient(135deg,#4d9bff,#3d6dff);border-color:transparent;color:#fff}
+.b.me .m,.b.me .m u{color:rgba(255,255,255,.78)}
+.b.del{border-left:0;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--rs) 65%,transparent)}
+/* строки настроек с иконками */
+.si{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--br) 16%,transparent);color:var(--br)}
+.sr{gap:14px;padding:14px 0}
+.sr .seg{flex:none}
+.grp{padding:4px 18px}
+/* профиль */
+.pf{background:radial-gradient(100% 80% at 50% 0,rgba(77,155,255,.30),transparent 70%),var(--pn);border-color:rgba(120,160,255,.2)}
+.av{box-shadow:0 0 0 4px var(--pn),0 0 0 6px color-mix(in srgb,var(--br) 60%,transparent),0 14px 30px rgba(61,125,255,.35)}
+.stats>div{padding:16px 14px;text-align:left}
+.stats b{font-size:22px}
 </style>
 </head>
 <body>
@@ -286,7 +387,7 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&am
 const hap = (t = "light") => { try { tg && tg.HapticFeedback.impactOccurred(t); } catch (e) {} };
 const tick = () => { try { tg && tg.HapticFeedback.selectionChanged(); } catch (e) {} };
 
-const S = { tab: "home", me: null, chats: null, chat: null, msgs: [], more: false, filter: "all", q: "", res: null, theme: localStorage.th || "auto", intro: false, amode: "users", ao: null, aomore: false, aown: null, ach: null, ch: null };
+const S = { tab: "home", me: null, chats: null, chat: null, msgs: [], more: false, filter: "all", q: "", res: null, theme: localStorage.th || "auto", intro: false, amode: "users", ao: null, aomore: false, aown: null, ach: null };
 const isAdm = () => !!(S.me && S.me.user && S.me.user.admin);
 
 /* ───────── иконки ───────── */
@@ -299,13 +400,24 @@ const IC = {
   back: '<path d="m15 18-6-6 6-6"/>',
   trash: '<path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
+  bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  feed: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  chats: '<path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/>',
+  gear: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  user: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/>',
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  down: '<path d="M12 15V3M7 10l5 5 5-5M5 21h14"/>',
+  send: '<path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/>',
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
 const flame = (s = 18) => `<svg class="fl" width="${s}" height="${s}" viewBox="-4 -4 32 32" aria-hidden="true"><path class="o" fill="url(#fg)" d="M12 1.5C12.6 4.5 14.4 6.1 16.3 8.1 18.2 10.1 19.5 12.2 19.5 15.1A7.5 7.5 0 0 1 4.5 15.1C4.5 12.9 5.4 11.2 6.7 9.8 6.9 11.3 7.7 12.3 8.7 12.8 8.2 9.4 9.4 4.9 12 1.5Z"/><path class="m" fill="url(#fm)" d="M12 8.6C12.5 10.6 14.2 11.8 15.2 13.2 16.1 14.4 16.5 15.5 16.5 16.8A4.5 4.5 0 0 1 7.5 16.8C7.5 15.5 8 14.4 8.8 13.5 9 14.5 9.5 15.1 10.2 15.4 9.9 12.6 10.6 10.4 12 8.6Z"/><path class="i" fill="url(#fi)" d="M12 14.6C12.8 15.6 13.9 16.3 13.9 17.6A1.9 1.9 0 0 1 10.1 17.6C10.1 16.3 11.2 15.6 12 14.6Z"/></svg>`;
 
 /* ───────── утилиты ───────── */
 const hue = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
-const mono = (name, id) => { const h = hue(id); return `<div class="mg" style="background:linear-gradient(135deg,hsl(${h} 40% 32%),hsl(${(h + 45) % 360} 45% 20%));color:hsl(${h} 70% 86%)">${esc((name || "?").trim()[0] || "?").toUpperCase()}</div>`; };
+const mono = (name, id) => { const h = 200 + hue(id) % 130; return `<div class="mg" style="background:linear-gradient(135deg,hsl(${h} 75% 58%),hsl(${h + 35} 70% 42%));color:#fff">${esc((name || "?").trim()[0] || "?").toUpperCase()}</div>`; };
 const tm = iso => new Date(iso).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
 const dayLbl = iso => {
   const d = new Date(iso), n = new Date(), y = new Date(Date.now() - 864e5);
@@ -331,7 +443,7 @@ function countUp(el, to, dur = 900) {
 function applyTheme() {
   const t = S.theme === "auto" ? ((tg && tg.colorScheme) || "dark") : S.theme;
   document.documentElement.dataset.theme = t;
-  try { const bg = t === "light" ? "#e9ecf3" : "#0a0a0b"; tg && tg.setHeaderColor(bg); tg && tg.setBackgroundColor(bg); tg && tg.setBottomBarColor && tg.setBottomBarColor(bg); } catch (e) {}
+  try { const bg = t === "light" ? "#eaf0fb" : "#070c1b"; tg && tg.setHeaderColor(bg); tg && tg.setBackgroundColor(bg); tg && tg.setBottomBarColor && tg.setBottomBarColor(bg); } catch (e) {}
 }
 
 /* ───────── огонь (canvas, частицы) ───────── */
@@ -413,7 +525,6 @@ async function api(action, p = {}) {
   if (!r.ok) throw new Error(j.error || r.status);
   return j;
 }
-const DEMO_CH = {};
 function demo(a, p) {
   const H = 36e5, now = Date.now(), iso = h => new Date(now - h * H).toISOString();
   const chats = [
@@ -422,13 +533,13 @@ function demo(a, p) {
     { chat_id: 3, chat_name: "Мама", msgs: 141, deleted: 20, last_at: iso(30), last_text: "Не забудь позвонить", cur: 0, best: 4, today_done: false, at_risk: false },
   ];
   const m = (id, me, t, h, x = {}) => ({ id, chat_id: p.chat_id || 1, chat_name: "Алина", from_id: me ? 1 : 9, from_name: me ? "Я" : "Алина", type: "text", text: t, edits: [], deleted_at: null, sent_at: iso(h), ...x });
-  if (a === "me") return { user: { id: 1, name: "Демо", premium: false, premium_until: null, trial_used: false, antidelete: true, notify: true, retention_days: 30, tz_min: 180, admin: true }, stats: { archive: 1284, deleted: 37, connected: 1 }, plans: { 100: 10, 150: 15, 250: 30 }, recent_deleted: [{ id: 5, chat_id: 1, chat_name: "Алина", from_name: "Алина", text: "Я передумала, давай завтра", type: "text" }, { id: 6, chat_id: 2, chat_name: "Макс", from_name: "Макс", text: "", type: "photo" }] };
+  if (a === "me") return { user: { id: 1, name: "Демо", username: "demo", premium: false, premium_until: null, trial_used: false, antidelete: true, notify: true, retention_days: 30, tz_min: 180, admin: true }, stats: { archive: 1284, deleted: 37, connected: 1 }, plans: { 100: 10, 150: 15, 250: 30 }, recent_deleted: [{ id: 5, chat_id: 1, chat_name: "Алина", from_name: "Алина", text: "Я передумала, давай завтра", type: "text" }, { id: 6, chat_id: 2, chat_name: "Макс", from_name: "Макс", text: "", type: "photo" }] };
   if (a === "chats") return { chats };
-  if (a.startsWith("ch_")) { DEMO_CH.posts = DEMO_CH.posts || []; return { ready: true, auto: true, btn: true, hour: 8, tz: "Europe/Moscow", channel: "@zetgramlive", posts: [{ id: 2, kind: "text", status: "scheduled", source: "manual", send_at: new Date(now + 5 * H).toISOString(), body: "Завтра расскажем про .summary", error: null, path: null }, { id: 1, kind: "text", status: "sent", source: "auto", sent_at: iso(3), body: "Знакомься: ZetGram", error: null, path: "zetgramlive/1" }] }; }
   if (a === "admin_owners") return { more: false, owners: [{ owner_id: 1, username: "demo", first_name: "Демо", cnt: 1284, deleted_cnt: 37, last_at: iso(.2) }, { owner_id: 2, username: "anna", first_name: "Анна", cnt: 540, deleted_cnt: 9, last_at: iso(7) }] };
   if (a === "admin_chats") return { chats: [{ chat_id: 1, chat_name: "Алина", cnt: 842, deleted_cnt: 12, last_at: iso(.2) }, { chat_id: 2, chat_name: "Макс", cnt: 301, deleted_cnt: 5, last_at: iso(5) }] };
   if (a === "admin_media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
   if (a === "messages" || a === "admin_messages") return { more: false, messages: [m(7, 0, "", .05, { type: "voice" }), m(6, 0, "", .1, { type: "video_note" }), m(5, 1, "", .15, { type: "photo" }), m(4, 0, "Ты видел это?", .2), m(3, 1, "Привет! Как день?", 1), m(2, 0, "Я передумала, давай завтра", 2, { deleted_at: iso(1.5) }), m(1, 0, "Отлично, почти закончила проект", 3, { edits: [{ text: "Отлично, уже закончила", at: iso(3) }] })] };
+  if (a === "peer_info") return { ok: true, photo: null, profile: { first_name: "Алина", username: "alina", bio: "Дизайнер. Пишу редко, отвечаю быстро.", birthdate: { day: 14, month: 3, year: 1998 }, business_location: { address: "Москва, Тверская 12" } }, stats: { total: 842, mine: 410, theirs: 432, deleted: 12, edited: 7, media: 96, first_at: iso(4800), last_at: iso(.2) }, flags: { mute: false, nomute: false, clone: false } };
   if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
   if (a === "voice_text") return { text: "Привет! Короче, я сегодня освобожусь пораньше, давай встретимся в семь у метро." };
   if (a === "photo") return { src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
@@ -436,10 +547,10 @@ function demo(a, p) {
 }
 
 /* ───────── вью ───────── */
-const TABS = [["home", "Замок", "home"], ["archive", "Архив", "archive"], ["streak", "Серии", "flame"], ["prem", "Premium", "star"], ["set", "Ещё", "set"]];
+const TABS = [["home", "Лента", "feed"], ["archive", "Чаты", "chats"], ["set", "Настройки", "gear"], ["prof", "Профиль", "user"]];
 function tabs() {
   const n = $("#tabs");
-  if (!n.children.length) n.innerHTML = '<i class="ind"></i>' + TABS.map(([k, l, i]) => `<button data-a="tab" data-k="${k}">${i === "flame" ? flame(22) : ic(i)}<span>${l}</span></button>`).join("");
+  if (!n.children.length) n.innerHTML = '<i class="ind"></i>' + TABS.map(([k, l, i]) => `<button data-a="tab" data-k="${k}">${ic(i, 23)}<span>${l}</span></button>`).join("");
   n.style.setProperty("--i", TABS.findIndex(t => t[0] === S.tab));
   $$("button", n).forEach((b, i) => b.classList.toggle("on", TABS[i][0] === S.tab));
 }
@@ -470,7 +581,7 @@ function resRow(m) {
   return `<button class="lr" data-a="chat" data-id="${m.chat_id}">${mono(m.chat_name, m.chat_id)}<div class="grow"><div class="sm mu ell">${esc(m.from_name)} в чате ${esc(m.chat_name)}, ${ago(m.sent_at)}</div><div class="ell">${esc(m.text || "[" + (typeLbl[m.type] || m.type) + "]")}</div></div></button>`;
 }
 function admSeg() {
-  return isAdm() ? `<div class="seg">${[["users", "Все"], ["mine", "Мой"], ["channel", "Канал"]].map(([v, l]) => `<button class="${S.amode === v ? "on" : ""}" data-a="amode" data-v="${v}">${l}</button>`).join("")}</div>` : "";
+  return isAdm() ? `<div class="seg">${[["users", "Все"], ["mine", "Мой"]].map(([v, l]) => `<button class="${S.amode === v ? "on" : ""}" data-a="amode" data-v="${v}">${l}</button>`).join("")}</div>` : "";
 }
 const ownName = o => o.first_name || (o.username ? "@" + o.username : o.owner_id);
 const cntTxt = (n, d) => `${num(n)} ${plural(n, "сообщение", "сообщения", "сообщений")}${d > 0 ? ` · <span style="color:var(--rs)">удалено ${num(d)}</span>` : ""}`;
@@ -494,45 +605,16 @@ async function loadOwners(more) {
   catch (e) { if (S.ao === null) S.ao = []; toast("Не удалось загрузить"); }
   if (S.tab === "archive" && S.amode === "users") render();
 }
-/* ───────── канал (только админ) ───────── */
-const CH_ST = { scheduled: "в очереди", sent: "вышел", failed: "ошибка", sending: "отправляется" };
-const CH_ERR = { publish_failed: "Telegram не принял пост. Проверь, что бот админ канала с правом публикации", delete_failed: "Не удалось удалить пост", bad_time: "Время в прошлом", empty: "Напиши текст", too_long: "Слишком длинный текст", no_table: "Нет таблицы channel_posts", forbidden: "Нет доступа", ai_empty: "ИИ не ответил, попробуй переформулировать", ai_failed: "ИИ недоступен. Проверь ключи AI в секретах функции" };
-const chErr = e => CH_ERR[e && e.message] || "Не получилось. Попробуй ещё раз";
-const chWhen = p => { const d = p.send_at || p.sent_at; return d ? new Date(d).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : ""; };
-function askYes(msg, fn) { tg && tg.showConfirm ? tg.showConfirm(msg, ok => ok && fn()) : confirm(msg) && fn(); }
-function vChannel() {
-  const c = S.ch, head = `<div class="head"><h1>Канал</h1>${admSeg()}</div>`;
-  if (c === null) return head + skeleton();
-  if (!c.ready) return head + '<div class="empty">Нет таблицы channel_posts. Выполни channel_posts.sql в Supabase.</div>';
-  const row = (t, sub, on, k) => `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 0"><div class="grow"><b>${t}</b><div class="mu sm">${sub}</div></div><button class="btn ghost" style="padding:8px 14px" data-a="chset" data-k="${k}" data-v="${on ? 0 : 1}">${on ? "Вкл" : "Выкл"}</button></div>`;
-  const hrs = [7, 8, 9, 10, 12, 18].map(h => `<button class="${c.hour === h ? "on" : ""}" data-a="chset" data-k="hour" data-v="${h}">${h}:00</button>`).join("");
-  const posts = c.posts.length ? c.posts.map(p => {
-    const acts = [
-      p.path ? `<button class="btn ghost" style="padding:7px 12px" data-a="tglink" data-u="${esc(p.path)}">Открыть</button>` : "",
-      p.status === "scheduled" || p.status === "failed" ? `<button class="btn ghost" style="padding:7px 12px" data-a="chnow" data-id="${p.id}">${p.status === "failed" ? "Повторить" : "Сейчас"}</button>` : "",
-      p.status !== "sending" ? `<button class="btn ghost" style="padding:7px 12px;color:var(--rs)" data-a="chdel" data-id="${p.id}" data-s="${p.status}">${p.status === "sent" ? "Удалить из канала" : "Удалить"}</button>` : "",
-    ].join("");
-    return `<div class="lr" style="align-items:flex-start"><div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b>${CH_ST[p.status] || p.status}${p.source === "auto" ? " · банк" : ""}</b><span class="mu sm">${chWhen(p)}</span></div><div class="mu sm" style="margin:2px 0 8px;white-space:pre-wrap;word-break:break-word">${esc(p.body || "[" + p.kind + "]")}</div>${p.error ? `<div class="sm" style="color:var(--rs);margin-bottom:8px">${esc(p.error)}</div>` : ""}<div style="display:flex;gap:8px;flex-wrap:wrap">${acts}</div></div></div>`;
-  }).join("") : '<div class="empty">Постов пока нет.</div>';
-  return head + `<section class="card" style="margin-top:0">${row("Автопост", `каждый день · ${String(c.hour).padStart(2, "0")}:00 (${esc(c.tz)})`, c.auto, "auto")}<div class="seg" style="margin:8px 0 10px;justify-content:space-between">${hrs}</div>${row("Кнопка «Открыть бота»", "под каждым постом", c.btn, "btn")}</section><button class="btn full" style="margin-top:12px" data-a="chnew">Новый пост</button><button class="btn ghost full" style="margin-top:8px" data-a="chbank">Опубликовать пост из банка</button><div class="mu sm" style="margin:14px 0 4px">${esc(c.channel)} · фото и видео публикуй через бота: /post</div><div>${posts}</div>`;
-}
-async function loadChannel() {
-  try { S.ch = await api("ch_state"); } catch (e) { S.ch = { ready: false, posts: [] }; toast("Не удалось загрузить"); }
-  if (S.tab === "archive" && S.amode === "channel") render();
-}
-async function chCall(action, p, ok) {
-  try { S.ch = await api(action, p); if (ok) toast(ok); hap(); } catch (e) { toast(chErr(e)); }
-  if (S.tab === "archive" && S.amode === "channel") render();
-}
+const streakBody = () => vStreak().replace(/^<div class="head">.*?<\/div>/, "");
 function archiveBody() {
+  if (S.filter === "streak" && !S.q) return streakBody();
   if (S.q || S.filter !== "all") return S.res === null ? skeleton() : S.res.length ? S.res.map(resRow).join("") : '<div class="empty">Ничего не найдено. Попробуй другое слово.</div>';
   return S.chats === null ? skeleton() : S.chats.length ? S.chats.map(chatRow).join("") : '<div class="empty">Архив пуст. Подключи бота в Telegram Business, и сообщения начнут сохраняться.</div>';
 }
 function vArchive() {
-  if (isAdm() && S.amode === "channel") return vChannel();
   if (isAdm() && S.amode === "users") return vAdminArchive();
-  const F = [["all", "Все"], ["deleted", "Удалённые"], ["edited", "Изменённые"]];
-  return `<div class="head"><h1>Архив</h1>${admSeg()}</div><div class="search"><div class="sb">${ic("search", 18)}<input id="q" placeholder="Поиск по сообщениям" value="${esc(S.q)}" autocomplete="off" enterkeyhint="search"></div>
+  const F = [["all", "Все"], ["deleted", "Удалённые"], ["edited", "Изменённые"], ["streak", "Серии"]];
+  return `<div class="head"><h1>Чаты</h1>${admSeg()}</div><div class="search"><div class="sb">${ic("search", 18)}<input id="q" placeholder="Поиск по сообщениям" value="${esc(S.q)}" autocomplete="off" enterkeyhint="search"></div>
   <div class="fchips">${F.map(([k, l]) => `<button class="fc ${S.filter === k ? "on" : ""}" data-a="filter" data-f="${k}">${l}</button>`).join("")}</div></div><div id="ab">${archiveBody()}</div>`;
 }
 
@@ -570,18 +652,18 @@ function vSet() {
   const seg = (a, opts, cur) => `<div class="seg">${opts.map(([v, l]) => `<button class="${String(cur) === String(v) ? "on" : ""}" data-a="${a}" data-v="${v}">${l}</button>`).join("")}</div>`;
   const off = u.tz_min, tz = "UTC" + (off >= 0 ? "+" : "−") + Math.floor(Math.abs(off) / 60) + (Math.abs(off) % 60 ? ":" + String(Math.abs(off) % 60).padStart(2, "0") : "");
   return `<div class="head"><h1>Настройки</h1></div><div class="grp">
-  <div class="sr"><div><b>Сохранять сообщения</b><div class="mu sm">Архив подключённых чатов</div></div>${sw("antidelete", u.antidelete)}</div>
-  <div class="sr"><div><b>Уведомления</b><div class="mu sm">Когда сообщение удалили или изменили</div></div>${sw("notify", u.notify)}</div>
-  <div class="sr"><div><b>Срок хранения</b><div class="mu sm">Дней. 90 доступно в Premium</div></div>${seg("ret", [[7, "7"], [30, "30"], [90, "90"]], u.retention_days)}</div>
-  <div class="sr"><b>Тема</b>${seg("theme", [["auto", "Авто"], ["light", "Светлая"], ["dark", "Тёмная"]], S.theme)}</div>
-  <div class="sr"><b>Часовой пояс</b><span class="mu">${tz}</span></div>
+  <div class="sr"><i class="si">${ic("archive", 18)}</i><div class="grow"><b>Сохранять сообщения</b><div class="mu sm">Архив подключённых чатов</div></div>${sw("antidelete", u.antidelete)}</div>
+  <div class="sr"><i class="si">${ic("bell", 18)}</i><div class="grow"><b>Уведомления</b><div class="mu sm">Когда сообщение удалили или изменили</div></div>${sw("notify", u.notify)}</div>
+  <div class="sr"><i class="si">${ic("clock", 18)}</i><div class="grow"><b>Срок хранения</b><div class="mu sm">Дней. 90 доступно в Premium</div></div>${seg("ret", [[7, "7"], [30, "30"], [90, "90"]], u.retention_days)}</div>
+  <div class="sr"><i class="si">${ic("sun", 18)}</i><b class="grow">Тема</b>${seg("theme", [["auto", "Авто"], ["light", "Светлая"], ["dark", "Тёмная"]], S.theme)}</div>
+  <div class="sr"><i class="si">${ic("globe", 18)}</i><b class="grow">Часовой пояс</b><span class="mu">${tz}</span></div>
   </div><button class="btn bad full" style="margin-top:24px" data-a="wipe">Удалить мои данные</button>`;
 }
 
 function render(anim) {
   const v = $("#view"); tabs();
   if (!S.me) { v.innerHTML = skeleton(); return; }
-  v.innerHTML = { home: vHome, archive: vArchive, streak: vStreak, prem: vPrem, set: vSet }[S.tab]();
+  v.innerHTML = { home: vHome, archive: vArchive, set: vSet, prof: vProf }[S.tab]();
   if (S.tab === "home") initDial();
   else $$("[data-n]").forEach(e => countUp(e, +e.dataset.n));
   const fh = $("#fh"); if (fh) fire(fh, { base: .74 });
@@ -590,12 +672,13 @@ function render(anim) {
 function go(k) {
   if (k === S.tab) return;
   const v = $("#view"); v.classList.add("sw"); hap();
-  setTimeout(() => { S.tab = k; v.scrollTop = 0; render(); v.classList.remove("sw"); if (["archive", "streak", "home"].includes(k)) loadChats(); if (k === "archive" && isAdm() && S.amode === "users") loadOwners(); if (k === "archive" && isAdm() && S.amode === "channel") loadChannel(); }, 140);
+  setTimeout(() => { S.tab = k; v.scrollTop = 0; render(); v.classList.remove("sw"); if (["archive", "streak", "home"].includes(k)) loadChats(); if (k === "archive" && isAdm() && S.amode === "users") loadOwners(); }, 140);
 }
 
 /* ───────── данные ───────── */
 function refreshBody() {
-  if (S.tab === "archive" && isAdm() && (S.amode === "users" || S.amode === "channel")) return;
+  if (S.tab === "archive" && isAdm() && S.amode === "users") return;
+  if (S.tab === "archive" && S.filter === "streak" && !S.q) return render();
   if (S.tab === "archive") { const ab = $("#ab"); if (ab) ab.innerHTML = archiveBody(); }
   else if (S.tab === "streak" || (S.tab === "home" && S.intro)) render();
 }
@@ -603,13 +686,13 @@ async function loadChats() {
   try {
     const old = JSON.stringify(S.chats), nw = (await api("chats")).chats;
     S.chats = nw;
-    if (old !== JSON.stringify(nw) && !S.q && S.filter === "all") refreshBody();
+    if (old !== JSON.stringify(nw) && !S.q && (S.filter === "all" || S.filter === "streak")) refreshBody();
     celebrate();
   } catch (e) { if (S.chats === null) S.chats = []; }
 }
 async function search() {
   S.res = null; const ab = $("#ab"); if (ab) ab.innerHTML = skeleton();
-  try { S.res = (await api("messages", { q: S.q, filter: S.filter, limit: 50 })).messages; } catch (e) { S.res = []; }
+  try { S.res = (await api("messages", { q: S.q, filter: S.filter === "streak" ? "all" : S.filter, limit: 50 })).messages; } catch (e) { S.res = []; }
   const a2 = $("#ab"); if (a2) a2.innerHTML = archiveBody();
 }
 async function refreshMe() { S.me = await api("me"); render(); }
@@ -753,47 +836,54 @@ function celebrate() {
   o.addEventListener("click", () => o.remove()); setTimeout(() => o.remove(), 4200);
 }
 
+
+/* ───────── профиль ───────── */
+function vProf() {
+  const u = S.me.user, s = S.me.stats, tu = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+  const name = u.name || tu.first_name || "Без имени", un = u.username || tu.username || "";
+  const av = tu.photo_url ? `<img class="av" src="${esc(tu.photo_url)}" alt="">` : `<div class="av">${esc((name.trim()[0] || "?").toUpperCase())}</div>`;
+  const sw = (k, v) => `<button class="tg ${v ? "on" : ""}" data-a="tog" data-k="${k}" role="switch" aria-checked="${!!v}"></button>`;
+  const row = (icn, t, sub, a, extra = "") => `<button class="ar" data-a="${a}" ${extra}><i>${ic(icn, 18)}</i><div class="grow"><b>${t}</b><div class="mu sm">${sub}</div></div></button>`;
+  return `<div class="head"><h1>Профиль</h1></div>
+  <section class="card pf">${av}<h1>${esc(name)}</h1><div class="mu sm" style="margin-top:4px">${un ? "@" + esc(un) + " · " : ""}<span data-a="copy" data-v="${esc(u.id)}" style="cursor:pointer">ID ${esc(u.id)}</span></div><button class="bdg ${u.premium ? "pr" : ""}" data-a="tab" data-k="prof">${esc(premTxt(u))}</button></section>
+  <div class="stats"><div><b data-n="${s.archive}">0</b><span>в архиве</span></div><div><b data-n="${s.deleted}">0</b><span>поймано удалённых</span></div><div><b>${s.ai_today || 0}/${s.ai_limit || 0}</b><span>ИИ сегодня</span></div></div>
+  <h2>Действия</h2><div class="grp">
+    <div class="sr"><i class="si">${ic("archive", 18)}</i><div class="grow"><b>Сохранять сообщения</b><div class="mu sm">Архив подключённых чатов</div></div>${sw("antidelete", u.antidelete)}</div>
+    <div class="sr"><i class="si">${ic("bell", 18)}</i><div class="grow"><b>Уведомления</b><div class="mu sm">Когда сообщение удалили или изменили</div></div>${sw("notify", u.notify)}</div>
+    ${row("down", "Скачать архив", "Файл придёт в чат с ботом", "exp")}
+    ${row("copy", "Скопировать мой ID", "Для поддержки и настроек", "copy", `data-v="${esc(u.id)}"`)}
+    ${un ? row("send", "Открыть мой профиль", "В Telegram", "tglink", `data-u="${esc(un)}"`) : ""}
+  </div>
+  <h2>Подписка</h2>${vPrem().replace(/^<div class="head">.*?<\/div>/, "")}`;
+}
+
+const MON = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+const fdate = iso => iso ? new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }) : "";
+async function peerSheet(p) {
+  const cid = S.chat.chat_id, un0 = p.username ? "@" + p.username : "";
+  const b = sheet(`<div class="pi-h">${mono(p.name, p.id)}<div class="grow"><b class="ell" style="font-size:18px">${esc(p.name || "Без имени")}</b><div class="mu sm">${un0 ? esc(un0) : "ID " + esc(p.id)}</div></div></div><div id="pi"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>`);
+  let r = null; try { r = await api("peer_info", { chat_id: +cid }); } catch (e) {}
+  if (!b.isConnected) return;
+  const pr = (r && r.profile) || {}, st = (r && r.stats) || {}, fl = (r && r.flags) || {}, ch = (S.chats || []).find(x => String(x.chat_id) === String(cid)) || S.chat;
+  const name = [pr.first_name, pr.last_name].filter(Boolean).join(" ") || p.name || "Без имени", un = pr.username || p.username;
+  const bd = pr.birthdate ? `${pr.birthdate.day} ${MON[pr.birthdate.month - 1]}${pr.birthdate.year ? " " + pr.birthdate.year : ""}` : "";
+  const pc = pr.personal_chat ? (pr.personal_chat.username ? "@" + pr.personal_chat.username : pr.personal_chat.title) : "";
+  const rows = [["Имя", name], ["Username", un ? "@" + un : ""], ["ID", String(p.id)], ["О себе", pr.bio], ["День рождения", bd], ["Личный канал", pc], ["Бизнес", pr.business_intro && pr.business_intro.title], ["Адрес", pr.business_location && pr.business_location.address], ["Первое сообщение", fdate(st.first_at)], ["Последнее", fdate(st.last_at)], ["Серия", ch && ch.best ? `${ch.cur || 0} сейчас, рекорд ${ch.best}` : ""]].filter(x => x[1]);
+  const tgl = (k, t, sub) => `<div class="sr"><div><b>${t}</b><div class="mu sm">${sub}</div></div><button class="tg ${fl[k] ? "on" : ""}" data-a="csw" data-k="${k}" role="switch"></button></div>`;
+  const stat = [[st.total, "сообщений"], [st.theirs, "от него"], [st.mine, "от тебя"], [st.deleted, "удалил"], [st.edited, "изменил"], [st.media, "медиа"]];
+  $("#pi", b).innerHTML = (r && r.ok ? "" : '<div class="note">Telegram не отдал био и дату рождения этого человека. Ниже то, что есть в архиве.</div>')
+    + `<div class="stats" style="margin-top:0">${stat.map(([n, l]) => `<div><b>${num(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`
+    + `<div style="margin-top:8px">${rows.map(([l, v]) => `<button class="kv" data-a="copy" data-v="${esc(v)}"><span>${l}</span><span>${esc(v)}</span></button>`).join("")}</div>`
+    + `<div style="margin-top:6px">${tgl("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`
+    + (un ? `<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="${esc(un)}">Открыть в Telegram</button>` : "");
+  if (r && r.photo) { const m = $(".mg", b); if (m) m.outerHTML = `<img class="av s" src="${r.photo}" alt="">`; }
+}
+
 /* ───────── действия ───────── */
 const A = {
-  tab: d => go(d.k),
+  tab: d => { if (d.k === "streak") { S.filter = "streak"; S.amode = "mine"; S.q = ""; S.res = null; return S.tab === "archive" ? render() : go("archive"); } go(d.k === "prem" ? "prof" : d.k); },
   chat: d => openChat(d.id),
-  amode: d => { S.amode = d.v; S.aown = null; render(); hap(); d.v === "users" ? loadOwners() : d.v === "channel" ? loadChannel() : loadChats(); },
-  chset: d => chCall("ch_set", { key: d.k, value: d.k === "hour" ? Number(d.v) : d.v === "1" }),
-  chnow: d => chCall("ch_now", { id: Number(d.id) }, "Опубликовано"),
-  chbank: () => askYes("Опубликовать пост из банка в канал сейчас?", () => chCall("ch_bank", {}, "Опубликовано")),
-  chdel: d => askYes(d.s === "sent" ? "Удалить пост из канала?" : "Удалить пост?", () => chCall("ch_delete", { id: Number(d.id) }, "Удалено")),
-  chnew: () => {
-    const f = "width:100%;padding:12px;border-radius:12px;background:var(--pn2);border:1px solid var(--ln);color:var(--tx);font:inherit";
-    const b = sheet(`<h3>Новый пост</h3>
-      <div style="display:flex;gap:8px;margin-bottom:10px">
-        <input id="chidea" placeholder="О чём пост? (для ИИ)" style="${f};flex:1" maxlength="300">
-        <button class="btn ghost" style="padding:0 14px;white-space:nowrap" id="chai">✨ Написать</button>
-      </div>
-      <textarea id="chtx" rows="6" maxlength="4096" placeholder="Текст поста" style="${f};resize:vertical"></textarea>
-      <div class="mu sm" style="margin:10px 0 6px">Запланировать (необязательно)</div>
-      <input id="chwh" type="datetime-local" style="${f}">
-      <button class="btn full" style="margin-top:14px" id="chgo">Опубликовать</button>
-      <div class="mu sm" style="margin-top:10px">Фото, видео и форматирование — через бота: команда /post.</div>`);
-    const w = b.querySelector("#chwh"), go = b.querySelector("#chgo"), ai = b.querySelector("#chai"), idea = b.querySelector("#chidea"), tx = b.querySelector("#chtx");
-    w.addEventListener("input", () => { go.textContent = w.value ? "Запланировать" : "Опубликовать"; });
-    ai.addEventListener("click", async () => {
-      const prompt = idea.value.trim();
-      if (!prompt) return toast("Сначала напиши тему");
-      ai.disabled = true; ai.textContent = "Пишу…";
-      try { const r = await api("ch_gen", { prompt }); tx.value = r.text; hap(); }
-      catch (e) { toast(chErr(e)); }
-      ai.disabled = false; ai.textContent = "✨ Написать";
-    });
-    go.addEventListener("click", async () => {
-      const text = tx.value.trim();
-      if (!text) return toast("Напиши текст");
-      let when = "now";
-      if (w.value) { const t = new Date(w.value); if (!(t > new Date())) return toast("Время в прошлом"); when = t.toISOString(); }
-      go.disabled = true;
-      try { S.ch = await api("ch_post", { text, when }); b.remove(); toast(when === "now" ? "Опубликовано" : "Запланировано"); hap(); if (S.tab === "archive" && S.amode === "channel") render(); }
-      catch (e) { go.disabled = false; toast(chErr(e)); }
-    });
-  },
+  amode: d => { S.amode = d.v; S.aown = null; render(); hap(); d.v === "users" ? loadOwners() : loadChats(); },
   aown: async d => { S.aown = (S.ao || []).find(x => String(x.owner_id) === String(d.id)); S.ach = null; render(); $("#view").scrollTop = 0; hap(); try { S.ach = (await api("admin_chats", { owner_id: +d.id })).chats; } catch (e) { S.ach = []; toast("Не удалось загрузить"); } render(); },
   aback: () => { S.aown = null; S.ach = null; render(); hap(); },
   aomore: () => loadOwners(true),
@@ -801,8 +891,11 @@ const A = {
   amedia: (d, el) => { const n = el.closest(".am"); n.innerHTML = '<div class="sk" style="height:120px;margin:0"></div>'; loadMedia(n); },
   back: closeChat,
   copy: d => copyText(d.v),
+  exp: async () => { try { await api("export"); toast("Файл отправлен в чат с ботом"); hap("medium"); } catch (e) { toast("Не удалось собрать файл"); } },
+  csw: async (d, el) => { const on = !el.classList.contains("on"); el.classList.toggle("on", on); hap(); try { await api("chat_set", { chat_id: +S.chat.chat_id, [d.k]: on }); } catch (e) { el.classList.toggle("on", !on); toast("Не сохранилось"); } },
   who: d => {
     const p = S.pp && S.pp[d.r]; if (!p) return;
+    if (d.r === "peer" && !S.chat.owner) return peerSheet(p);
     const role = d.r === "peer" ? "Собеседник" : "Абонент", un = p.username ? "@" + p.username : "";
     const row = (l, v) => `<div class="lr" style="cursor:default"><div class="grow"><div class="mu sm">${l}</div><div style="user-select:text">${esc(v)}</div></div><button class="btn ghost" style="padding:7px 12px" data-a="copy" data-v="${esc(v)}">Копировать</button></div>`;
     const b = sheet(`<h3>${role}</h3><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${mono(p.name, p.id)}<b class="grow ell">${esc(p.name || "Без имени")}</b></div>${un ? row("Username", un) : '<div class="mu sm" style="margin-bottom:8px">Username не указан</div>'}${row("ID", String(p.id))}${un ? '<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="' + esc(p.username) + '">Открыть в Telegram</button>' : ""}`);
@@ -812,7 +905,7 @@ const A = {
   filter: d => {
     if (S.tab !== "archive") { S.tab = "archive"; S.amode = "mine"; S.chats === null && loadChats(); }
     S.filter = S.filter === d.f ? "all" : d.f; render(); hap();
-    (S.q || S.filter !== "all") ? search() : loadChats();
+    (S.q || !["all", "streak"].includes(S.filter)) ? search() : loadChats();
   },
   edits: d => { const e = $("#ed" + d.id); e.hidden = !e.hidden; },
   photo: async d => {
@@ -846,7 +939,7 @@ const A = {
 document.addEventListener("click", e => { const a = e.target.closest("[data-a]"); if (a && A[a.dataset.a]) A[a.dataset.a](a.dataset, a); });
 let qt; document.addEventListener("input", e => {
   if (e.target.id !== "q") return; clearTimeout(qt);
-  qt = setTimeout(() => { S.q = e.target.value.trim(); (S.q || S.filter !== "all") ? search() : refreshBody(); }, 300);
+  qt = setTimeout(() => { S.q = e.target.value.trim(); (S.q || !["all", "streak"].includes(S.filter)) ? search() : refreshBody(); }, 300);
 });
 
 /* ───────── старт ───────── */

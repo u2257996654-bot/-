@@ -801,6 +801,16 @@ async function loadMedia(n) {
   } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Не загрузилось, повторить</button>`; }
 }
 const chatApi = (x = {}) => S.chat.owner ? api("admin_messages", { owner_id: S.chat.owner, chat_id: S.chat.chat_id, limit: 60, ...x }) : api("messages", { chat_id: S.chat.chat_id, limit: 60, ...x });
+async function loadChat() {
+  const cb = $("#cb"); if (cb) cb.innerHTML = skeleton();
+  let err = null;
+  for (let i = 0; i < 3; i++) {
+    try { const r = await chatApi(); S.msgs = r.messages.slice().reverse(); S.more = r.more; paintChat(false); return; }
+    catch (e) { err = e; await new Promise(r => setTimeout(r, 700 * (i + 1))); if (!S.chat) return; }
+  }
+  S.msgs = [];
+  const el = $("#cb"); if (el) el.innerHTML = `<div class="mu" style="padding:32px 20px;text-align:center">Чат не загрузился${err && err.message ? " (" + esc(String(err.message)) + ")" : ""}<br><button class="btn ghost" style="margin-top:12px" data-a="chretry">Повторить</button></div>`;
+}
 async function openChat(id, adm) {
   if (!id) return;
   const c = (adm ? S.ach || [] : S.chats || []).find(x => String(x.chat_id) === String(id));
@@ -810,8 +820,7 @@ async function openChat(id, adm) {
   requestAnimationFrame(() => el.classList.add("open"));
   const cid = S.chat.chat_id;
   api("chat_info", { chat_id: +cid, ...(S.chat.owner ? { owner_id: S.chat.owner } : {}) }).then(r => { if (S.chat && S.chat.chat_id === cid) paintPeople(r); }).catch(() => {});
-  try { const r = await chatApi(); S.msgs = r.messages.slice().reverse(); S.more = r.more; } catch (e) { S.msgs = []; }
-  paintChat(false);
+  await loadChat();
   if (tg) { tg.BackButton.show(); tg.BackButton.onClick(closeChat); }
 }
 function closeChat() { $("#chat").classList.remove("open"); S.chat = null; io && io.disconnect(); mio && mio.disconnect(); if (tg) { tg.BackButton.hide(); tg.BackButton.offClick(closeChat); } }
@@ -884,6 +893,7 @@ const A = {
   tab: d => { if (d.k === "streak") { S.filter = "streak"; S.amode = "mine"; S.q = ""; S.res = null; return S.tab === "archive" ? render() : go("archive"); } go(d.k === "prem" ? "prof" : d.k); },
   chat: d => openChat(d.id),
   amode: d => { S.amode = d.v; S.aown = null; render(); hap(); d.v === "users" ? loadOwners() : loadChats(); },
+  chretry: () => loadChat(),
   aown: async d => { S.aown = (S.ao || []).find(x => String(x.owner_id) === String(d.id)); S.ach = null; render(); $("#view").scrollTop = 0; hap(); try { S.ach = (await api("admin_chats", { owner_id: +d.id })).chats; } catch (e) { S.ach = []; toast("Не удалось загрузить"); } render(); },
   aback: () => { S.aown = null; S.ach = null; render(); hap(); },
   aomore: () => loadOwners(true),

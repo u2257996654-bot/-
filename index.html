@@ -970,7 +970,6 @@ function vProf() {
     <div class="sr"><i class="si">${ic("archive", 18)}</i><div class="grow"><b>Сохранять сообщения</b><div class="mu sm">Архив подключённых чатов</div></div>${sw("antidelete", u.antidelete)}</div>
     <div class="sr"><i class="si">${ic("bell", 18)}</i><div class="grow"><b>Уведомления</b><div class="mu sm">Когда сообщение удалили или изменили</div></div>${sw("notify", u.notify)}</div>
     ${row("down", "Скачать архив", "Файл придёт в чат с ботом", "exp")}
-    ${row("search", "Проверить человека", "Поиск по нику на ~1500 сайтах, результат в чат с ботом", "osq")}
     ${row("copy", "Скопировать мой ID", "Для поддержки и настроек", "copy", `data-v="${esc(u.id)}"`)}
     ${un ? row("send", "Открыть мой профиль", "В Telegram", "tglink", `data-u="${esc(un)}"`) : ""}
   </div>
@@ -995,7 +994,7 @@ async function peerSheet(p) {
     + `<div class="stats" style="margin-top:0">${stat.map(([n, l]) => `<div><b>${num(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`
     + `<div style="margin-top:8px">${rows.map(([l, v]) => `<button class="kv" data-a="copy" data-v="${esc(v)}"><span>${l}</span><span>${esc(v)}</span></button>`).join("")}</div>`
     + `<div style="margin-top:6px">${tgl("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`
-    + (un ? `<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="${esc(un)}">Открыть в Telegram</button><button class="btn ghost full" style="margin-top:8px" data-a="osq" data-q="${esc(un)}">Проверить на мошенничество</button>` : `<div class="note">У собеседника нет @username, поиск по нику невозможен. Если он пишет угрозы или просит деньги, нажми на флажок в чате.</div>`);
+    + (un ? `<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="${esc(un)}">Открыть в Telegram</button>` : `<div class="note">У собеседника нет @username. Если он пишет угрозы или просит деньги, нажми на флажок в чате.</div>`);
   if (r && r.photo) { const m = $(".mg", b); if (m) m.outerHTML = `<img class="av s" src="${r.photo}" alt="">`; }
 }
 
@@ -1024,15 +1023,6 @@ const A = {
     toast("Если файл не скачался, нажми «Сохранить»: бот пришлёт его в чат");
   },
   rep: d => reportSheet(d.id ? +d.id : null),
-  osq: d => {
-    const b = sheet(`<h3>Проверить человека</h3><p class="mu sm" style="margin-bottom:12px">Бот поищет этот ник на ~1500 сайтах: так видно, не мошенник ли за аккаунтом. Ход и итог придут в чат с ботом.</p><div class="sb" style="margin-bottom:14px">${ic("search", 18)}<input id="oq" placeholder="Ник, например ivan_petrov" value="${esc(d.q || "")}" autocomplete="off" autocapitalize="off"></div><button class="btn full" data-go>Проверить</button>`);
-    $("[data-go]", b).onclick = async () => {
-      const q = $("#oq", b).value.trim().replace(/^@/, ""); if (q.length < 2) return toast("Введи ник от 2 символов");
-      if (DEMO) return toast("В демо-режиме поиск недоступен");
-      try { await api("osint", { q }); b.remove(); hap("medium"); toast("Ищу. Результат придёт в чат с ботом"); }
-      catch (e) { toast(String(e.message) === "bad_nick" ? "Ник: 2–40 символов, буквы, цифры, _ . -" : "Не получилось. Попробуй ещё раз"); }
-    };
-  },
   back: closeChat,
   copy: d => copyText(d.v),
   exp: async () => { try { await api("export"); toast("Файл отправлен в чат с ботом"); hap("medium"); } catch (e) { toast("Не удалось собрать файл"); } },

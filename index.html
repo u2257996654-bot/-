@@ -356,6 +356,26 @@ h2{font:600 13px var(--fb);color:var(--mu);margin:28px 6px 10px;letter-spacing:0
 .av{box-shadow:0 0 0 4px var(--pn),0 0 0 6px color-mix(in srgb,var(--br) 60%,transparent),0 14px 30px rgba(61,125,255,.35)}
 .stats>div{padding:16px 14px;text-align:left}
 .stats b{font-size:22px}
+
+/* ═══ v7: жалобы, сохранение медиа, стикеры ═══ */
+.b img,.b video,.b .am{-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.b .am{min-height:40px}
+.b .am.st{min-width:0}
+.b .am .tgs{width:180px;height:180px}
+.b .am .tgs svg{display:block;width:100%;height:100%}
+.mt{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.mb{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1px solid var(--ln);background:var(--pn2);color:var(--tx);font-size:12.5px;font-weight:500}
+.b.me .mb{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);color:#fff}
+.mb:active{opacity:.6} .mb[disabled]{opacity:.5;pointer-events:none}
+.fcard{display:flex;align-items:center;gap:10px;margin-top:6px;padding:10px 12px;border-radius:18px;background:var(--pn2)}
+.b.me .fcard{background:rgba(255,255,255,.14)}
+.fcard i{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--br) 18%,transparent);color:var(--br)}
+.b .m .rp{color:var(--mu);cursor:pointer;margin-left:auto;opacity:.8}
+.rch{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.rch .fc{flex:none}
+.sheet textarea{width:100%;min-height:78px;resize:none;padding:12px 14px;border-radius:18px;border:1px solid var(--ln);background:var(--pn2);color:var(--tx);font:inherit;outline:0;-webkit-user-select:text;user-select:text}
+.sheet textarea:focus{border-color:var(--br)}
+.sheet .btn[disabled]{opacity:.6;pointer-events:none}
 </style>
 </head>
 <body>
@@ -411,6 +431,9 @@ const IC = {
   copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
   down: '<path d="M12 15V3M7 10l5 5 5-5M5 21h14"/>',
   send: '<path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/>',
+  flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+  share: '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>',
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
 const flame = (s = 18) => `<svg class="fl" width="${s}" height="${s}" viewBox="-4 -4 32 32" aria-hidden="true"><path class="o" fill="url(#fg)" d="M12 1.5C12.6 4.5 14.4 6.1 16.3 8.1 18.2 10.1 19.5 12.2 19.5 15.1A7.5 7.5 0 0 1 4.5 15.1C4.5 12.9 5.4 11.2 6.7 9.8 6.9 11.3 7.7 12.3 8.7 12.8 8.2 9.4 9.4 4.9 12 1.5Z"/><path class="m" fill="url(#fm)" d="M12 8.6C12.5 10.6 14.2 11.8 15.2 13.2 16.1 14.4 16.5 15.5 16.5 16.8A4.5 4.5 0 0 1 7.5 16.8C7.5 15.5 8 14.4 8.8 13.5 9 14.5 9.5 15.1 10.2 15.4 9.9 12.6 10.6 10.4 12 8.6Z"/><path class="i" fill="url(#fi)" d="M12 14.6C12.8 15.6 13.9 16.3 13.9 17.6A1.9 1.9 0 0 1 10.1 17.6C10.1 16.3 11.2 15.6 12 14.6Z"/></svg>`;
@@ -542,6 +565,8 @@ function demo(a, p) {
   if (a === "peer_info") return { ok: true, photo: null, profile: { first_name: "Алина", username: "alina", bio: "Дизайнер. Пишу редко, отвечаю быстро.", birthdate: { day: 14, month: 3, year: 1998 }, business_location: { address: "Москва, Тверская 12" } }, stats: { total: 842, mine: 410, theirs: 432, deleted: 12, edited: 7, media: 96, first_at: iso(4800), last_at: iso(.2) }, flags: { mute: false, nomute: false, clone: false } };
   if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
   if (a === "voice_text") return { text: "Привет! Короче, я сегодня освобожусь пораньше, давай встретимся в семь у метро." };
+  if (a === "report") return { ok: true, grounds: true, sent: !!p.send, evidence: !!p.send };
+  if (a === "save_media") return { ok: true };
   if (a === "photo") return { src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
   return { ok: true };
 }
@@ -712,9 +737,10 @@ function bubbles() {
     const who = adm ? `<div style="font-size:11px;font-weight:600;margin-bottom:2px;color:${me ? "var(--br)" : "var(--mu)"}">${me ? "Владелец" : esc(m.from_name || "Собеседник")}</div>` : "";
     const rich = ["photo", "video_note", "video", "animation", "sticker", "voice", "audio"].includes(m.type);
     const txt = m.text ? (m.deleted_at ? `<span class="rd">${esc(m.text)}</span>` : esc(m.text)) : "";
-    const media = rich ? `<div class="am" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : ["voice", "audio"].includes(m.type) ? 40 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
-    const vt = ["voice", "audio", "video_note", "video", "sticker", "animation"].includes(m.type) ? `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>` : "";
-    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}${vt}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}</div></div>`;
+    const media = m.type === "document" ? `<div class="fcard"><i>${ic("file", 18)}</i><div class="grow"><b>Файл</b><div class="mu sm">Сохранится в чат с ботом</div></div><button class="mb" data-a="msave" data-id="${m.id}">${ic("share", 14)}Сохранить</button></div>`
+      : rich ? `<div class="am${m.type === "sticker" ? " st" : ""}" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : ["voice", "audio"].includes(m.type) ? 40 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
+    const vt = ["voice", "audio", "video_note", "video"].includes(m.type) ? `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>` : "";
+    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}${vt}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}${!me && !adm ? `<span class="rp" data-a="rep" data-id="${m.id}">пожаловаться</span>` : ""}</div></div>`;
   });
   return h || '<div class="empty">В этом чате пока нет сохранённых сообщений.</div>';
 }
@@ -756,17 +782,67 @@ let mio;
 function observeMedia() {
   mio && mio.disconnect();
   const els = $$(".am"); if (!els.length) return;
-  mio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { mio.unobserve(e.target); loadMedia(e.target); } }), { root: $("#cb"), rootMargin: "300px" });
+  mio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { mio.unobserve(e.target); loadMedia(e.target); } }), { root: $("#cb"), rootMargin: "700px" });
   els.forEach(n => mio.observe(n));
 }
+
+/* очередь и кэш: не больше 3 загрузок разом, каждый файл качается один раз, 3 попытки */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const MC = new Map(); let mBusy = 0; const mWait = [];
+const mSlot = () => new Promise(res => { const go = () => { mBusy++; res(); }; mBusy < 3 ? go() : mWait.push(go); });
+const mFree = () => { mBusy--; const n = mWait.shift(); n && n(); };
+function getMedia(id) {
+  if (MC.has(id)) return MC.get(id);
+  const p = (async () => {
+    await mSlot();
+    try {
+      let last;
+      for (let i = 0; i < 3; i++) {
+        try {
+          if (DEMO) { const r = await demo("media", { id }), blob = await (await fetch(r.src)).blob(); return { blob, kind: r.kind, url: URL.createObjectURL(blob) }; }
+          const r = await fetch(API, { method: "POST", headers: { "content-type": "application/json", "x-init-data": tg.initData }, body: JSON.stringify({ action: "media", raw: true, id, tz: -new Date().getTimezoneOffset() }) });
+          if (!r.ok) { const j = await r.json().catch(() => ({})); const e = new Error(j.error || r.status); e.fatal = [404, 413].includes(r.status); throw e; }
+          const blob = await r.blob();
+          return { blob, kind: r.headers.get("x-kind") || (blob.type.startsWith("video") ? "video" : blob.type.startsWith("audio") ? "audio" : "image"), url: URL.createObjectURL(blob) };
+        } catch (e) { last = e; if (e.fatal) break; await sleep(700 * (i + 1)); }
+      }
+      throw last;
+    } finally { mFree(); }
+  })();
+  MC.set(id, p); p.catch(() => MC.delete(id));
+  return p;
+}
+let lotP;
+const lottie = () => lotP ||= new Promise((ok, no) => {
+  if (window.lottie) return ok(window.lottie);
+  const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js";
+  s.onload = () => ok(window.lottie); s.onerror = () => { lotP = null; no(new Error("lottie")); }; document.head.appendChild(s);
+});
+const gunzip = async blob => new Response(blob.stream().pipeThrough(new DecompressionStream("gzip"))).text();
+const saveBar = (id, local) => `<div class="mt"><button class="mb" data-a="msave" data-id="${id}">${ic("share", 14)}Сохранить</button>${local ? `<button class="mb" data-a="mdl" data-id="${id}">${ic("down", 14)}Скачать</button>` : ""}</div>`;
+const retryBtn = (n, t) => `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">${t}</button>`;
+const EXT = { photo: "jpg", video_note: "mp4", video: "mp4", animation: "mp4", voice: "ogg", audio: "mp3", sticker: "webp" };
+
 async function loadMedia(n) {
+  const id = +n.dataset.id, t = n.dataset.t;
+  let m;
+  try { m = await getMedia(id); }
+  catch (e) {
+    const big = e && e.message === "too_big";
+    n.innerHTML = big
+      ? `<div class="fcard"><i>${ic("file", 18)}</i><div class="grow"><b>Файл больше 20 МБ</b><div class="mu sm">Здесь его не показать, но бот пришлёт его в чат</div></div></div>${saveBar(id, false).replace("Сохранить", "Прислать в чат")}`
+      : retryBtn(n, "Не загрузилось, повторить");
+    return;
+  }
+  if (!n.isConnected) return;
+  const { url, blob, kind } = m;
+  n.dataset.url = url;
+  const bar = saveBar(id, true);
   try {
-    const r = await api("media", { id: +n.dataset.id });
-    if (r.kind === "audio") {
-      const url = URL.createObjectURL(await (await fetch(r.src)).blob());
-      const N = 32, seed = +n.dataset.id || 1;
+    if (kind === "audio") {
+      const N = 32, seed = id || 1;
       const bars = Array.from({ length: N }, (_, i) => `<b style="height:${25 + Math.round(Math.abs(Math.sin(seed * 7.3 + i * 1.7)) * 75)}%"></b>`).join("");
-      n.innerHTML = `<div class="ap"><button class="apb" aria-label="Играть">▶</button><div class="apt"><div class="apl">${bars}</div><span class="mu sm apd">0:00</span></div><button class="aps">1×</button></div><audio src="${url}" preload="metadata"></audio>`;
+      n.innerHTML = `<div class="ap"><button class="apb" aria-label="Играть">▶</button><div class="apt"><div class="apl">${bars}</div><span class="mu sm apd">0:00</span></div><button class="aps">1×</button></div><audio src="${url}" preload="metadata"></audio>${bar}`;
       const au = n.querySelector("audio"), btn = n.querySelector(".apb"), bs = [...n.querySelectorAll(".apl b")], dur = n.querySelector(".apd"), sp = n.querySelector(".aps");
       const fmt = s => isFinite(s) ? Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0") : "0:00";
       const paint = () => { const p = au.duration && isFinite(au.duration) ? au.currentTime / au.duration : 0; bs.forEach((b, i) => b.classList.toggle("on", i < p * N)); dur.textContent = au.currentTime > 0 || !au.paused ? fmt(au.currentTime) : fmt(au.duration); };
@@ -774,31 +850,35 @@ async function loadMedia(n) {
       au.onplay = () => { btn.textContent = "❚❚"; $$("audio").forEach(a => a !== au && a.pause()); };
       au.onpause = () => { btn.textContent = "▶"; };
       au.onended = () => { au.currentTime = 0; btn.textContent = "▶"; paint(); };
-      au.onerror = () => { n.innerHTML = '<span class="mu sm">Это устройство не воспроизводит такой формат голосовых</span>'; };
+      au.onerror = () => { n.querySelector(".ap").outerHTML = '<span class="mu sm">Это устройство не воспроизводит такой формат. Нажми «Сохранить» и открой в Telegram.</span>'; };
       btn.onclick = () => { au.paused ? au.play().catch(() => au.onerror()) : au.pause(); };
       n.querySelector(".apl").onclick = e => { const rc = e.currentTarget.getBoundingClientRect(); if (au.duration && isFinite(au.duration)) au.currentTime = au.duration * (e.clientX - rc.left) / rc.width; };
       sp.onclick = () => { const v = au.playbackRate >= 2 ? 1 : au.playbackRate >= 1.5 ? 2 : 1.5; au.playbackRate = v; sp.textContent = v + "×"; };
       return;
     }
-    if (r.kind === "tgs") { n.innerHTML = '<span class="mu">[Анимированный стикер]</span>'; return; }
-    if (r.kind === "video") {
-      const blob = await (await fetch(r.src)).blob();
-      const url = URL.createObjectURL(blob);
-      const isVn = n.dataset.t === "video_note";
-      const loop = ["animation", "sticker"].includes(n.dataset.t);
-      n.innerHTML = isVn
-        ? `<video class="vn" src="${url}" muted loop autoplay playsinline preload="auto"></video>`
-        : loop ? `<video src="${url}" muted loop autoplay playsinline preload="auto" style="max-width:${n.dataset.t === "sticker" ? 180 : 260}px"></video>`
-        : `<video src="${url}" controls playsinline preload="metadata"></video>`;
-      const v = n.querySelector("video");
-      v.onerror = () => { URL.revokeObjectURL(url); n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Видео не воспроизводится, повторить</button>`; };
-      if (isVn) v.onclick = () => { v.muted = !v.muted; };
-    } else {
-      n.innerHTML = `<img alt="Фото из архива" src="${r.src}">`;
-      if (n.dataset.t === "sticker") n.querySelector("img").style.maxWidth = "180px";
-      n.querySelector("img").onerror = () => { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Фото не загрузилось, повторить</button>`; };
+    if (kind === "tgs") {
+      n.innerHTML = '<div class="tgs"></div>' + saveBar(id, false);
+      const data = JSON.parse(await gunzip(blob)), L = await lottie();
+      L.loadAnimation({ container: n.querySelector(".tgs"), renderer: "svg", loop: true, autoplay: true, animationData: data });
+      return;
     }
-  } catch (e) { n.innerHTML = `<button class="btn ghost rt" data-a="amedia" data-id="${n.dataset.id}">Не загрузилось, повторить</button>`; }
+    if (kind === "video") {
+      const vn = t === "video_note", loop = ["animation", "sticker"].includes(t);
+      n.innerHTML = (vn
+        ? `<video class="vn" src="${url}" muted loop autoplay playsinline preload="auto"></video>`
+        : loop ? `<video src="${url}" muted loop autoplay playsinline preload="auto" style="max-width:${t === "sticker" ? 180 : 260}px"></video>`
+        : `<video src="${url}" controls playsinline preload="metadata"></video>`) + bar;
+      const v = n.querySelector("video");
+      v.onerror = () => { v.outerHTML = '<span class="mu sm">Это устройство не воспроизводит такой формат. Нажми «Сохранить» и открой в Telegram.</span>'; };
+      if (vn) v.onclick = () => { if (v.muted) { v.muted = false; v.currentTime = 0; v.play().catch(() => {}); } else v.muted = true; };
+      v.play && v.play().catch(() => {});
+      return;
+    }
+    n.innerHTML = `<img alt="Фото из архива" src="${url}"${t === "sticker" ? ' style="max-width:180px"' : ""}>` + bar;
+    n.querySelector("img").onerror = () => { n.innerHTML = retryBtn(n, "Не загрузилось, повторить") + saveBar(id, false); };
+  } catch (e) {
+    n.innerHTML = `<span class="mu sm">Не получилось показать здесь.</span>` + saveBar(id, false);
+  }
 }
 const chatApi = (x = {}) => S.chat.owner ? api("admin_messages", { owner_id: S.chat.owner, chat_id: S.chat.chat_id, limit: 60, ...x }) : api("messages", { chat_id: S.chat.chat_id, limit: 60, ...x });
 async function loadChat() {
@@ -816,7 +896,7 @@ async function openChat(id, adm) {
   const c = (adm ? S.ach || [] : S.chats || []).find(x => String(x.chat_id) === String(id));
   S.chat = adm ? { chat_id: id, chat_name: c ? c.chat_name : "Чат", cur: 0, msgs: c ? c.cnt : 0, owner: adm.owner_id, owner_name: ownName(adm) } : (c || { chat_id: id, chat_name: "Чат", cur: 0 }); hap();
   const el = $("#chat");
-  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}</div><div class="pp" id="pp" hidden></div><div class="ch-b" id="cb">${skeleton()}</div>`;
+  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}${S.chat.owner ? "" : `<button class="ib" data-a="rep" aria-label="Пожаловаться">${ic("flag", 19)}</button>`}</div><div class="pp" id="pp" hidden></div><div class="ch-b" id="cb">${skeleton()}</div>`;
   requestAnimationFrame(() => el.classList.add("open"));
   const cid = S.chat.chat_id;
   api("chat_info", { chat_id: +cid, ...(S.chat.owner ? { owner_id: S.chat.owner } : {}) }).then(r => { if (S.chat && S.chat.chat_id === cid) paintPeople(r); }).catch(() => {});
@@ -824,6 +904,36 @@ async function openChat(id, adm) {
   if (tg) { tg.BackButton.show(); tg.BackButton.onClick(closeChat); }
 }
 function closeChat() { $("#chat").classList.remove("open"); S.chat = null; io && io.disconnect(); mio && mio.disconnect(); if (tg) { tg.BackButton.hide(); tg.BackButton.offClick(closeChat); } }
+
+/* ───────── жалоба ───────── */
+const REASONS = [["threat", "Угрозы"], ["scam", "Мошенничество"], ["spam", "Спам"], ["abuse", "Оскорбления"], ["other", "Другое"]];
+function reportSheet(msgId) {
+  if (!S.chat || S.chat.owner) return;
+  let reason = "threat";
+  const b = sheet(`<h3>Пожаловаться</h3><p class="mu sm">${msgId ? "На это сообщение и всю переписку в чате." : "На собеседника в этом чате."} Бот сам проверит сохранённую переписку.</p>
+    <div class="rch">${REASONS.map(([k, l]) => `<button class="fc ${k === reason ? "on" : ""}" data-r="${k}">${l}</button>`).join("")}</div>
+    <textarea id="rc" maxlength="300" placeholder="Что произошло (необязательно)"></textarea>
+    <div class="note">Если угроз или другого нарушения в переписке нет, ничего не отправится и переписка не прикладывается.</div>
+    <button class="btn full" data-go="send">Отправить жалобу</button>
+    <button class="btn ghost full" style="margin-top:8px" data-go="draft">Только текст, в чат с ботом</button>`);
+  $$(".rch .fc", b).forEach(x => x.onclick = () => { reason = x.dataset.r; $$(".rch .fc", b).forEach(y => y.classList.toggle("on", y === x)); tick(); });
+  const go = async send => {
+    const btns = $$("[data-go]", b); btns.forEach(x => x.disabled = true);
+    const lead = $('[data-go="send"]', b), old = lead.textContent; lead.textContent = "Проверяю переписку…";
+    try {
+      const r = await api("report", { chat_id: +S.chat.chat_id, msg_id: msgId, reason, comment: $("#rc", b).value.trim(), send });
+      const box = $(".sheet", b); if (!box) return;
+      if (!r.grounds) { box.innerHTML = '<h3>Нарушений не нашёл</h3><p class="mu" style="margin-bottom:16px">В сохранённой переписке нет признаков этой причины. Ничего не отправлено, переписка не прикладывалась.</p><button class="btn full" data-close>Понятно</button>'; return; }
+      hap("medium");
+      box.innerHTML = `<h3>${r.sent ? "Жалоба отправлена" : "Жалоба готова"}</h3><p class="mu" style="margin-bottom:16px">${r.sent ? "Ушла в @notoscam" + (r.evidence ? " вместе с перепиской" : "") + ". Копия в чате с ботом." : "Текст пришёл в чат с ботом. Оттуда её можно отправить одной кнопкой."}</p><button class="btn full" data-close>Готово</button>`;
+    } catch (e) {
+      const m = String(e && e.message || e);
+      toast(m === "limit" ? "Лимит жалоб на сегодня исчерпан" : m === "ai_limit" ? "Лимит ИИ на сегодня исчерпан" : "Не получилось. Попробуй ещё раз");
+      btns.forEach(x => x.disabled = false); lead.textContent = old;
+    }
+  };
+  $$("[data-go]", b).forEach(x => x.onclick = () => go(x.dataset.go === "send"));
+}
 
 /* ───────── оверлеи ───────── */
 function sheet(html) {
@@ -860,6 +970,7 @@ function vProf() {
     <div class="sr"><i class="si">${ic("archive", 18)}</i><div class="grow"><b>Сохранять сообщения</b><div class="mu sm">Архив подключённых чатов</div></div>${sw("antidelete", u.antidelete)}</div>
     <div class="sr"><i class="si">${ic("bell", 18)}</i><div class="grow"><b>Уведомления</b><div class="mu sm">Когда сообщение удалили или изменили</div></div>${sw("notify", u.notify)}</div>
     ${row("down", "Скачать архив", "Файл придёт в чат с ботом", "exp")}
+    ${row("search", "Проверить человека", "Поиск по нику на ~1500 сайтах, результат в чат с ботом", "osq")}
     ${row("copy", "Скопировать мой ID", "Для поддержки и настроек", "copy", `data-v="${esc(u.id)}"`)}
     ${un ? row("send", "Открыть мой профиль", "В Telegram", "tglink", `data-u="${esc(un)}"`) : ""}
   </div>
@@ -884,7 +995,7 @@ async function peerSheet(p) {
     + `<div class="stats" style="margin-top:0">${stat.map(([n, l]) => `<div><b>${num(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`
     + `<div style="margin-top:8px">${rows.map(([l, v]) => `<button class="kv" data-a="copy" data-v="${esc(v)}"><span>${l}</span><span>${esc(v)}</span></button>`).join("")}</div>`
     + `<div style="margin-top:6px">${tgl("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`
-    + (un ? `<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="${esc(un)}">Открыть в Telegram</button>` : "");
+    + (un ? `<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="${esc(un)}">Открыть в Telegram</button><button class="btn ghost full" style="margin-top:8px" data-a="osq" data-q="${esc(un)}">Проверить на мошенничество</button>` : `<div class="note">У собеседника нет @username, поиск по нику невозможен. Если он пишет угрозы или просит деньги, нажми на флажок в чате.</div>`);
   if (r && r.photo) { const m = $(".mg", b); if (m) m.outerHTML = `<img class="av s" src="${r.photo}" alt="">`; }
 }
 
@@ -898,7 +1009,30 @@ const A = {
   aback: () => { S.aown = null; S.ach = null; render(); hap(); },
   aomore: () => loadOwners(true),
   achat: d => openChat(d.id, S.aown),
-  amedia: (d, el) => { const n = el.closest(".am"); n.innerHTML = '<div class="sk" style="height:120px;margin:0"></div>'; loadMedia(n); },
+  amedia: (d, el) => { const n = el.closest(".am"); MC.delete(+d.id); n.innerHTML = '<div class="sk" style="height:120px;margin:0"></div>'; loadMedia(n); },
+  msave: async (d, el) => {
+    if (DEMO) return toast("В демо-режиме сохранение недоступно");
+    el.disabled = true; hap();
+    try { await api("save_media", { id: +d.id }); toast("Отправил в чат с ботом. Открой его и сохрани"); hap("medium"); }
+    catch (e) { toast("Не отправилось. Попробуй ещё раз"); }
+    el.disabled = false;
+  },
+  mdl: (d, el) => {
+    const n = el.closest(".am"), url = n && n.dataset.url, t = n && n.dataset.t;
+    if (!url) return toast("Файл ещё не загрузился");
+    const a = document.createElement("a"); a.href = url; a.download = `zetgram-${d.id}.${EXT[t] || "bin"}`; document.body.appendChild(a); a.click(); a.remove();
+    toast("Если файл не скачался, нажми «Сохранить»: бот пришлёт его в чат");
+  },
+  rep: d => reportSheet(d.id ? +d.id : null),
+  osq: d => {
+    const b = sheet(`<h3>Проверить человека</h3><p class="mu sm" style="margin-bottom:12px">Бот поищет этот ник на ~1500 сайтах: так видно, не мошенник ли за аккаунтом. Ход и итог придут в чат с ботом.</p><div class="sb" style="margin-bottom:14px">${ic("search", 18)}<input id="oq" placeholder="Ник, например ivan_petrov" value="${esc(d.q || "")}" autocomplete="off" autocapitalize="off"></div><button class="btn full" data-go>Проверить</button>`);
+    $("[data-go]", b).onclick = async () => {
+      const q = $("#oq", b).value.trim().replace(/^@/, ""); if (q.length < 2) return toast("Введи ник от 2 символов");
+      if (DEMO) return toast("В демо-режиме поиск недоступен");
+      try { await api("osint", { q }); b.remove(); hap("medium"); toast("Ищу. Результат придёт в чат с ботом"); }
+      catch (e) { toast(String(e.message) === "bad_nick" ? "Ник: 2–40 символов, буквы, цифры, _ . -" : "Не получилось. Попробуй ещё раз"); }
+    };
+  },
   back: closeChat,
   copy: d => copyText(d.v),
   exp: async () => { try { await api("export"); toast("Файл отправлен в чат с ботом"); hap("medium"); } catch (e) { toast("Не удалось собрать файл"); } },

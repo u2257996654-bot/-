@@ -566,6 +566,7 @@ function demo(a, p) {
   if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
   if (a === "voice_text") return { text: "Привет! Короче, я сегодня освобожусь пораньше, давай встретимся в семь у метро." };
   if (a === "report") return { ok: true, grounds: true, sent: !!p.send, evidence: !!p.send };
+  if (a === "chat_wipe") return { ok: true, deleted: 12 };
   if (a === "save_media") return { ok: true };
   if (a === "photo") return { src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#263049"/></svg>') };
   return { ok: true };
@@ -904,7 +905,7 @@ async function openChat(id, adm) {
   const c = (adm ? S.ach || [] : S.chats || []).find(x => String(x.chat_id) === String(id));
   S.chat = adm ? { chat_id: id, chat_name: c ? c.chat_name : "Чат", cur: 0, msgs: c ? c.cnt : 0, owner: adm.owner_id, owner_name: ownName(adm) } : (c || { chat_id: id, chat_name: "Чат", cur: 0 }); hap();
   const el = $("#chat");
-  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}${S.chat.owner ? "" : `<button class="ib" data-a="rep" aria-label="Пожаловаться">${ic("flag", 19)}</button>`}</div><div class="pp" id="pp" hidden></div><div class="ch-b" id="cb">${skeleton()}</div>`;
+  el.innerHTML = `<div class="ch-h"><button class="ib" data-a="back" aria-label="Назад">${ic("back", 20)}</button>${mono(S.chat.chat_name, S.chat.chat_id)}<div class="grow"><b class="ell">${esc(S.chat.chat_name)}</b>${S.chat.msgs ? `<div class="mu sm ell">${S.chat.owner ? "Владелец: " + esc(S.chat.owner_name) + ", " : ""}${num(S.chat.msgs)} ${plural(S.chat.msgs, "сообщение", "сообщения", "сообщений")}</div>` : ""}</div>${S.chat.cur > 0 ? `<div class="cs" title="Серия вместе">${flame(24)}<b>${S.chat.cur}</b></div>` : ""}${S.chat.owner ? "" : `<button class="ib" data-a="rep" aria-label="Пожаловаться">${ic("flag", 19)}</button>`}<button class="ib" data-a="cw" aria-label="Очистить архив чата">${ic("trash", 19)}</button></div><div class="pp" id="pp" hidden></div><div class="ch-b" id="cb">${skeleton()}</div>`;
   requestAnimationFrame(() => el.classList.add("open"));
   const cid = S.chat.chat_id;
   api("chat_info", { chat_id: +cid, ...(S.chat.owner ? { owner_id: S.chat.owner } : {}) }).then(r => { if (S.chat && S.chat.chat_id === cid) paintPeople(r); }).catch(() => {});
@@ -1075,6 +1076,22 @@ const A = {
     try { await api("settings", { retention_days: v }); } catch (e) { u.retention_days = old; render(); toast("Настройка не сохранилась"); }
   },
   theme: d => { S.theme = d.v; localStorage.th = d.v; applyTheme(); render(); },
+  cw: () => {
+    if (!S.chat) return;
+    const adm = isAdm(), own = S.chat.owner, cid = +S.chat.chat_id, nm = esc(S.chat.chat_name || "чат");
+    const b = sheet(`<h3>Очистить архив?</h3><p class="mu" style="margin-bottom:16px">${own ? "У пользователя " + esc(S.chat.owner_name) + " будет стёрта вся сохранённая переписка с «" + nm + "»." : "Вся сохранённая переписка с «" + nm + "» будет стёрта из архива."} Серия по этому чату тоже обнулится. Вернуть нельзя.</p><button class="btn bad full" data-yes>Стереть этот чат</button>${adm ? '<button class="btn ghost full" style="margin-top:8px" data-all>Стереть мою переписку у всех пользователей</button>' : ""}<button class="btn ghost full" style="margin-top:8px" data-close>Отмена</button>`);
+    const run = async (p, done) => {
+      $$("button", b).forEach(x => x.disabled = true);
+      try { const r = await api("chat_wipe", p); b.remove(); hap("medium"); toast(r && r.deleted ? "Стёрто сообщений: " + r.deleted : "Архив очищен"); done && done(); }
+      catch (e) { $$("button", b).forEach(x => x.disabled = false); toast("Не удалось очистить. Попробуй ещё раз"); }
+    };
+    $("[data-yes]", b).onclick = () => run({ chat_id: cid, ...(own ? { owner_id: own } : {}) }, () => {
+      if (own) S.ach = (S.ach || []).filter(x => String(x.chat_id) !== String(cid)); else S.chats = (S.chats || []).filter(x => String(x.chat_id) !== String(cid));
+      closeChat(); render(); if (!own) loadChats();
+    });
+    const al = $("[data-all]", b);
+    if (al) al.onclick = () => run({ scope: "me_all" }, () => { closeChat(); S.ach = null; render(); loadChats(); });
+  },
   wipe: () => {
     const b = sheet(`<h3>Удалить все данные?</h3><p class="mu" style="margin-bottom:16px">Архив и серии будут стёрты без возможности восстановления. Платежи и Premium сохранятся.</p><button class="btn bad full" data-yes>Удалить данные</button><button class="btn ghost full" style="margin-top:8px" data-close>Отмена</button>`);
     $("[data-yes]", b).onclick = async () => { b.remove(); try { await api("wipe"); toast("Данные удалены"); S.chats = []; refreshMe(); } catch (e) { toast("Не удалось удалить. Попробуй ещё раз"); } };

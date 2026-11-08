@@ -126,7 +126,7 @@ h2{font:600 15px/1.2 var(--fd);letter-spacing:-.01em;margin:30px 0 4px}
 .b.me{align-self:flex-end;border-radius:14px 14px 4px 14px;background:color-mix(in srgb,var(--br) 14%,var(--pn));border-color:color-mix(in srgb,var(--br) 35%,transparent)}
 .b.th{align-self:flex-start}
 .pp{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--ln);background:var(--pn)}
-.pp[hidden]{display:none} .pc{display:flex;align-items:center;gap:9px;flex:1;min-width:0} .pc b{display:block} .pp .mg{width:36px;height:36px;border-radius:10px;font-size:15px} .pa{flex:none;color:var(--mu)} button.pc{background:none;border:0;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer} .cp{text-decoration:underline dotted;text-underline-offset:3px}
+.pp[hidden]{display:none} .pc{display:flex;align-items:center;gap:9px;flex:1;min-width:0} .pc b{display:block} .pp .mg{width:36px;height:36px;border-radius:10px;font-size:15px} .pa{flex:none;color:var(--mu)} button.pc{background:none;border:0;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer} .cp{text-decoration:underline dotted;text-underline-offset:3px} .wr{flex:none;width:34px;height:34px;border-radius:10px;margin-left:4px}
 .ap{display:flex;align-items:center;gap:10px;width:240px;max-width:100%} .apb{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:var(--br);color:#0a0a0b;font-size:15px;cursor:pointer;display:grid;place-items:center} .apt{flex:1;min-width:0} .apl{display:flex;align-items:center;gap:2px;height:28px;cursor:pointer} .apl b{flex:1;min-width:2px;border-radius:2px;background:var(--mu);opacity:.45} .apl b.on{background:var(--br);opacity:1} .aps{flex:none;border:1px solid var(--ln);background:none;color:var(--tx);border-radius:8px;padding:3px 7px;font-size:12px;cursor:pointer}
 .vt{margin-top:6px;padding-top:6px;border-top:1px dashed var(--ln);font-size:14px} .vt .vtt{white-space:pre-wrap}
 .b.del{border-left:3px solid var(--rs)}
@@ -615,12 +615,12 @@ function vAdminArchive() {
   if (!o) {
     head = `<div class="head"><h1>Архив</h1>${admSeg()}</div>`;
     body = S.ao === null ? skeleton() : S.ao.length
-      ? S.ao.map(r => `<button class="lr" data-a="aown" data-id="${r.owner_id}">${mono(ownName(r), r.owner_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(ownName(r))}</b><span class="mu sm">${ago(r.last_at)}</span></div><div class="mu sm ell">${r.username ? "@" + esc(r.username) + " · " : ""}${cntTxt(r.cnt, r.deleted_cnt)}</div></div></button>`).join("") + (S.aomore ? '<button class="btn ghost full" style="margin-top:12px" data-a="aomore">Показать ещё</button>' : "")
+      ? S.ao.map(r => `<button class="lr" data-a="aown" data-id="${r.owner_id}">${mono(ownName(r), r.owner_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(ownName(r))}</b><span class="mu sm">${ago(r.last_at)}</span></div><div class="mu sm ell">${r.username ? "@" + esc(r.username) + " · " : ""}${cntTxt(r.cnt, r.deleted_cnt)}</div></div><span class="ib wr" role="button" aria-label="Написать" data-a="wr" data-id="${r.owner_id}" data-u="${esc(r.username || "")}">${ic("send", 16)}</span></button>`).join("") + (S.aomore ? '<button class="btn ghost full" style="margin-top:12px" data-a="aomore">Показать ещё</button>' : "")
       : '<div class="empty">Архивов пока нет.</div>';
   } else {
     head = `<div class="head" style="justify-content:flex-start;align-items:center;gap:12px"><button class="ib" data-a="aback" aria-label="Назад">${ic("back", 20)}</button><div class="grow"><h1 class="ell" style="font-size:20px">${esc(ownName(o))}</h1><div class="mu sm">чаты владельца</div></div></div>`;
     body = S.ach === null ? skeleton() : S.ach.length
-      ? S.ach.map(c => `<button class="lr" data-a="achat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(c.chat_name || c.chat_id)}</b><span class="mu sm">${ago(c.last_at)}</span></div><div class="mu sm">${cntTxt(c.cnt, c.deleted_cnt)}</div></div></button>`).join("")
+      ? S.ach.map(c => `<button class="lr" data-a="achat" data-id="${c.chat_id}">${mono(c.chat_name, c.chat_id)}<div class="grow"><div style="display:flex;justify-content:space-between;gap:8px"><b class="ell">${esc(c.chat_name || c.chat_id)}</b><span class="mu sm">${ago(c.last_at)}</span></div><div class="mu sm">${c.username ? "@" + esc(c.username) + " · " : ""}${cntTxt(c.cnt, c.deleted_cnt)}</div></div>${+c.chat_id > 0 ? `<span class="ib wr" role="button" aria-label="Написать" data-a="wr" data-id="${c.chat_id}" data-u="${esc(c.username || "")}">${ic("send", 16)}</span>` : ""}</button>`).join("")
       : '<div class="empty">Чатов нет.</div>';
   }
   return head + `<div id="ab">${body}</div>`;
@@ -772,6 +772,14 @@ function paintPeople(r) {
   const card = (p, role, k) => `<button class="pc" data-a="who" data-r="${k}">${mono(p.name, p.id)}<div class="grow"><div class="mu sm">${role}</div><b class="ell">${esc(p.name || "Без имени")}</b><div class="mu sm ell">${p.username ? `<span class="cp" data-a="copy" data-v="@${esc(p.username)}">@${esc(p.username)}</span> · ` : ""}<span class="cp" data-a="copy" data-v="${esc(p.id)}">ID ${esc(p.id)}</span></div></div></button>`;
   el.innerHTML = card(r.peer, "Собеседник", "peer") + '<div class="pa" aria-hidden="true">⇄</div>' + card(r.owner, "Абонент", "owner");
   el.hidden = false;
+}
+// написать человеку: по @username (t.me), без него — по ID (tg://user?id=; работает, если Telegram знает этого человека)
+function openUser(id, un) {
+  const name = String(un || "").replace(/^@/, "");
+  if (name) { const u = "https://t.me/" + name; return tg && tg.openTelegramLink ? tg.openTelegramLink(u) : window.open(u, "_blank"); }
+  copyText(String(id));
+  toast("Открываю по ID. Если чат не открылся, ID скопирован");
+  window.location.href = "tg://user?id=" + id;
 }
 async function copyText(v) {
   try { await navigator.clipboard.writeText(v); }
@@ -994,7 +1002,8 @@ async function peerSheet(p) {
     + `<div class="stats" style="margin-top:0">${stat.map(([n, l]) => `<div><b>${num(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`
     + `<div style="margin-top:8px">${rows.map(([l, v]) => `<button class="kv" data-a="copy" data-v="${esc(v)}"><span>${l}</span><span>${esc(v)}</span></button>`).join("")}</div>`
     + `<div style="margin-top:6px">${tgl("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`
-    + (un ? `<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="${esc(un)}">Открыть в Telegram</button>` : `<div class="note">У собеседника нет @username. Если он пишет угрозы или просит деньги, нажми на флажок в чате.</div>`);
+    + `<button class="btn full" style="margin-top:14px" data-a="wr" data-id="${esc(p.id)}" data-u="${esc(un || "")}">Написать в Telegram</button>`
+    + (un ? "" : `<div class="note">У собеседника нет @username, открою чат по ID. Если он пишет угрозы или просит деньги, нажми на флажок в чате.</div>`);
   if (r && r.photo) { const m = $(".mg", b); if (m) m.outerHTML = `<img class="av s" src="${r.photo}" alt="">`; }
 }
 
@@ -1032,8 +1041,9 @@ const A = {
     if (d.r === "peer" && !S.chat.owner) return peerSheet(p);
     const role = d.r === "peer" ? "Собеседник" : "Абонент", un = p.username ? "@" + p.username : "";
     const row = (l, v) => `<div class="lr" style="cursor:default"><div class="grow"><div class="mu sm">${l}</div><div style="user-select:text">${esc(v)}</div></div><button class="btn ghost" style="padding:7px 12px" data-a="copy" data-v="${esc(v)}">Копировать</button></div>`;
-    const b = sheet(`<h3>${role}</h3><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${mono(p.name, p.id)}<b class="grow ell">${esc(p.name || "Без имени")}</b></div>${un ? row("Username", un) : '<div class="mu sm" style="margin-bottom:8px">Username не указан</div>'}${row("ID", String(p.id))}${un ? '<button class="btn full" style="margin-top:14px" data-a="tglink" data-u="' + esc(p.username) + '">Открыть в Telegram</button>' : ""}`);
+    const b = sheet(`<h3>${role}</h3><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${mono(p.name, p.id)}<b class="grow ell">${esc(p.name || "Без имени")}</b></div>${un ? row("Username", un) : '<div class="mu sm" style="margin-bottom:8px">Username не указан</div>'}${row("ID", String(p.id))}<button class="btn full" style="margin-top:14px" data-a="wr" data-id="${esc(p.id)}" data-u="${esc(p.username || "")}">Написать в Telegram</button>`);
   },
+  wr: d => openUser(d.id, d.u),
   tglink: d => { const u = "https://t.me/" + d.u; tg && tg.openTelegramLink ? tg.openTelegramLink(u) : window.open(u, "_blank"); },
   vtext: (d, el) => loadVoice(el.closest(".vt")),
   filter: d => {

@@ -741,7 +741,7 @@ function bubbles() {
     const media = m.type === "document" ? `<div class="fcard"><i>${ic("file", 18)}</i><div class="grow"><b>Файл</b><div class="mu sm">Сохранится в чат с ботом</div></div><button class="mb" data-a="msave" data-id="${m.id}">${ic("share", 14)}Сохранить</button></div>`
       : rich ? `<div class="am${m.type === "sticker" ? " st" : ""}" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : ["voice", "audio"].includes(m.type) ? 40 : 120}px;margin:0"></div></div>` : m.type === "photo" ? `<div><button class="btn ghost" style="padding:7px 12px;margin-top:4px" data-a="photo" data-id="${m.id}">Показать фото</button></div><div id="ph${m.id}"></div>` : (!m.text ? `<span class="mu">[${typeLbl[m.type] || m.type}]</span>` : "");
     const vt = ["voice", "audio", "video_note", "video"].includes(m.type) ? `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>` : "";
-    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}">${who}${txt}${media}${vt}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}${!me && !adm ? `<span class="rp" data-a="rep" data-id="${m.id}">пожаловаться</span>` : ""}</div></div>`;
+    h += `<div class="b ${me ? "me" : "th"} ${m.deleted_at ? "del" : ""}"${isAdm() ? ` data-mid="${m.id}"` : ""}>${who}${txt}${media}${vt}<div class="ed" id="ed${m.id}" hidden>${ed ? m.edits.map(e => `<div>Было: ${esc(e.text)}</div>`).join("") : ""}</div><div class="m"><span>${tm(m.sent_at)}</span>${m.deleted_at ? '<span class="x">удалено, но сохранено</span>' : ""}${ed ? `<u data-a="edits" data-id="${m.id}">изменено</u>` : ""}${!me && !adm ? `<span class="rp" data-a="rep" data-id="${m.id}">пожаловаться</span>` : ""}</div></div>`;
   });
   return h || '<div class="empty">В этом чате пока нет сохранённых сообщений.</div>';
 }
@@ -979,6 +979,7 @@ function vProf() {
     <div class="sr"><i class="si">${ic("archive", 18)}</i><div class="grow"><b>Сохранять сообщения</b><div class="mu sm">Архив подключённых чатов</div></div>${sw("antidelete", u.antidelete)}</div>
     <div class="sr"><i class="si">${ic("bell", 18)}</i><div class="grow"><b>Уведомления</b><div class="mu sm">Когда сообщение удалили или изменили</div></div>${sw("notify", u.notify)}</div>
     ${row("down", "Скачать архив", "Файл придёт в чат с ботом", "exp")}
+    ${row("archive", "ZetGram Wrapped", "Твои итоги в карточках", "wrapped")}
     ${row("copy", "Скопировать мой ID", "Для поддержки и настроек", "copy", `data-v="${esc(u.id)}"`)}
     ${un ? row("send", "Открыть мой профиль", "В Telegram", "tglink", `data-u="${esc(un)}"`) : ""}
   </div>
@@ -1010,6 +1011,32 @@ async function peerSheet(p) {
 
 /* ───────── действия ───────── */
 const A = {
+  wrapped: () => {
+    const s = S.me.stats, d = s.deleted || 0, a = s.archive || 0;
+    const rank = d > 100 ? "Детектив 🕵️" : d > 30 ? "Сыщик 🔍" : d > 5 ? "Наблюдатель 👀" : "Новичок 🌱";
+    const cards = [
+      ["📦", a, "сообщений в твоём архиве", "#2b1a6b,#6a3df0"],
+      ["🗑", d, "удалённых сообщений поймано", "#6b1a3a,#f03d6a"],
+      ["🔌", s.connected || 0, "подключённых чатов под защитой", "#0f4c5c,#1fb6a6"],
+      ["🏆", rank, "твой ранг в ZetGram", "#5c3d0f,#f0a63d"]
+    ];
+    let i = 0;
+    const o = document.createElement("div");
+    o.style.cssText = "position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:32px;font-family:inherit;cursor:pointer;transition:background .4s";
+    const draw = () => {
+      const c = cards[i];
+      o.style.background = `linear-gradient(160deg,${c[3]})`;
+      o.innerHTML = `<div style="position:absolute;top:18px;left:18px;right:18px;display:flex;gap:6px">${cards.map((_, k) => `<i style="flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,${k <= i ? ".95" : ".3"})"></i>`).join("")}</div><div style="font-size:84px">${c[0]}</div><div style="font:700 56px/1.1 system-ui;margin:14px 0">${c[1]}</div><div style="font-size:18px;opacity:.9;max-width:260px">${c[2]}</div><div style="position:absolute;bottom:36px;font-size:13px;opacity:.7">${i < cards.length - 1 ? "Нажми, чтобы продолжить" : "Нажми, чтобы поделиться"}</div>`;
+    };
+    o.onclick = () => {
+      if (i < cards.length - 1) { i++; draw(); return; }
+      const t = `Мой ZetGram Wrapped: ${a} сообщений в архиве, ${d} удалённых поймано, ранг ${rank}`;
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.resolve()).catch(() => {});
+      toast("Текст скопирован: вставь в сторис"); o.remove();
+    };
+    draw(); document.body.appendChild(o);
+  },
+
   tab: d => { if (d.k === "streak") { S.filter = "streak"; S.amode = "mine"; S.q = ""; S.res = null; return S.tab === "archive" ? render() : go("archive"); } go(d.k === "prem" ? "prof" : d.k); },
   chat: d => openChat(d.id),
   amode: d => { S.amode = d.v; S.aown = null; render(); hap(); d.v === "users" ? loadOwners() : loadChats(); },
@@ -1097,6 +1124,27 @@ const A = {
     $("[data-yes]", b).onclick = async () => { b.remove(); try { await api("wipe"); toast("Данные удалены"); S.chats = []; refreshMe(); } catch (e) { toast("Не удалось удалить. Попробуй ещё раз"); } };
   },
 };
+// админ: клик или удержание по сообщению → удалить его в архиве у обоих
+(() => {
+  let tm = null, long = false;
+  const bub = e => (isAdm() && e.target.closest && !e.target.closest("button,a,audio,video,input,[data-a]")) ? e.target.closest("#cb .b[data-mid]") : null;
+  const ask = el => {
+    const id = el.dataset.mid, b = document.createElement("div");
+    b.style.cssText = "position:fixed;inset:0;z-index:99;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5)";
+    b.innerHTML = `<div style="width:100%;max-width:480px;background:var(--pn);border-radius:24px 24px 0 0;padding:20px;border:1px solid var(--ln)"><b style="font-size:17px">Удалить сообщение?</b><div class="mu sm" style="margin:6px 0 16px">Оно исчезнет из архива у обоих собеседников. Это нельзя отменить.</div><button class="btn bad full" data-yes>Удалить у обоих</button><button class="btn ghost full" style="margin-top:8px" data-no>Отмена</button></div>`;
+    b.addEventListener("click", e => { if (e.target === b || e.target.closest("[data-no]")) b.remove(); });
+    b.querySelector("[data-yes]").onclick = async () => {
+      b.remove();
+      try { await api("msg_wipe", { id }); S.msgs = S.msgs.filter(x => String(x.id) !== String(id)); paintChat(true); toast("Сообщение удалено у обоих"); }
+      catch (err) { toast("Не удалось удалить"); }
+    };
+    document.body.appendChild(b);
+  };
+  document.addEventListener("pointerdown", e => { const el = bub(e); long = false; if (!el) return; tm = setTimeout(() => { long = true; ask(el); }, 550); });
+  ["pointerup", "pointermove", "pointercancel"].forEach(t => document.addEventListener(t, () => clearTimeout(tm)));
+  document.addEventListener("click", e => { if (long) { long = false; return; } const el = bub(e); if (el) ask(el); });
+  document.addEventListener("contextmenu", e => { if (bub(e)) e.preventDefault(); });
+})();
 document.addEventListener("click", e => { const a = e.target.closest("[data-a]"); if (a && A[a.dataset.a]) A[a.dataset.a](a.dataset, a); });
 let qt; document.addEventListener("input", e => {
   if (e.target.id !== "q") return; clearTimeout(qt);

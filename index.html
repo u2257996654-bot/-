@@ -6,7 +6,9 @@
 <title>ZetGram</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://zdqhpnlpqxsilkpxjkxk.supabase.co" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap"></noscript>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 /* ───────── токены ───────── */
@@ -388,6 +390,7 @@ h2{font:600 13px var(--fb);color:var(--mu);margin:28px 6px 10px;letter-spacing:0
 <script>
 /* ═══ НАСТРОЙКА: адрес Edge Function ═══ */
 const API = "https://zdqhpnlpqxsilkpxjkxk.supabase.co/functions/v1/super-api";
+try { fetch(API, { method: "GET", mode: "no-cors", keepalive: true }).catch(() => {}); } catch (e) {} // прогрев: первый запрос не ждёт холодного старта
 
 /* ───────── окружение ───────── */
 const tg = window.Telegram && window.Telegram.WebApp;
@@ -408,6 +411,10 @@ const hap = (t = "light") => { try { tg && tg.HapticFeedback.impactOccurred(t); 
 const tick = () => { try { tg && tg.HapticFeedback.selectionChanged(); } catch (e) {} };
 
 const S = { tab: "home", me: null, chats: null, chat: null, msgs: [], more: false, filter: "all", q: "", res: null, theme: localStorage.th || "auto", intro: false, amode: "users", ao: null, aomore: false, aown: null, ach: null };
+/* быстрый первый экран: показываем сохранённые цифры, пока приходят свежие. Тексты сообщений в кэш не кладём */
+const ZK = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? "zg" + tg.initDataUnsafe.user.id + ":" : "";
+const cget = k => { try { return ZK ? JSON.parse(localStorage.getItem(ZK + k)) : null; } catch (e) { return null; } };
+const cset = (k, v) => { try { ZK && localStorage.setItem(ZK + k, JSON.stringify(v)); } catch (e) {} };
 const isAdm = () => !!(S.me && S.me.user && S.me.user.admin);
 
 /* ───────── иконки ───────── */
@@ -711,7 +718,7 @@ function refreshBody() {
 async function loadChats() {
   try {
     const old = JSON.stringify(S.chats), nw = (await api("chats")).chats;
-    S.chats = nw;
+    S.chats = nw; cset("chats", nw.map(c => ({ ...c, last_text: "" })));
     if (old !== JSON.stringify(nw) && !S.q && (S.filter === "all" || S.filter === "streak")) refreshBody();
     celebrate();
   } catch (e) { if (S.chats === null) S.chats = []; }
@@ -721,7 +728,7 @@ async function search() {
   try { S.res = (await api("messages", { q: S.q, filter: S.filter === "streak" ? "all" : S.filter, limit: 50 })).messages; } catch (e) { S.res = []; }
   const a2 = $("#ab"); if (a2) a2.innerHTML = archiveBody();
 }
-async function refreshMe() { S.me = await api("me"); render(); }
+async function refreshMe() { S.me = await api("me"); cset("me", { ...S.me, recent_deleted: [] }); render(); }
 
 /* ───────── переписка ───────── */
 let io;
@@ -797,13 +804,13 @@ function observeMedia() {
 
 /* очередь и кэш: не больше 3 загрузок разом, каждый файл качается один раз, 3 попытки */
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const MC = new Map(); let mBusy = 0; const mWait = [];
-const mSlot = () => new Promise(res => { const go = () => { mBusy++; res(); }; mBusy < 3 ? go() : mWait.push(go); });
-const mFree = () => { mBusy--; const n = mWait.shift(); n && n(); };
-function getMedia(id) {
+const MC = new Map(); const mQ = { l: { busy: 0, max: 5, w: [] }, h: { busy: 0, max: 2, w: [] } };
+const mSlot = heavy => new Promise(res => { const q = heavy ? mQ.h : mQ.l; const go = () => { q.busy++; res(q); }; q.busy < q.max ? go() : q.w.push(go); });
+const mFree = q => { q.busy--; const n = q.w.shift(); n && n(); };
+function getMedia(id, t) {
   if (MC.has(id)) return MC.get(id);
   const p = (async () => {
-    await mSlot();
+    const slot = await mSlot(["video", "video_note", "animation"].includes(t));
     try {
       let last;
       for (let i = 0; i < 3; i++) {
@@ -816,7 +823,7 @@ function getMedia(id) {
         } catch (e) { last = e; if (e.fatal) break; await sleep(700 * (i + 1)); }
       }
       throw last;
-    } finally { mFree(); }
+    } finally { mFree(slot); }
   })();
   MC.set(id, p); p.catch(() => MC.delete(id));
   return p;
@@ -835,7 +842,7 @@ const EXT = { photo: "jpg", video_note: "mp4", video: "mp4", animation: "mp4", v
 async function loadMedia(n) {
   const id = +n.dataset.id, t = n.dataset.t;
   let m;
-  try { m = await getMedia(id); }
+  try { m = await getMedia(id, t); }
   catch (e) {
     const big = e && e.message === "too_big";
     n.innerHTML = big
@@ -883,7 +890,7 @@ async function loadMedia(n) {
       v.play && v.play().catch(() => {});
       return;
     }
-    n.innerHTML = `<img alt="Фото из архива" src="${url}"${t === "sticker" ? ' style="max-width:180px"' : ""}>` + bar;
+    n.innerHTML = `<img decoding="async" alt="Фото из архива" src="${url}"${t === "sticker" ? ' style="max-width:180px"' : ""}>` + bar;
     n.querySelector("img").onerror = () => { n.innerHTML = retryBtn(n, "Не загрузилось, повторить") + saveBar(id, false); };
   } catch (e) {
     n.innerHTML = `<span class="mu sm">Не получилось показать здесь.</span>` + saveBar(id, false);
@@ -1082,7 +1089,7 @@ const A = {
   edits: d => { const e = $("#ed" + d.id); e.hidden = !e.hidden; },
   photo: async d => {
     const t = $("#ph" + d.id); t.innerHTML = '<div class="sk" style="height:120px;margin-top:6px"></div>';
-    try { t.innerHTML = `<img alt="Фото из архива" src="${(await api("photo", { id: +d.id })).src}">`; } catch (e) { t.innerHTML = ""; toast("Фото не загрузилось. Попробуй ещё раз"); }
+    try { t.innerHTML = `<img decoding="async" alt="Фото из архива" src="${(await api("photo", { id: +d.id })).src}">`; } catch (e) { t.innerHTML = ""; toast("Фото не загрузилось. Попробуй ещё раз"); }
   },
   older: async () => {
     try { const r = await chatApi({ before: S.msgs[0].id }); S.msgs = r.messages.slice().reverse().concat(S.msgs); S.more = r.more; paintChat(true); }
@@ -1153,9 +1160,13 @@ let qt; document.addEventListener("input", e => {
 
 /* ───────── старт ───────── */
 (async function init() {
-  applyTheme(); render();
-  try { await refreshMe(); loadChats(); }
-  catch (e) { $("#view").innerHTML = '<div class="empty">Не удалось загрузить данные. Проверь соединение.<br><br><button class="btn" onclick="location.reload()">Повторить</button></div>'; }
+  applyTheme();
+  if (!DEMO) { const m = cget("me"), c = cget("chats"); if (m) S.me = m; if (c) S.chats = c; }
+  render();
+  const pc = loadChats(); // чаты грузятся одновременно с профилем, а не после него
+  try { await refreshMe(); await pc; }
+  catch (e) {
+    if (S.me) { toast("Нет соединения. Показаны сохранённые данные"); return; } $("#view").innerHTML = '<div class="empty">Не удалось загрузить данные. Проверь соединение.<br><br><button class="btn" onclick="location.reload()">Повторить</button></div>'; }
 })();
 </script>
 </body>

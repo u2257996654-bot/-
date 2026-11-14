@@ -118,7 +118,16 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 .ib:active{transform:scale(.9);transition-duration:.1s}
 .ib svg{width:20px;height:20px}
 .ch-t{flex:1;min-width:0} .ch-t b{display:block;font-weight:500}
-.ch-f{flex:none;padding:10px 14px 0}
+.ch-f{flex:none;padding:10px 14px 6px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:4px;border-radius:18px;background:var(--sf2);border:1px solid var(--bd)}
+.tabs button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 6px;border-radius:14px;text-align:center;font-size:11px;font-weight:500;color:var(--mu);transition:background .25s,color .25s,transform .4s var(--sp)}
+.tabs button b{font-size:16px;font-weight:600;line-height:1.2;color:var(--tx)}
+.tabs button:active{transform:scale(.95);transition-duration:.1s}
+.tabs button.on{background:var(--btn);color:var(--btnt);font-weight:600}
+.tabs button.on b{color:var(--btnt)}
+.tabs button.hot:not(.on) b{color:var(--rd)}
+.ch-f .search{margin:0 0 8px}
+.sk.m{height:44px;border-radius:16px;margin:4px 0;width:62%}.sk.m.r{align-self:flex-end;width:48%}
 .ch-f .chips{margin:0 -14px 10px;padding:0 14px}
 .ch-b{flex:1;overflow-y:auto;padding:8px 14px calc(var(--sab) + 24px);display:flex;flex-direction:column;gap:4px;scrollbar-width:none}
 .day{align-self:center;margin:14px 0 8px;padding:3px 12px;border-radius:99px;background:var(--sf2);border:1px solid var(--bd);font-size:11.5px;font-weight:500;color:var(--mu)}
@@ -274,14 +283,15 @@ async function api(action, p = {}) {
 /* ═══ демо-данные для просмотра вне Telegram ═══ */
 function demo(a, p) {
   const now = Date.now(), M = (i, t, o = {}) => ({ id: i, chat_id: 9, from_id: o.me ? 1 : 9, from_name: o.me ? "Демо" : "Алина", type: "text", text: t, edits: o.ed || [], deleted_at: o.del ? new Date(now - 36e5).toISOString() : null, sent_at: new Date(now - (60 - i) * 6e5).toISOString() });
-  if (a === "me") return { user: { id: 1, name: "Демо", username: "demo", premium: false, trial_used: false, antidelete: true, notify: true, retention_days: 30, admin: false }, stats: { archive: 1284, deleted: 37, ai_today: 3, ai_limit: 20, connected: 1 }, plans: { 100: 10, 150: 15, 250: 30 }, recent_deleted: [{ id: 3, chat_id: 9, chat_name: "Алина", from_name: "Алина", text: "Привет! Короче, я сегодня освобожусь пораньше", deleted_at: new Date(now - 36e5).toISOString() }, { id: 4, chat_id: 8, chat_name: "Макс", from_name: "Макс", text: "скинь адрес ещё раз", deleted_at: new Date(now - 9e6).toISOString() }] };
+  if (a === "me") return { user: { id: 1, name: "Демо", username: "demo", premium: false, trial_used: false, antidelete: true, notify: true, retention_days: 30, admin: false }, stats: { archive: 1284, deleted: 37, ai_today: 3, ai_limit: 20, connected: 1 }, plans: { 50: 10, 75: 15, 150: 30 }, recent_deleted: [{ id: 3, chat_id: 9, chat_name: "Алина", from_name: "Алина", text: "Привет! Короче, я сегодня освобожусь пораньше", deleted_at: new Date(now - 36e5).toISOString() }, { id: 4, chat_id: 8, chat_name: "Макс", from_name: "Макс", text: "скинь адрес ещё раз", deleted_at: new Date(now - 9e6).toISOString() }] };
   if (a === "chats") return { chats: [{ chat_id: 9, chat_name: "Алина", username: "alina", cnt: 842, deleted_cnt: 12, last_at: new Date(now - 3e5).toISOString() }, { chat_id: 8, chat_name: "Макс", username: "max", cnt: 301, deleted_cnt: 0, last_at: new Date(now - 9e6).toISOString() }, { chat_id: 7, chat_name: "Мама", username: null, cnt: 128, deleted_cnt: 2, last_at: new Date(now - 864e5).toISOString() }] };
   if (a === "messages") return { more: false, messages: [M(6, "Ты видел это?", { del: 1 }), M(5, "Да, сейчас гляну", { me: 1 }), M(4, "Привет! Как дела?", {}), M(3, "Нормально, а у тебя?", { me: 1, ed: ["Норм, а у тебя?"] }), M(2, "Встретимся в семь у метро", {}), M(1, "Хорошо", { me: 1 })].filter(m => p.filter !== "deleted" || m.deleted_at) };
+  if (a === "chat_counts") return { all: 842, deleted: 12, edited: 3, media: 40 };
   return { ok: true };
 }
 
 /* ═══ состояние ═══ */
-const S = { tab: "home", me: null, chats: null, q: "", cf: "all", admin: false, owners: null, owner: null, chat: null, msgs: [], more: false, mf: "all", mq: "" };
+const S = { tab: "home", me: null, chats: null, q: "", cf: "all", admin: false, owners: null, owner: null, chat: null, msgs: [], more: false, mf: "all", mq: "", cc: {}, sq: false, ld: false, rq: 0, cerr: false, capprox: false };
 const myId = () => S.me && S.me.user.id;
 const save = (k, v) => { try { localStorage.setItem("zg:" + k, JSON.stringify(v)); } catch (e) {} };
 const load = k => { try { return JSON.parse(localStorage.getItem("zg:" + k)); } catch (e) { return null; } };
@@ -298,7 +308,7 @@ function vHome() {
   const pct = st.ai_limit ? Math.min(100, Math.round(st.ai_today / st.ai_limit * 100)) : 0;
   return `<div class="top"><h1>ZetGram</h1>${prem(u)}</div>
   <section class="card hero in"><div class="st"><i class="dot ${on ? "" : "off"}"></i>${on ? "Архив ведётся" : st.connected ? "Сохранение выключено" : "Бот не подключён"}</div>
-    <div class="big num">${fmt(st.archive)}</div><div class="mu">${plural(st.archive, ["сообщение", "сообщения", "сообщений"])} в архиве · поймано удалённых: <b style="color:var(--tx)">${fmt(st.deleted)}</b></div>
+    <div class="big num">${st.archive == null ? "—" : fmt(st.archive)}</div><div class="mu">${st.archive == null ? "Считаю архив…" : plural(st.archive, ["сообщение", "сообщения", "сообщений"]) + " в архиве"} · поймано удалённых: <b style="color:var(--tx)">${st.deleted == null ? "—" : fmt(st.deleted)}</b></div>
     ${st.connected ? `<button class="btn" data-a="tab" data-k="chats">Открыть архив</button>` : `<div class="mu sm" style="margin-top:14px">Подключи бота: Настройки Telegram → Business → Чат-боты.</div>`}
   </section>
   <div class="tiles"><div class="card tile in"><span class="mu sm">Хранение</span><b class="num">${u.retention_days}<span class="mu" style="font-size:16px;font-weight:600"> дн.</span></b></div>
@@ -321,9 +331,10 @@ function vChats() {
   const list = S.chats.filter(c => (S.cf === "all" || c.deleted_cnt > 0) && (!q || String(c.chat_name || "").toLowerCase().includes(q) || String(c.username || "").toLowerCase().includes(q)));
   return head + seg + `<label class="search">${ic("search")}<input id="q" placeholder="Поиск по чатам" value="${esc(S.q)}" autocomplete="off"></label>
   <div class="chips"><button class="chip ${S.cf === "all" ? "on" : ""}" data-a="cf" data-k="all">Все</button><button class="chip ${S.cf === "del" ? "on" : ""}" data-a="cf" data-k="del">С удалёнными</button></div>
-  <div id="cl">${chatRows(list)}</div>`;
+  ${S.capprox ? `<div class="mu sm" style="margin:0 4px 10px">Счётчики по чатам приблизительные: считаю по последним сообщениям.</div>` : ""}<div id="cl">${chatRows(list)}</div>`;
 }
 function chatRows(list) {
+  if (S.cerr && !(S.chats && S.chats.length)) return `<div class="card empty"><b>Не удалось загрузить чаты</b>Архив на месте, просто сервер не ответил.<button class="btn" style="margin-top:16px" data-a="reload">Повторить</button></div>`;
   if (!list.length) return `<div class="card empty"><b>${S.chats && S.chats.length ? "Ничего не найдено" : "Чатов пока нет"}</b>${S.chats && S.chats.length ? "" : "Они появятся, как только бот сохранит первые сообщения."}</div>`;
   return list.map((c, i) => `<button class="card chat in" style="animation-delay:${Math.min(i, 8) * 30}ms" data-a="open" data-id="${c.chat_id}" data-n="${esc(c.chat_name || "")}">${av(c.chat_name, c.chat_id)}<div class="g"><div class="l1"><b class="ell">${esc(c.chat_name || "Чат " + c.chat_id)}</b><span class="mu sm">${c.last_at ? ago(c.last_at) : ""}</span></div><div class="mu sm ell">${c.username ? "@" + esc(c.username) + " · " : ""}${fmt(c.cnt)} ${plural(c.cnt, ["сообщение", "сообщения", "сообщений"])}${c.deleted_cnt > 0 ? ` <span class="badge">${c.deleted_cnt} удал.</span>` : ""}</div></div></button>`).join("");
 }
@@ -375,14 +386,17 @@ function render() {
 function chatHtml() {
   const c = S.chat; if (!c) return "";
   const me = myId(); let out = "", last = null;
-  const flt = S.owner ? "" : `<div class="ch-f"><label class="search" style="margin-bottom:10px">${ic("search")}<input id="mq" placeholder="Поиск в переписке" value="${esc(S.mq)}" autocomplete="off"></label><div class="chips">${[["all", "Все"], ["deleted", "Удалённые"], ["edited", "Изменённые"]].map(([k, t]) => `<button class="chip ${S.mf === k ? "on" : ""}" data-a="mf" data-k="${k}">${t}</button>`).join("")}</div></div>`;
+  const cc = S.cc || {}, EM = { all: "Сообщений нет", deleted: "Удалённых сообщений нет", edited: "Изменённых сообщений нет", media: "Медиа нет" };
+  const tabs = [["all", "Все"], ["deleted", "Удалённые"], ["edited", "Изменённые"], ["media", "Медиа"]];
+  const flt = S.owner ? "" : `<div class="ch-f"><div class="tabs" role="tablist">${tabs.map(([k, t]) => `<button role="tab" aria-selected="${S.mf === k}" class="${S.mf === k ? "on" : ""} ${k === "deleted" && cc.deleted > 0 ? "hot" : ""}" data-a="mf" data-k="${k}"><b class="num">${cc[k] == null ? "·" : fmt(cc[k])}</b><span>${t}</span></button>`).join("")}</div>${S.sq || S.mq ? `<label class="search" style="margin-top:8px">${ic("search")}<input id="mq" placeholder="Поиск в этом чате" value="${esc(S.mq)}" autocomplete="off"></label>` : ""}</div>`;
   for (const m of S.msgs) {
     if (!last || !sameDay(last, m.sent_at)) out += `<div class="day">${dayLabel(m.sent_at)}</div>`; last = m.sent_at;
     const mine = m.from_id === (S.owner || me), eds = (m.edits || []).map(e => typeof e === "string" ? e : (e.text || e.old || "")).filter(Boolean);
     out += `<div class="msg ${mine ? "me" : ""} ${m.deleted_at ? "del" : ""}">${m.deleted_at ? `<span class="tag">Удалено в ${hm(m.deleted_at)}</span>` : ""}<p>${body(m)}</p>${eds.length ? `<div class="ed">Было: ${eds.map(esc).join(" → ")}</div>` : ""}<div class="meta">${eds.length ? "изменено" : ""}<span>${hm(m.sent_at)}</span></div></div>`;
   }
-  if (!S.msgs.length) out = `<div class="empty"><b>Ничего нет</b>Сообщений по этому фильтру нет.</div>`;
-  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button>${av(c.n, c.id, "s")}<div class="ch-t"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu sm">Архив переписки</span></div></header>${flt}<div class="ch-b" id="cb">${S.more ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}</div>`;
+  if (S.ld) out = `<div class="sk m"></div><div class="sk m r"></div><div class="sk m"></div><div class="sk m r"></div>`;
+  else if (!S.msgs.length) out = `<div class="empty"><b>${S.mq ? "Ничего не найдено" : EM[S.mf] || "Ничего нет"}</b>${S.mq ? "Попробуй другое слово." : "В этом чате по этой вкладке пока пусто."}</div>`;
+  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button>${av(c.n, c.id, "s")}<div class="ch-t"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu sm">Архив переписки</span></div>${S.owner ? "" : `<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button>`}</header>${flt}<div class="ch-b" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}</div>`;
 }
 async function loadMsgs(older) {
   const c = S.chat, lim = 50, before = older && S.msgs.length ? Math.min(...S.msgs.map(m => m.id)) : undefined;
@@ -392,11 +406,18 @@ async function loadMsgs(older) {
   S.msgs = older ? [...got, ...S.msgs] : got; S.more = !!r.more;
 }
 async function openChat(id, n) {
-  S.chat = { id, n }; S.msgs = []; S.more = false; S.mf = "all"; S.mq = "";
-  const el = $("#chat"); el.innerHTML = chatHtml() + ""; el.classList.add("open");
+  const row = (S.chats || []).find(c => String(c.chat_id) === String(id));
+  S.chat = { id, n }; S.msgs = []; S.more = false; S.mf = "all"; S.mq = ""; S.sq = false; S.ld = true;
+  S.cc = row ? { all: row.cnt, deleted: row.deleted_cnt } : {};
+  const el = $("#chat"); el.innerHTML = chatHtml(); el.classList.add("open");
   try { tg.BackButton.show(); } catch (e) {}
+  if (!S.owner) api("chat_counts", { chat_id: +id }).then(r => {
+    if (!S.chat || String(S.chat.id) !== String(id)) return;
+    for (const k of ["all", "deleted", "edited", "media"]) if (r && r[k] != null) S.cc[k] = r[k];
+    paintChat(false);
+  }).catch(() => {});
   try { await loadMsgs(); } catch (e) { toast("Не удалось загрузить переписку"); }
-  paintChat(true);
+  S.ld = false; paintChat(true);
 }
 function paintChat(bottom) {
   const el = $("#chat"), keep = $("#mq") && document.activeElement === $("#mq");
@@ -412,9 +433,16 @@ function sheet(html) { $("#sheet").innerHTML = html; $("#sheet").classList.add("
 function unsheet() { $("#sheet").classList.remove("on"); $("#scrim").classList.remove("on"); }
 
 /* ═══ данные ═══ */
-async function refreshMe() { try { S.me = await api("me"); save("me", S.me); } catch (e) { if (!S.me) throw e; } render(); }
+let meTry = 0;
+async function refreshMe() {
+  try { S.me = await api("me"); save("me", S.me); } catch (e) { if (!S.me) throw e; }
+  render();
+  // сервер не смог посчитать архив: не показываем ноль, пробуем ещё раз
+  if (S.me && S.me.stats && (S.me.stats.archive == null || S.me.stats.deleted == null) && meTry++ < 4) setTimeout(() => refreshMe().catch(() => {}), 3000);
+}
 async function loadChats() {
-  try { const r = await api("chats"); S.chats = r.chats || []; save("chats", S.chats); } catch (e) { if (!S.chats) S.chats = []; }
+  S.cerr = false;
+  try { const r = await api("chats"); S.chats = r.chats || []; S.capprox = !!r.approx; save("chats", S.chats); } catch (e) { S.cerr = true; if (!S.chats) S.chats = []; }
   if (S.tab === "chats" && !S.admin) { render(); }
 }
 let rt = 0;
@@ -430,7 +458,14 @@ const A = {
   open: d => { hap(); openChat(d.id, d.n); },
   close: closeChat,
   older: async () => { try { await loadMsgs(true); paintChat(false); } catch (e) { toast("Не удалось загрузить"); } },
-  mf: async d => { S.mf = d.k; try { await loadMsgs(); } catch (e) {} paintChat(true); },
+  mf: async d => {
+    if (S.mf === d.k && !S.ld && !d.force) return;
+    S.mf = d.k; S.ld = true; hap("light"); const t = ++S.rq; paintChat(true);
+    try { await loadMsgs(); } catch (e) { toast("Не удалось загрузить"); }
+    if (t !== S.rq) return; S.ld = false; paintChat(true);
+  },
+  sq: () => { S.sq = !S.sq; if (!S.sq && S.mq) { S.mq = ""; A.mf({ k: S.mf, force: 1 }); return; } paintChat(false); if (S.sq) { const i = $("#mq"); if (i) i.focus(); } },
+  reload: () => { S.chats = null; S.cerr = false; render(); loadChats(); },
   amode: async d => { S.admin = d.k === "1"; render(); if (S.admin && !S.owners) { try { const r = await api("admin_owners"); S.owners = r.owners || []; } catch (e) { S.owners = []; } render(); } },
   owner: async d => { S.owner = +d.id; S.chats = null; render(); try { const r = await api("admin_chats", { owner_id: S.owner }); S.chats = r.chats || []; } catch (e) { S.chats = []; } render(); },
   ownback: () => { S.owner = null; S.chats = load("chats"); render(); },
@@ -449,7 +484,7 @@ document.addEventListener("click", e => { const t = e.target.closest("[data-a]")
 $("#scrim").addEventListener("click", unsheet);
 document.addEventListener("input", e => {
   if (e.target.id === "q") { S.q = e.target.value; $("#cl").innerHTML = chatRows((S.chats || []).filter(c => (S.cf === "all" || c.deleted_cnt > 0) && (!S.q.trim() || String(c.chat_name || "").toLowerCase().includes(S.q.trim().toLowerCase()) || String(c.username || "").toLowerCase().includes(S.q.trim().toLowerCase())))); }
-  if (e.target.id === "mq") { S.mq = e.target.value; clearTimeout(window.__mt); window.__mt = setTimeout(async () => { try { await loadMsgs(); } catch (x) {} paintChat(true); }, 350); }
+  if (e.target.id === "mq") { S.mq = e.target.value; clearTimeout(window.__mt); window.__mt = setTimeout(async () => { const t = ++S.rq; try { await loadMsgs(); } catch (x) {} if (t !== S.rq) return; paintChat(true); }, 350); }
 });
 try { tg.BackButton.onClick(() => { if (S.chat) closeChat(); }); } catch (e) {}
 

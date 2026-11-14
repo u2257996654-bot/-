@@ -186,6 +186,29 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 .plan b{font-size:17px;font-weight:500}
 .star{display:inline-flex;align-items:center;gap:5px;font-weight:600}.star svg{width:16px;height:16px;fill:currentColor;stroke:none}
 .nd::before{display:none}
+.msg .am{margin-top:6px;min-width:180px}
+.msg .am.st{min-width:0}
+.msg img,.msg video{display:block;max-width:100%;border-radius:14px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.msg video.vn{width:210px;height:210px;border-radius:50%;object-fit:cover;background:var(--sf2)}
+.msg .tgs{width:180px;height:180px}.msg .tgs svg{display:block;width:100%;height:100%}
+.ap{display:flex;align-items:center;gap:10px;width:240px;max-width:100%}
+.apb{flex:none;width:38px;height:38px;border-radius:50%;background:var(--btn);color:var(--btnt);display:grid;place-items:center;font-size:13px}
+.msg.me .apb{background:var(--btnt);color:var(--btn)}
+.apt{flex:1;min-width:0}
+.apl{display:flex;align-items:center;gap:2px;height:28px;cursor:pointer}
+.apl b{flex:1;min-width:2px;border-radius:2px;background:currentColor;opacity:.3}
+.apl b.on{opacity:1}
+.aps{flex:none;border:1px solid var(--bd);border-radius:99px;padding:3px 9px;font-size:12px;text-align:center}
+.vt{margin-top:8px;padding-top:7px;border-top:1px dashed var(--bd);font-size:13.5px}
+.vt .vtt{white-space:pre-wrap;word-break:break-word}
+.mt{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.mb{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:99px;background:rgba(127,127,127,.18);font-size:12.5px;font-weight:500;color:inherit}
+.mb svg{width:14px;height:14px}
+.mb:active{opacity:.6}.mb[disabled]{opacity:.5;pointer-events:none}
+.fcard{display:flex;align-items:center;gap:10px;margin-top:6px;padding:10px 12px;border-radius:14px;background:rgba(127,127,127,.16)}
+.fcard i{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(127,127,127,.2)}
+.fcard .g{flex:1;min-width:0}
+.rt{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:99px;background:rgba(127,127,127,.18);font-size:12.5px;font-weight:500;color:inherit;margin-top:4px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
 </style>
 </head>
@@ -230,6 +253,8 @@ const P = {
   star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
   users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.2A6.5 6.5 0 0 1 21.5 20"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+  share: '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>',
 };
 const ic = (k, s) => `<svg viewBox="0 0 24 24"${s ? ` style="width:${s}px;height:${s}px"` : ""}>${P[k]}</svg>`;
 
@@ -254,14 +279,7 @@ function dayLabel(d) {
   return t.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: t.getFullYear() === n.getFullYear() ? undefined : "numeric" });
 }
 const TYPES = { photo: "Фото", video: "Видео", video_note: "Кружок", voice: "Голосовое", audio: "Аудио", animation: "GIF", sticker: "Стикер", document: "Файл", location: "Геопозиция", contact: "Контакт" };
-const AI_LBL = { voice: "Расшифровать", audio: "Расшифровать", video_note: "Расшифровать кружок", photo: "Описать", sticker: "Описать стикер", animation: "Описать", video: "Описать видео" };
-const aiBox = m => {
-  if (!AI_LBL[m.type]) return "";
-  const r = S.mai[m.id];
-  if (r && r !== "…") return `<div class="ai"><b>${["voice", "audio", "video_note"].includes(m.type) ? "Расшифровка" : "Описание"}</b>${esc(r)}</div>`;
-  return `<button class="aib ${r ? "ld" : ""}" data-a="mai" data-id="${m.id}">${r ? "Расшифровываю…" : "✨ " + AI_LBL[m.type]}</button>`;
-};
-const body = m => m.text ? esc(m.text) : `<span style="opacity:.7">${esc(TYPES[m.type] || "Сообщение")}</span>`;
+const body = m => m.text ? esc(m.text) : (m.type === "document" || MEDIA.has(m.type)) ? "" : `<span style="opacity:.7">${esc(TYPES[m.type] || "Сообщение")}</span>`;
 let tt; function toast(t) { const e = $("#toast"); e.textContent = t; e.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => e.classList.remove("on"), 2400); }
 
 /* ═══ тема ═══ */
@@ -274,19 +292,20 @@ function applyTheme() {
 }
 
 /* ═══ запросы: таймаут, повторы ═══ */
-async function api(action, p = {}) {
+async function api(action, p = {}, ms) {
   if (DEMO) return demo(action, p);
   const body = JSON.stringify({ action, tz: -new Date().getTimezoneOffset(), ...p });
   let last;
-  for (let i = 0; i < 3; i++) {
-    const ac = new AbortController(), t = setTimeout(() => ac.abort(), i ? 15000 : 8000);
+  const N = ms ? 1 : 3;
+  for (let i = 0; i < N; i++) {
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), ms || (i ? 15000 : 8000));
     try {
       const r = await fetch(API, { method: "POST", headers: { "content-type": "application/json", "x-init-data": tg.initData }, body, signal: ac.signal });
       const j = await r.json().catch(() => ({}));
-      if (r.status >= 500 && i < 2) { last = new Error(j.error || r.status); await sleep(400 * (i + 1)); continue; }
+      if (r.status >= 500 && i < N - 1) { last = new Error(j.error || r.status); await sleep(400 * (i + 1)); continue; }
       if (!r.ok) throw Object.assign(new Error(j.error || r.status), { final: true });
       return j;
-    } catch (e) { last = e; if (e && e.final) throw e; if (i < 2) await sleep(400 * (i + 1)); }
+    } catch (e) { last = e; if (e && e.final) throw e; if (i < N - 1) await sleep(400 * (i + 1)); }
     finally { clearTimeout(t); }
   }
   throw last;
@@ -299,12 +318,14 @@ function demo(a, p) {
   if (a === "chats") return { chats: [{ chat_id: 9, chat_name: "Алина", username: "alina", cnt: 842, deleted_cnt: 12, last_at: new Date(now - 3e5).toISOString() }, { chat_id: 8, chat_name: "Макс", username: "max", cnt: 301, deleted_cnt: 0, last_at: new Date(now - 9e6).toISOString() }, { chat_id: 7, chat_name: "Мама", username: null, cnt: 128, deleted_cnt: 2, last_at: new Date(now - 864e5).toISOString() }] };
   if (a === "messages") return { more: false, messages: [M(6, "Ты видел это?", { del: 1 }), M(5, "Да, сейчас гляну", { me: 1 }), M(4, "Привет! Как дела?", {}), M(3, "Нормально, а у тебя?", { me: 1, ed: ["Норм, а у тебя?"] }), M(2, "Встретимся в семь у метро", {}), M(1, "Хорошо", { me: 1 })].filter(m => p.filter !== "deleted" || m.deleted_at) };
   if (a === "media_ai") return { text: "Голосовое: «Привет, я задержусь минут на десять, начинайте без меня»." };
+  if (a === "voice_text") return { text: "Привет! Короче, я сегодня освобожусь пораньше, давай встретимся в семь у метро." };
+  if (a === "media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#444"/></svg>') };
   if (a === "chat_counts") return { all: 842, deleted: 12, edited: 3, media: 40 };
   return { ok: true };
 }
 
 /* ═══ состояние ═══ */
-const S = { tab: "home", me: null, chats: null, q: "", cf: "all", admin: false, owners: null, owner: null, chat: null, msgs: [], more: false, mf: "all", mq: "", cc: {}, mai: {}, sq: false, ld: false, rq: 0, cerr: false, capprox: false };
+const S = { tab: "home", me: null, chats: null, q: "", cf: "all", admin: false, owners: null, owner: null, chat: null, msgs: [], more: false, mf: "all", mq: "", cc: {}, sq: false, ld: false, rq: 0, cerr: false, capprox: false };
 const myId = () => S.me && S.me.user.id;
 const save = (k, v) => { try { localStorage.setItem("zg:" + k, JSON.stringify(v)); } catch (e) {} };
 const load = k => { try { return JSON.parse(localStorage.getItem("zg:" + k)); } catch (e) { return null; } };
@@ -324,7 +345,7 @@ function vHome() {
     <div class="big num">${st.archive == null ? "—" : fmt(st.archive)}</div><div class="mu">${st.archive == null ? "Считаю архив…" : plural(st.archive, ["сообщение", "сообщения", "сообщений"]) + " в архиве"} · поймано удалённых: <b style="color:var(--tx)">${st.deleted == null ? "—" : fmt(st.deleted)}</b></div>
     ${st.connected ? `<button class="btn" data-a="tab" data-k="chats">Открыть архив</button>` : `<div class="mu sm" style="margin-top:14px">Подключи бота: Настройки Telegram → Business → Чат-боты.</div>`}
   </section>
-  <div class="tiles"><div class="card tile in"><span class="mu sm">Хранение</span><b class="num">${u.retention_days}<span class="mu" style="font-size:16px;font-weight:600"> дн.</span></b></div>
+  <div class="tiles"><div class="card tile in"><span class="mu sm">Хранение архива</span><b>Навсегда</b></div>
   <div class="card tile in"><span class="mu sm">Запросы ИИ сегодня</span><b class="num">${st.ai_today}<span class="mu" style="font-size:16px;font-weight:600"> / ${st.ai_limit}</span></b><div class="bar"><i style="width:${pct}%"></i></div></div></div>
   <div class="lb">Недавно удалённые</div>
   ${rd && rd.length ? `<div class="card grp in">${rd.map(m => `<button class="row b" data-a="open" data-id="${m.chat_id}" data-n="${esc(m.chat_name || m.from_name || "")}"><span style="margin-left:-0px">${av(m.chat_name || m.from_name, m.chat_id, "s")}</span><div class="g"><b class="ell">${esc(m.chat_name || m.from_name || "Чат")}</b><span class="ell">${esc(m.text || TYPES[m.type] || "Сообщение")}</span></div><span class="mu sm">${ago(m.deleted_at)}</span></button>`).join("")}</div>`
@@ -362,7 +383,7 @@ function vSet() {
   <div class="card grp in">
     <div class="row"><span class="ico">${ic("archive")}</span><div class="g"><b>Сохранять сообщения</b><span>Архив подключённых чатов</span></div>${tgl("antidelete", u.antidelete)}</div>
     <div class="row"><span class="ico">${ic("bell")}</span><div class="g"><b>Уведомлять об удалении</b><span>Когда сообщение удалили или изменили</span></div>${tgl("notify", u.notify)}</div>
-    <div class="row" style="flex-wrap:wrap"><span class="ico">${ic("clock")}</span><div class="g"><b>Срок хранения</b><span>Дней${u.premium ? "" : " · 90 дней в Premium"}</span></div><div style="flex:1 0 100%;padding-left:48px">${seg("ret", [[7, "7"], [30, "30"], [90, "90"]], u.retention_days)}</div></div>
+    <div class="row"><span class="ico">${ic("clock")}</span><div class="g"><b>Хранение архива</b><span>Бессрочно, пока ты сам не удалишь</span></div></div>
   </div>
   <div class="lb">Оформление</div>
   <div class="card grp in"><div class="row"><span class="ico">${ic("sun")}</span><div class="g"><b>Тема</b></div><div style="flex:none;width:220px">${seg("theme", [["auto", "Авто"], ["light", "Светлая"], ["dark", "Тёмная"]], p)}</div></div></div>
@@ -381,9 +402,9 @@ function vProf() {
   <section class="card in" style="display:flex;align-items:center;gap:16px;padding:18px">${av(u.name, u.id, "l")}<div class="g" style="flex:1;min-width:0"><b class="ell" style="font-size:19px;font-weight:700">${esc(u.name || "Без имени")}</b><div class="mu ell">${u.username ? "@" + esc(u.username) : "без username"}</div><div style="margin-top:8px">${prem(u)}</div></div></section>
   <div class="lb">Аккаунт</div>
   <div class="card grp in"><button class="row b" data-a="copy" data-v="${u.id}"><span class="ico">${ic("copy")}</span><div class="g"><b>Мой ID</b><span class="num">${u.id}</span></div><span class="mu sm">Скопировать</span></button>
-  <div class="row"><span class="ico">${ic("star")}</span><div class="g"><b>${u.premium ? "Premium активен" : "Бесплатный тариф"}</b><span>${u.premium && until ? "До " + until : "30 дней хранения, базовые лимиты ИИ"}</span></div></div></div>
+  <div class="row"><span class="ico">${ic("star")}</span><div class="g"><b>${u.premium ? "Premium активен" : "Бесплатный тариф"}</b><span>${u.premium && until ? "До " + until : "Архив хранится бессрочно, базовые лимиты ИИ"}</span></div></div></div>
   <div class="lb">Premium</div>
-  <div class="card in" style="padding:6px 16px 4px;margin-bottom:12px">${["Хранение архива до 90 дней", "Повышенные лимиты ИИ", "Полный экспорт архива"].map(t => `<div class="row nd" style="min-height:44px;padding:8px 0;gap:12px"><span style="color:var(--ac)">${ic("check", 18)}</span><span>${t}</span></div>`).join("")}</div>
+  <div class="card in" style="padding:6px 16px 4px;margin-bottom:12px">${["Повышенные лимиты ИИ", "Полный экспорт архива"].map(t => `<div class="row nd" style="min-height:44px;padding:8px 0;gap:12px"><span style="color:var(--ac)">${ic("check", 18)}</span><span>${t}</span></div>`).join("")}</div>
   ${!u.premium && !u.trial_used ? `<button class="btn sec" style="margin-bottom:12px" data-a="trial">Попробовать бесплатно</button>` : ""}
   ${Object.entries(plans).map(([s, d]) => `<button class="card plan" data-a="buy" data-s="${s}"><span><b>${d} ${plural(d, ["день", "дня", "дней"])}</b><br><span class="mu sm">${(s / d).toFixed(1)} ★ в день</span></span><span class="star">${s} <svg viewBox="0 0 24 24">${P.star}</svg></span></button>`).join("")}`;
 }
@@ -405,7 +426,7 @@ function chatHtml() {
   for (const m of S.msgs) {
     if (!last || !sameDay(last, m.sent_at)) out += `<div class="day">${dayLabel(m.sent_at)}</div>`; last = m.sent_at;
     const mine = m.from_id === (S.owner || me), eds = (m.edits || []).map(e => typeof e === "string" ? e : (e.text || e.old || "")).filter(Boolean);
-    out += `<div class="msg ${mine ? "me" : ""} ${m.deleted_at ? "del" : ""}">${m.deleted_at ? `<span class="tag">Удалено в ${hm(m.deleted_at)}</span>` : ""}<p>${body(m)}</p>${aiBox(m)}${eds.length ? `<div class="ed">Было: ${eds.map(esc).join(" → ")}</div>` : ""}<div class="meta">${eds.length ? "изменено" : ""}<span>${hm(m.sent_at)}</span></div></div>`;
+    out += `<div class="msg ${mine ? "me" : ""} ${m.deleted_at ? "del" : ""}">${m.deleted_at ? `<span class="tag">Удалено в ${hm(m.deleted_at)}</span>` : ""}${bodyP(m)}${mediaHtml(m)}${eds.length ? `<div class="ed">Было: ${eds.map(esc).join(" → ")}</div>` : ""}<div class="meta">${eds.length ? "изменено" : ""}<span>${hm(m.sent_at)}</span></div></div>`;
   }
   if (S.ld) out = `<div class="sk m"></div><div class="sk m r"></div><div class="sk m"></div><div class="sk m r"></div>`;
   else if (!S.msgs.length) out = `<div class="empty"><b>${S.mq ? "Ничего не найдено" : EM[S.mf] || "Ничего нет"}</b>${S.mq ? "Попробуй другое слово." : "В этом чате по этой вкладке пока пусто."}</div>`;
@@ -437,9 +458,143 @@ function paintChat(bottom) {
   const cb = $("#cb"), h = cb ? cb.scrollHeight - cb.scrollTop : 0;
   el.innerHTML = chatHtml();
   const nb = $("#cb"); if (nb) nb.scrollTop = bottom ? nb.scrollHeight : nb.scrollHeight - h;
+  observeMedia(); observeVoice();
   if (keep) { const i = $("#mq"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
 }
-function closeChat() { S.chat = null; $("#chat").classList.remove("open"); try { tg.BackButton.hide(); } catch (e) {} }
+function closeChat() { S.chat = null; mio && mio.disconnect(); vio && vio.disconnect(); $("#chat").classList.remove("open"); try { tg.BackButton.hide(); } catch (e) {} }
+
+/* ═══ медиа: очередь загрузок, кэш, плееры, автоматическая расшифровка ═══ */
+const MEDIA = new Set(["photo", "video_note", "video", "animation", "sticker", "voice", "audio"]);
+const VTYPES = new Set(["voice", "audio", "video_note", "video"]);
+const VT = {};
+const EXT = { photo: "jpg", video_note: "mp4", video: "mp4", animation: "mp4", voice: "ogg", audio: "mp3", sticker: "webp" };
+const bodyP = m => { const b = body(m); return b ? `<p>${b}</p>` : ""; };
+function mediaHtml(m) {
+  let h = "";
+  if (m.type === "document") h += `<div class="fcard"><i>${ic("file", 18)}</i><div class="g"><b>Файл</b><span class="mu sm" style="display:block">Сохранится в чат с ботом</span></div><button class="mb" data-a="msave" data-id="${m.id}">${ic("share")}Сохранить</button></div>`;
+  else if (MEDIA.has(m.type)) h += `<div class="am${m.type === "sticker" ? " st" : ""}" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : ["voice", "audio"].includes(m.type) ? 40 : 120}px"></div></div>`;
+  if (VTYPES.has(m.type)) h += `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>`;
+  return h;
+}
+let mio, vio;
+function observeMedia() {
+  mio && mio.disconnect();
+  const els = $$(".am"); if (!els.length) return;
+  mio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { mio.unobserve(e.target); loadMedia(e.target); } }), { root: $("#cb"), rootMargin: "700px" });
+  els.forEach(n => mio.observe(n));
+}
+function observeVoice() {
+  vio && vio.disconnect();
+  const els = $$(".vt").filter(n => !n.querySelector(".vtt")); if (!els.length) return;
+  vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); loadVoice(e.target); } }), { root: $("#cb"), rootMargin: "300px" });
+  els.forEach(n => vio.observe(n));
+}
+const VBUSY = new Set();
+async function loadVoice(n) {
+  if (!n || VBUSY.has(n.dataset.id)) return;
+  const id = n.dataset.id; VBUSY.add(id);
+  n.innerHTML = '<span class="mu sm">Расшифровываю…</span>';
+  let html;
+  try {
+    const r = await api("voice_text", { id: +id, ...(S.owner ? { owner_id: S.owner } : {}) }, 90000);
+    VT[id] = r.text || "Речи не найдено";
+    html = `<div class="vtt">${esc(VT[id])}</div>`;
+  } catch (e) {
+    const c = String(e && e.message || e);
+    html = `<button class="rt" data-a="vtext" data-id="${id}">Не расшифровалось, повторить</button><div class="mu sm">${esc(/limit/i.test(c) ? "Лимит ИИ на сегодня исчерпан" : /premium/i.test(c) ? "Расшифровка доступна в Premium" : c.slice(0, 120))}</div>`;
+  }
+  VBUSY.delete(id);
+  const cur = $(`.vt[data-id="${id}"]`); if (cur) cur.innerHTML = html;
+}
+const MC = new Map(), mQ = { l: { busy: 0, max: 5, w: [] }, h: { busy: 0, max: 2, w: [] } };
+const mSlot = heavy => new Promise(res => { const q = heavy ? mQ.h : mQ.l; const go = () => { q.busy++; res(q); }; q.busy < q.max ? go() : q.w.push(go); });
+const mFree = q => { q.busy--; const n = q.w.shift(); n && n(); };
+function getMedia(id, t) {
+  if (MC.has(id)) return MC.get(id);
+  const p = (async () => {
+    const slot = await mSlot(["video", "video_note", "animation"].includes(t));
+    try {
+      let last;
+      for (let i = 0; i < 3; i++) {
+        try {
+          if (DEMO) { const r = await demo("media", { id }), blob = await (await fetch(r.src)).blob(); return { blob, kind: r.kind, url: URL.createObjectURL(blob) }; }
+          const r = await fetch(API, { method: "POST", headers: { "content-type": "application/json", "x-init-data": tg.initData }, body: JSON.stringify({ action: "media", raw: true, id, tz: -new Date().getTimezoneOffset() }) });
+          if (!r.ok) { const j = await r.json().catch(() => ({})); const e = new Error(j.error || r.status); e.fatal = [404, 413].includes(r.status); throw e; }
+          const blob = await r.blob();
+          return { blob, kind: r.headers.get("x-kind") || (blob.type.startsWith("video") ? "video" : blob.type.startsWith("audio") ? "audio" : "image"), url: URL.createObjectURL(blob) };
+        } catch (e) { last = e; if (e.fatal) break; await sleep(700 * (i + 1)); }
+      }
+      throw last;
+    } finally { mFree(slot); }
+  })();
+  MC.set(id, p); p.catch(() => MC.delete(id));
+  return p;
+}
+let lotP;
+const lottie = () => lotP ||= new Promise((ok, no) => {
+  if (window.lottie) return ok(window.lottie);
+  const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js";
+  s.onload = () => ok(window.lottie); s.onerror = () => { lotP = null; no(new Error("lottie")); }; document.head.appendChild(s);
+});
+const gunzip = async blob => new Response(blob.stream().pipeThrough(new DecompressionStream("gzip"))).text();
+const saveBar = (id, local) => `<div class="mt"><button class="mb" data-a="msave" data-id="${id}">${ic("share")}Сохранить</button>${local ? `<button class="mb" data-a="mdl" data-id="${id}">${ic("down")}Скачать</button>` : ""}</div>`;
+const retryBtn = (n, t) => `<button class="rt" data-a="amedia" data-id="${n.dataset.id}">${t}</button>`;
+async function loadMedia(n) {
+  const id = +n.dataset.id, t = n.dataset.t;
+  let m;
+  try { m = await getMedia(id, t); }
+  catch (e) {
+    n.innerHTML = e && e.message === "too_big"
+      ? `<div class="fcard"><i>${ic("file", 18)}</i><div class="g"><b>Файл больше 20 МБ</b><span class="mu sm" style="display:block">Бот пришлёт его в чат</span></div></div>${saveBar(id, false).replace("Сохранить", "Прислать в чат")}`
+      : retryBtn(n, "Не загрузилось, повторить");
+    return;
+  }
+  if (!n.isConnected) return;
+  const { url, blob, kind } = m;
+  n.dataset.url = url;
+  const bar = saveBar(id, true);
+  try {
+    if (kind === "audio") {
+      const N = 32, seed = id || 1;
+      const bars = Array.from({ length: N }, (_, i) => `<b style="height:${25 + Math.round(Math.abs(Math.sin(seed * 7.3 + i * 1.7)) * 75)}%"></b>`).join("");
+      n.innerHTML = `<div class="ap"><button class="apb" aria-label="Играть">▶</button><div class="apt"><div class="apl">${bars}</div><span class="sm apd" style="opacity:.65">0:00</span></div><button class="aps">1×</button></div><audio src="${url}" preload="metadata"></audio>${bar}`;
+      const au = n.querySelector("audio"), btn = n.querySelector(".apb"), bs = [...n.querySelectorAll(".apl b")], dur = n.querySelector(".apd"), sp = n.querySelector(".aps");
+      const f = s => isFinite(s) ? Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0") : "0:00";
+      const paint = () => { const p = au.duration && isFinite(au.duration) ? au.currentTime / au.duration : 0; bs.forEach((b, i) => b.classList.toggle("on", i < p * N)); dur.textContent = au.currentTime > 0 || !au.paused ? f(au.currentTime) : f(au.duration); };
+      au.onloadedmetadata = paint; au.ontimeupdate = paint;
+      au.onplay = () => { btn.textContent = "❚❚"; $$("audio").forEach(a => a !== au && a.pause()); };
+      au.onpause = () => { btn.textContent = "▶"; };
+      au.onended = () => { au.currentTime = 0; btn.textContent = "▶"; paint(); };
+      au.onerror = () => { n.querySelector(".ap").outerHTML = '<span class="mu sm">Это устройство не воспроизводит такой формат. Нажми «Сохранить» и открой в Telegram.</span>'; };
+      btn.onclick = () => { au.paused ? au.play().catch(() => au.onerror()) : au.pause(); };
+      n.querySelector(".apl").onclick = e => { const rc = e.currentTarget.getBoundingClientRect(); if (au.duration && isFinite(au.duration)) au.currentTime = au.duration * (e.clientX - rc.left) / rc.width; };
+      sp.onclick = () => { const v = au.playbackRate >= 2 ? 1 : au.playbackRate >= 1.5 ? 2 : 1.5; au.playbackRate = v; sp.textContent = v + "×"; };
+      return;
+    }
+    if (kind === "tgs") {
+      n.innerHTML = '<div class="tgs"></div>' + saveBar(id, false);
+      const data = JSON.parse(await gunzip(blob)), L = await lottie();
+      L.loadAnimation({ container: n.querySelector(".tgs"), renderer: "svg", loop: true, autoplay: true, animationData: data });
+      return;
+    }
+    if (kind === "video") {
+      const vn = t === "video_note", loop = ["animation", "sticker"].includes(t);
+      n.innerHTML = (vn
+        ? `<video class="vn" src="${url}" muted loop autoplay playsinline preload="auto"></video>`
+        : loop ? `<video src="${url}" muted loop autoplay playsinline preload="auto" style="max-width:${t === "sticker" ? 180 : 260}px"></video>`
+        : `<video src="${url}" controls playsinline preload="metadata"></video>`) + bar;
+      const v = n.querySelector("video");
+      v.onerror = () => { v.outerHTML = '<span class="mu sm">Это устройство не воспроизводит такой формат. Нажми «Сохранить» и открой в Telegram.</span>'; };
+      if (vn) v.onclick = () => { if (v.muted) { v.muted = false; v.currentTime = 0; v.play().catch(() => {}); } else v.muted = true; };
+      v.play && v.play().catch(() => {});
+      return;
+    }
+    n.innerHTML = `<img decoding="async" alt="Фото из архива" src="${url}"${t === "sticker" ? ' style="max-width:180px"' : ""}>` + bar;
+    n.querySelector("img").onerror = () => { n.innerHTML = retryBtn(n, "Не загрузилось, повторить") + saveBar(id, false); };
+  } catch (e) {
+    n.innerHTML = `<span class="mu sm">Не получилось показать здесь.</span>` + saveBar(id, false);
+  }
+}
 
 /* ═══ окна ═══ */
 function sheet(html) { $("#sheet").innerHTML = html; $("#sheet").classList.add("on"); $("#scrim").classList.add("on"); }
@@ -478,23 +633,26 @@ const A = {
     if (t !== S.rq) return; S.ld = false; paintChat(true);
   },
   sq: () => { S.sq = !S.sq; if (!S.sq && S.mq) { S.mq = ""; A.mf({ k: S.mf, force: 1 }); return; } paintChat(false); if (S.sq) { const i = $("#mq"); if (i) i.focus(); } },
-  mai: async d => {
-    const id = +d.id; if (!id || S.mai[id] === "…") return;
-    S.mai[id] = "…"; hap("light"); paintChat(false);
-    try { const r = await api("media_ai", { id }); S.mai[id] = r.text || "Не удалось распознать"; }
-    catch (e) {
-      delete S.mai[id];
-      const c = String(e && e.message || e);
-      toast(/premium/i.test(c) ? "Расшифровка голосовых и кружков — в Premium" : /limit/i.test(c) ? "Лимит AI на сегодня исчерпан" : /too_big/i.test(c) ? "Файл слишком большой" : "Не удалось распознать");
-    }
-    paintChat(false);
+  amedia: (d, el) => { const n = el.closest(".am"); MC.delete(+d.id); n.innerHTML = '<div class="sk" style="height:120px"></div>'; loadMedia(n); },
+  msave: async (d, el) => {
+    if (DEMO) return toast("В демо-режиме сохранение недоступно");
+    el.disabled = true; hap();
+    try { await api("save_media", { id: +d.id }); toast("Отправил в чат с ботом. Открой его и сохрани"); hap("medium"); }
+    catch (e) { toast("Не отправилось. Попробуй ещё раз"); }
+    el.disabled = false;
   },
+  mdl: (d, el) => {
+    const n = el.closest(".am"), url = n && n.dataset.url, t = n && n.dataset.t;
+    if (!url) return toast("Файл ещё не загрузился");
+    const a = document.createElement("a"); a.href = url; a.download = `zetgram-${d.id}.${EXT[t] || "bin"}`; document.body.appendChild(a); a.click(); a.remove();
+    toast("Если файл не скачался, нажми «Сохранить»: бот пришлёт его в чат");
+  },
+  vtext: (d, el) => loadVoice(el.closest(".vt")),
   reload: () => { S.chats = null; S.cerr = false; render(); loadChats(); },
   amode: async d => { S.admin = d.k === "1"; render(); if (S.admin && !S.owners) { try { const r = await api("admin_owners"); S.owners = r.owners || []; } catch (e) { S.owners = []; } render(); } },
   owner: async d => { S.owner = +d.id; S.chats = null; render(); try { const r = await api("admin_chats", { owner_id: S.owner }); S.chats = r.chats || []; } catch (e) { S.chats = []; } render(); },
   ownback: () => { S.owner = null; S.chats = load("chats"); render(); },
   tog: async d => { const u = S.me.user; u[d.k] = !u[d.k]; render(); hap(); try { await api("settings", { [d.k]: u[d.k] }); save("me", S.me); } catch (e) { u[d.k] = !u[d.k]; render(); toast("Настройка не сохранилась"); } },
-  ret: async d => { const u = S.me.user, v = +d.k, old = u.retention_days; if (v === 90 && !u.premium) { toast("90 дней доступно в Premium"); S.tab = "prof"; render(); return; } u.retention_days = v; render(); hap(); try { await api("settings", { retention_days: v }); } catch (e) { u.retention_days = old; render(); toast("Настройка не сохранилась"); } },
   theme: d => { localStorage.setItem("zg:theme", d.k); applyTheme(); render(); hap(); },
   exp: async () => { try { await api("export"); toast("Файл отправлен в чат с ботом"); hap("medium"); } catch (e) { toast("Не удалось собрать файл"); } },
   wipeq: () => sheet(`<h2>Удалить все данные?</h2><p class="mu">Архив сообщений и настройки будут стёрты без возможности восстановления.</p><button class="btn bad" data-a="wipe">Удалить</button><button class="btn sec" data-a="unsheet">Отмена</button>`),

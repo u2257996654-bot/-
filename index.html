@@ -187,7 +187,7 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 .star{display:inline-flex;align-items:center;gap:5px;font-weight:600}.star svg{width:16px;height:16px;fill:currentColor;stroke:none}
 .nd::before{display:none}
 .msg .am{margin-top:6px;min-width:180px}
-.msg .am.st{min-width:0}
+.msg .am.stk{min-width:0}
 .msg img,.msg video{display:block;max-width:100%;border-radius:14px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
 .msg video.vn{width:210px;height:210px;border-radius:50%;object-fit:cover;background:var(--sf2)}
 .msg .tgs{width:180px;height:180px}.msg .tgs svg{display:block;width:100%;height:100%}
@@ -209,6 +209,15 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 .fcard i{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(127,127,127,.2)}
 .fcard .g{flex:1;min-width:0}
 .rt{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:99px;background:rgba(127,127,127,.18);font-size:12.5px;font-weight:500;color:inherit;margin-top:4px}
+.sheet{max-height:90vh;overflow-y:auto}
+.avb{flex:none;border-radius:50%;transition:transform .45s var(--sp)}.avb:active{transform:scale(.92);transition-duration:.1s}
+.avp{flex:none;width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--hl)}
+.kv{display:flex;justify-content:space-between;gap:16px;width:100%;padding:12px 0;border-bottom:1px solid var(--bd);text-align:left}
+.kv span:first-child{color:var(--mu);flex:none}
+.kv span:last-child{text-align:right;word-break:break-word}
+.ps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 8px}
+.ps div{padding:10px 12px;border-radius:14px;background:var(--sf2);border:1px solid var(--bd)}
+.ps b{display:block;font-size:18px;font-weight:600}.ps span{font-size:11.5px;color:var(--mu)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
 </style>
 </head>
@@ -320,6 +329,8 @@ function demo(a, p) {
   if (a === "media_ai") return { text: "Голосовое: «Привет, я задержусь минут на десять, начинайте без меня»." };
   if (a === "voice_text") return { text: "Привет! Короче, я сегодня освобожусь пораньше, давай встретимся в семь у метро." };
   if (a === "media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#444"/></svg>') };
+  if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
+  if (a === "peer_info") return { ok: true, photo: null, profile: { first_name: "Алина", username: "alina", bio: "Дизайнер. Пишу редко, отвечаю быстро.", birthdate: { day: 14, month: 3, year: 1998 } }, stats: { total: 842, mine: 410, theirs: 432, deleted: 12, edited: 7, media: 96, first_at: new Date(now - 4e10).toISOString(), last_at: new Date(now - 3e5).toISOString() }, flags: { mute: false, nomute: false } };
   if (a === "chat_counts") return { all: 842, deleted: 12, edited: 3, media: 40 };
   return { ok: true };
 }
@@ -347,6 +358,7 @@ function vHome() {
   </section>
   <div class="tiles"><div class="card tile in"><span class="mu sm">Хранение архива</span><b>Навсегда</b></div>
   <div class="card tile in"><span class="mu sm">Запросы ИИ сегодня</span><b class="num">${st.ai_today}<span class="mu" style="font-size:16px;font-weight:600"> / ${st.ai_limit}</span></b><div class="bar"><i style="width:${pct}%"></i></div></div></div>
+  <button class="card chat in" style="margin-top:12px" data-a="wrapped"><span class="av">🏆</span><div class="g"><b>Мои итоги для сторис</b><div class="mu sm">Кто чаще всех удаляет. Картинка для TikTok и Stories</div></div></button>
   <div class="lb">Недавно удалённые</div>
   ${rd && rd.length ? `<div class="card grp in">${rd.map(m => `<button class="row b" data-a="open" data-id="${m.chat_id}" data-n="${esc(m.chat_name || m.from_name || "")}"><span style="margin-left:-0px">${av(m.chat_name || m.from_name, m.chat_id, "s")}</span><div class="g"><b class="ell">${esc(m.chat_name || m.from_name || "Чат")}</b><span class="ell">${esc(m.text || TYPES[m.type] || "Сообщение")}</span></div><span class="mu sm">${ago(m.deleted_at)}</span></button>`).join("")}</div>`
     : `<div class="card empty in"><b>Пока пусто</b>Когда собеседник удалит сообщение, оно появится здесь.</div>`}`;
@@ -430,7 +442,7 @@ function chatHtml() {
   }
   if (S.ld) out = `<div class="sk m"></div><div class="sk m r"></div><div class="sk m"></div><div class="sk m r"></div>`;
   else if (!S.msgs.length) out = `<div class="empty"><b>${S.mq ? "Ничего не найдено" : EM[S.mf] || "Ничего нет"}</b>${S.mq ? "Попробуй другое слово." : "В этом чате по этой вкладке пока пусто."}</div>`;
-  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button>${av(c.n, c.id, "s")}<div class="ch-t"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu sm">Архив переписки</span></div>${S.owner ? "" : `<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button>`}</header>${flt}<div class="ch-b" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}</div>`;
+  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu sm ell" style="display:block">${S.pp && S.pp.peer && S.pp.peer.username ? "@" + esc(S.pp.peer.username) + " · " : ""}Профиль и архив</span></button>${S.owner ? "" : `<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button>`}</header>${flt}<div class="ch-b" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}</div>`;
 }
 async function loadMsgs(older) {
   const c = S.chat, lim = 50, before = older && S.msgs.length ? Math.min(...S.msgs.map(m => m.id)) : undefined;
@@ -442,7 +454,8 @@ async function loadMsgs(older) {
 async function openChat(id, n) {
   const row = (S.chats || []).find(c => String(c.chat_id) === String(id));
   S.chat = { id, n }; S.msgs = []; S.more = false; S.mf = "all"; S.mq = ""; S.sq = false; S.ld = true;
-  S.cc = row ? { all: row.cnt, deleted: row.deleted_cnt } : {};
+  S.cc = row ? { all: row.cnt, deleted: row.deleted_cnt } : {}; S.pp = null;
+  api("chat_info", { chat_id: +id, ...(S.owner ? { owner_id: S.owner } : {}) }).then(r => { if (S.chat && String(S.chat.id) === String(id)) { S.pp = r; paintChat(false); } }).catch(() => {});
   const el = $("#chat"); el.innerHTML = chatHtml(); el.classList.add("open");
   try { tg.BackButton.show(); } catch (e) {}
   if (!S.owner) api("chat_counts", { chat_id: +id }).then(r => {
@@ -472,7 +485,7 @@ const bodyP = m => { const b = body(m); return b ? `<p>${b}</p>` : ""; };
 function mediaHtml(m) {
   let h = "";
   if (m.type === "document") h += `<div class="fcard"><i>${ic("file", 18)}</i><div class="g"><b>Файл</b><span class="mu sm" style="display:block">Сохранится в чат с ботом</span></div><button class="mb" data-a="msave" data-id="${m.id}">${ic("share")}Сохранить</button></div>`;
-  else if (MEDIA.has(m.type)) h += `<div class="am${m.type === "sticker" ? " st" : ""}" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : ["voice", "audio"].includes(m.type) ? 40 : 120}px"></div></div>`;
+  else if (MEDIA.has(m.type)) h += `<div class="am${m.type === "sticker" ? " stk" : ""}" data-id="${m.id}" data-t="${m.type}"><div class="sk" style="height:${m.type === "video_note" ? 210 : m.type === "sticker" ? 150 : ["voice", "audio"].includes(m.type) ? 40 : 120}px"></div></div>`;
   if (VTYPES.has(m.type)) h += `<div class="vt" data-id="${m.id}">${VT[m.id] !== undefined ? `<div class="vtt">${esc(VT[m.id])}</div>` : '<span class="mu sm">Расшифровываю…</span>'}</div>`;
   return h;
 }
@@ -596,6 +609,68 @@ async function loadMedia(n) {
   }
 }
 
+/* ═══ Итоги: картинка 9:16 для сторис и TikTok ═══ */
+const WS = { hide: true };
+const wTop = () => (S.chats || []).filter(c => c.deleted_cnt > 0).sort((a, b) => b.deleted_cnt - a.deleted_cnt).slice(0, 3);
+function wCanvas() {
+  const c = document.createElement("canvas"); c.width = 1080; c.height = 1920; const x = c.getContext("2d");
+  let g = x.createLinearGradient(0, 0, 0, 1920); g.addColorStop(0, "#1b1b1f"); g.addColorStop(1, "#050506"); x.fillStyle = g; x.fillRect(0, 0, 1080, 1920);
+  g = x.createRadialGradient(900, 100, 0, 900, 100, 900); g.addColorStop(0, "rgba(255,80,71,.35)"); g.addColorStop(1, "rgba(255,80,71,0)"); x.fillStyle = g; x.fillRect(0, 0, 1080, 1920);
+  const T = (t, px, py, sz, w, col, al) => { x.font = `${w} ${sz}px -apple-system,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif`; x.fillStyle = col; x.textAlign = al || "left"; x.fillText(t, px, py); };
+  const st = S.me.stats, top = wTop();
+  T("ZETGRAM", 90, 150, 44, 700, "#ffffff"); T("МОИ ИТОГИ", 990, 150, 36, 500, "#9b9ba3", "right");
+  T("Я поймал", 90, 420, 72, 500, "#9b9ba3"); T(String(st.deleted || 0), 90, 700, 300, 700, "#ff5047");
+  T("удалённых сообщений", 90, 790, 60, 500, "#ffffff"); T("в архиве " + fmt(st.archive || 0) + " сообщений", 90, 870, 42, 400, "#9b9ba3");
+  T("КТО УДАЛЯЕТ ЧАЩЕ ВСЕГО", 90, 1060, 36, 600, "#9b9ba3");
+  top.forEach((ch, i) => {
+    const y = 1150 + i * 190, nm = WS.hide ? "Собеседник " + (i + 1) : String(ch.chat_name || "Чат").slice(0, 16);
+    x.fillStyle = "rgba(255,255,255,.07)"; x.beginPath(); x.roundRect(90, y, 900, 150, 75); x.fill();
+    T(String(i + 1), 150, y + 98, 64, 700, i === 0 ? "#ff5047" : "#ffffff", "center");
+    T(nm, 220, y + 94, 52, 600, "#ffffff"); T(ch.deleted_cnt + " уд.", 940, y + 94, 52, 700, "#ff5047", "right");
+  });
+  T("Ничего не исчезает бесследно", 540, 1800, 40, 500, "#9b9ba3", "center");
+  return c;
+}
+function wOpen() {
+  const c = wCanvas();
+  sheet(`<h2>Твои итоги</h2><img alt="Итоги" src="${c.toDataURL("image/png")}" style="display:block;max-height:50vh;max-width:100%;margin:12px auto;border-radius:16px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto">
+  <div class="row" style="padding:6px 0;min-height:48px"><div class="g"><b>Скрыть имена</b><span>Покажем «Собеседник 1, 2, 3»</span></div><button class="tg ${WS.hide ? "on" : ""}" data-a="whide" role="switch" aria-checked="${WS.hide}"></button></div>
+  <button class="btn" data-a="wshare">Поделиться</button><button class="btn sec" data-a="unsheet">Закрыть</button>`);
+}
+/* ═══ профиль собеседника: по тапу на аватарку ═══ */
+const PI = {};
+const MON = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+const fdate = iso => iso ? new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }) : "";
+function openUser(id, un) {
+  const name = String(un || "").replace(/^@/, "");
+  if (name) { const u = "https://t.me/" + name; return tg && tg.openTelegramLink ? tg.openTelegramLink(u) : window.open(u, "_blank"); }
+  try { navigator.clipboard.writeText(String(id)); } catch (e) {}
+  toast("Открываю по ID. Если чат не открылся, ID скопирован");
+  window.location.href = "tg://user?id=" + id;
+}
+async function peerSheet() {
+  const c = S.chat; if (!c) return;
+  const pp = (S.pp && S.pp.peer) || { id: c.id, name: c.n, username: null };
+  const cid = c.id, head = (photo, name, sub) => `<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px">${photo ? `<img class="avp" src="${photo}" alt="">` : av(name, pp.id, "l")}<div style="min-width:0"><b class="ell" style="font-size:19px;display:block">${esc(name || "Без имени")}</b><span class="mu sm">${esc(sub)}</span></div></div>`;
+  sheet(head(null, pp.name || c.n, pp.username ? "@" + pp.username : "ID " + pp.id) + `<div id="pi">${sk(2)}</div>`);
+  let r = PI[cid] || null;
+  if (!r && !S.owner) { try { r = await api("peer_info", { chat_id: +cid }, 20000); if (r) PI[cid] = r; } catch (e) {} }
+  if (!S.chat || S.chat.id !== cid || !$("#sheet").classList.contains("on") || !$("#pi")) return;
+  const pr = (r && r.profile) || {}, st = (r && r.stats) || {}, fl = (r && r.flags) || {};
+  const name = [pr.first_name, pr.last_name].filter(Boolean).join(" ") || pp.name || c.n || "Без имени", un = pr.username || pp.username;
+  const bd = pr.birthdate ? `${pr.birthdate.day} ${MON[pr.birthdate.month - 1]}${pr.birthdate.year ? " " + pr.birthdate.year : ""}` : "";
+  const pc = pr.personal_chat ? (pr.personal_chat.username ? "@" + pr.personal_chat.username : pr.personal_chat.title) : "";
+  const phone = pr.phone ? "+" + String(pr.phone).replace(/^\+/, "") : "";
+  const rows = [["Имя", name], ["Username", un ? "@" + un : ""], ["ID", String(pp.id)], ["Номер", phone || "Telegram не передаёт"], ["О себе", pr.bio], ["День рождения", bd], ["Личный канал", pc], ["Бизнес", pr.business_intro && pr.business_intro.title], ["Адрес", pr.business_location && pr.business_location.address], ["Первое сообщение", fdate(st.first_at)], ["Последнее", fdate(st.last_at)]].filter(x => x[1]);
+  const tgl2 = (k, t, sub) => `<div class="row" style="padding:8px 0;min-height:52px"><div class="g"><b>${t}</b><span>${sub}</span></div><button class="tg ${fl[k] ? "on" : ""}" data-a="csw" data-k="${k}" role="switch"></button></div>`;
+  const stat = [[st.total, "сообщений"], [st.theirs, "от него"], [st.mine, "от тебя"], [st.deleted, "удалил"], [st.edited, "изменил"], [st.media, "медиа"]];
+  $("#sheet").innerHTML = head(r && r.photo, name, un ? "@" + un : "ID " + pp.id)
+    + (S.owner ? '<div class="empty" style="padding:10px 0;font-size:13px">Расширенный профиль доступен в своём архиве.</div>' : (r && r.ok ? "" : '<div class="mu sm" style="margin:6px 0">Telegram не отдал био и дату рождения этого человека. Ниже то, что есть в архиве.</div>')
+    + `<div class="ps">${stat.map(([n, l]) => `<div><b class="num">${fmt(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`)
+    + `<div>${rows.map(([l, v]) => `<button class="kv" data-a="cpy" data-v="${esc(v)}"><span>${l}</span><span>${esc(v)}</span></button>`).join("")}</div>`
+    + (S.owner ? "" : `<div style="margin-top:6px">${tgl2("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl2("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`)
+    + `<button class="btn" data-a="wr" data-id="${esc(pp.id)}" data-u="${esc(un || "")}">Написать в Telegram</button><button class="btn sec" data-a="unsheet">Закрыть</button>`;
+}
 /* ═══ окна ═══ */
 function sheet(html) { $("#sheet").innerHTML = html; $("#sheet").classList.add("on"); $("#scrim").classList.add("on"); }
 function unsheet() { $("#sheet").classList.remove("on"); $("#scrim").classList.remove("on"); }
@@ -648,6 +723,19 @@ const A = {
     toast("Если файл не скачался, нажми «Сохранить»: бот пришлёт его в чат");
   },
   vtext: (d, el) => loadVoice(el.closest(".vt")),
+  wrapped: () => { if (!wTop().length) return toast("Пока нет удалённых сообщений"); hap(); wOpen(); },
+  whide: () => { WS.hide = !WS.hide; wOpen(); },
+  wshare: () => {
+    wCanvas().toBlob(b => {
+      const f = new File([b], "zetgram-itogi.png", { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f] }).catch(() => {});
+      else { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); toast("Если не скачалось, удерживай картинку и сохрани"); }
+    });
+  },
+  who: () => peerSheet(),
+  cpy: d => { try { navigator.clipboard.writeText(d.v); } catch (e) {} toast("Скопировано"); hap(); },
+  wr: d => openUser(d.id, d.u),
+  csw: async (d, el) => { const on = !el.classList.contains("on"); el.classList.toggle("on", on); hap(); if (PI[S.chat.id] && PI[S.chat.id].flags) PI[S.chat.id].flags[d.k] = on; try { await api("chat_set", { chat_id: +S.chat.id, [d.k]: on }); } catch (e) { el.classList.toggle("on", !on); toast("Не сохранилось"); } },
   reload: () => { S.chats = null; S.cerr = false; render(); loadChats(); },
   amode: async d => { S.admin = d.k === "1"; render(); if (S.admin && !S.owners) { try { const r = await api("admin_owners"); S.owners = r.owners || []; } catch (e) { S.owners = []; } render(); } },
   owner: async d => { S.owner = +d.id; S.chats = null; render(); try { const r = await api("admin_chats", { owner_id: S.owner }); S.chats = r.chats || []; } catch (e) { S.chats = []; } render(); },

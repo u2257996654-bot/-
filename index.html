@@ -139,6 +139,11 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 .msg .meta{display:flex;gap:8px;justify-content:flex-end;margin-top:3px;font-size:11px;opacity:.6}
 .ed{margin-top:6px;padding:6px 10px;border-radius:10px;background:rgba(127,127,127,.15);font-size:13px;color:var(--mu)}
 .msg.me:not(.del) .ed{background:rgba(127,127,127,.22);color:inherit;opacity:.85}
+.aib{display:inline-flex;align-items:center;gap:6px;margin-top:8px;height:30px;padding:0 12px;border-radius:99px;background:rgba(127,127,127,.16);font-size:12.5px;font-weight:500;color:inherit;transition:transform .3s var(--sp),background .2s}
+.aib:active{transform:scale(.95)}
+.aib.ld{opacity:.6;pointer-events:none}
+.ai{margin-top:8px;padding:8px 11px;border-radius:12px;background:rgba(127,127,127,.15);font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.ai b{display:block;margin-bottom:2px;font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.65}
 .more{align-self:center;margin:6px 0;height:34px;padding:0 16px;border-radius:99px;background:var(--sf2);border:1px solid var(--bd);font-size:13px;font-weight:500}
 /* нижнее меню */
 .nv{position:fixed;left:50%;bottom:calc(var(--sab) + 14px);transform:translateX(-50%);z-index:10;display:grid;grid-template-columns:repeat(4,1fr);width:calc(100% - 32px);max-width:440px;padding:6px;border-radius:24px;background:var(--glass);border:1px solid var(--bd);border-top-color:var(--hl);box-shadow:0 14px 34px -12px rgba(0,0,0,.55);backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%)}
@@ -249,6 +254,13 @@ function dayLabel(d) {
   return t.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: t.getFullYear() === n.getFullYear() ? undefined : "numeric" });
 }
 const TYPES = { photo: "Фото", video: "Видео", video_note: "Кружок", voice: "Голосовое", audio: "Аудио", animation: "GIF", sticker: "Стикер", document: "Файл", location: "Геопозиция", contact: "Контакт" };
+const AI_LBL = { voice: "Расшифровать", audio: "Расшифровать", video_note: "Расшифровать кружок", photo: "Описать", sticker: "Описать стикер", animation: "Описать", video: "Описать видео" };
+const aiBox = m => {
+  if (!AI_LBL[m.type]) return "";
+  const r = S.mai[m.id];
+  if (r && r !== "…") return `<div class="ai"><b>${["voice", "audio", "video_note"].includes(m.type) ? "Расшифровка" : "Описание"}</b>${esc(r)}</div>`;
+  return `<button class="aib ${r ? "ld" : ""}" data-a="mai" data-id="${m.id}">${r ? "Расшифровываю…" : "✨ " + AI_LBL[m.type]}</button>`;
+};
 const body = m => m.text ? esc(m.text) : `<span style="opacity:.7">${esc(TYPES[m.type] || "Сообщение")}</span>`;
 let tt; function toast(t) { const e = $("#toast"); e.textContent = t; e.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => e.classList.remove("on"), 2400); }
 
@@ -286,12 +298,13 @@ function demo(a, p) {
   if (a === "me") return { user: { id: 1, name: "Демо", username: "demo", premium: false, trial_used: false, antidelete: true, notify: true, retention_days: 30, admin: false }, stats: { archive: 1284, deleted: 37, ai_today: 3, ai_limit: 20, connected: 1 }, plans: { 50: 10, 75: 15, 150: 30 }, recent_deleted: [{ id: 3, chat_id: 9, chat_name: "Алина", from_name: "Алина", text: "Привет! Короче, я сегодня освобожусь пораньше", deleted_at: new Date(now - 36e5).toISOString() }, { id: 4, chat_id: 8, chat_name: "Макс", from_name: "Макс", text: "скинь адрес ещё раз", deleted_at: new Date(now - 9e6).toISOString() }] };
   if (a === "chats") return { chats: [{ chat_id: 9, chat_name: "Алина", username: "alina", cnt: 842, deleted_cnt: 12, last_at: new Date(now - 3e5).toISOString() }, { chat_id: 8, chat_name: "Макс", username: "max", cnt: 301, deleted_cnt: 0, last_at: new Date(now - 9e6).toISOString() }, { chat_id: 7, chat_name: "Мама", username: null, cnt: 128, deleted_cnt: 2, last_at: new Date(now - 864e5).toISOString() }] };
   if (a === "messages") return { more: false, messages: [M(6, "Ты видел это?", { del: 1 }), M(5, "Да, сейчас гляну", { me: 1 }), M(4, "Привет! Как дела?", {}), M(3, "Нормально, а у тебя?", { me: 1, ed: ["Норм, а у тебя?"] }), M(2, "Встретимся в семь у метро", {}), M(1, "Хорошо", { me: 1 })].filter(m => p.filter !== "deleted" || m.deleted_at) };
+  if (a === "media_ai") return { text: "Голосовое: «Привет, я задержусь минут на десять, начинайте без меня»." };
   if (a === "chat_counts") return { all: 842, deleted: 12, edited: 3, media: 40 };
   return { ok: true };
 }
 
 /* ═══ состояние ═══ */
-const S = { tab: "home", me: null, chats: null, q: "", cf: "all", admin: false, owners: null, owner: null, chat: null, msgs: [], more: false, mf: "all", mq: "", cc: {}, sq: false, ld: false, rq: 0, cerr: false, capprox: false };
+const S = { tab: "home", me: null, chats: null, q: "", cf: "all", admin: false, owners: null, owner: null, chat: null, msgs: [], more: false, mf: "all", mq: "", cc: {}, mai: {}, sq: false, ld: false, rq: 0, cerr: false, capprox: false };
 const myId = () => S.me && S.me.user.id;
 const save = (k, v) => { try { localStorage.setItem("zg:" + k, JSON.stringify(v)); } catch (e) {} };
 const load = k => { try { return JSON.parse(localStorage.getItem("zg:" + k)); } catch (e) { return null; } };
@@ -392,7 +405,7 @@ function chatHtml() {
   for (const m of S.msgs) {
     if (!last || !sameDay(last, m.sent_at)) out += `<div class="day">${dayLabel(m.sent_at)}</div>`; last = m.sent_at;
     const mine = m.from_id === (S.owner || me), eds = (m.edits || []).map(e => typeof e === "string" ? e : (e.text || e.old || "")).filter(Boolean);
-    out += `<div class="msg ${mine ? "me" : ""} ${m.deleted_at ? "del" : ""}">${m.deleted_at ? `<span class="tag">Удалено в ${hm(m.deleted_at)}</span>` : ""}<p>${body(m)}</p>${eds.length ? `<div class="ed">Было: ${eds.map(esc).join(" → ")}</div>` : ""}<div class="meta">${eds.length ? "изменено" : ""}<span>${hm(m.sent_at)}</span></div></div>`;
+    out += `<div class="msg ${mine ? "me" : ""} ${m.deleted_at ? "del" : ""}">${m.deleted_at ? `<span class="tag">Удалено в ${hm(m.deleted_at)}</span>` : ""}<p>${body(m)}</p>${aiBox(m)}${eds.length ? `<div class="ed">Было: ${eds.map(esc).join(" → ")}</div>` : ""}<div class="meta">${eds.length ? "изменено" : ""}<span>${hm(m.sent_at)}</span></div></div>`;
   }
   if (S.ld) out = `<div class="sk m"></div><div class="sk m r"></div><div class="sk m"></div><div class="sk m r"></div>`;
   else if (!S.msgs.length) out = `<div class="empty"><b>${S.mq ? "Ничего не найдено" : EM[S.mf] || "Ничего нет"}</b>${S.mq ? "Попробуй другое слово." : "В этом чате по этой вкладке пока пусто."}</div>`;
@@ -465,6 +478,17 @@ const A = {
     if (t !== S.rq) return; S.ld = false; paintChat(true);
   },
   sq: () => { S.sq = !S.sq; if (!S.sq && S.mq) { S.mq = ""; A.mf({ k: S.mf, force: 1 }); return; } paintChat(false); if (S.sq) { const i = $("#mq"); if (i) i.focus(); } },
+  mai: async d => {
+    const id = +d.id; if (!id || S.mai[id] === "…") return;
+    S.mai[id] = "…"; hap("light"); paintChat(false);
+    try { const r = await api("media_ai", { id }); S.mai[id] = r.text || "Не удалось распознать"; }
+    catch (e) {
+      delete S.mai[id];
+      const c = String(e && e.message || e);
+      toast(/premium/i.test(c) ? "Расшифровка голосовых и кружков — в Premium" : /limit/i.test(c) ? "Лимит AI на сегодня исчерпан" : /too_big/i.test(c) ? "Файл слишком большой" : "Не удалось распознать");
+    }
+    paintChat(false);
+  },
   reload: () => { S.chats = null; S.cerr = false; render(); loadChats(); },
   amode: async d => { S.admin = d.k === "1"; render(); if (S.admin && !S.owners) { try { const r = await api("admin_owners"); S.owners = r.owners || []; } catch (e) { S.owners = []; } render(); } },
   owner: async d => { S.owner = +d.id; S.chats = null; render(); try { const r = await api("admin_chats", { owner_id: S.owner }); S.chats = r.chats || []; } catch (e) { S.chats = []; } render(); },

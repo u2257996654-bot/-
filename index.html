@@ -334,6 +334,8 @@ function demo(a, p) {
   if (a === "media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#444"/></svg>') };
   if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
   if (a === "peer_info") return { ok: true, photo: null, profile: { first_name: "Алина", username: "alina", bio: "Дизайнер. Пишу редко, отвечаю быстро.", birthdate: { day: 14, month: 3, year: 1998 } }, stats: { total: 842, mine: 410, theirs: 432, deleted: 12, edited: 7, media: 96, first_at: new Date(now - 4e10).toISOString(), last_at: new Date(now - 3e5).toISOString() }, flags: { mute: false, nomute: false } };
+  if (a === "story_state" || a === "story_count") return { counted: true, bonus: 0, n: 3, c: 3, per: 5, days: 3, rw: 0, max: 4, today: false, players: 12 };
+  if (a === "story_admin") return { season: "1", players: 3, stories: 14, last: null, rows: [{ id: 9, n: 7, name: "Алина", username: "alina" }, { id: 8, n: 5, name: "Макс", username: null }, { id: 7, n: 2, name: "Мама", username: null }] };
   if (a === "chat_counts") return { all: 842, deleted: 12, edited: 3, media: 40 };
   return { ok: true };
 }
@@ -407,7 +409,7 @@ function vSet() {
     <button class="row b" data-a="exp"><span class="ico">${ic("down")}</span><div class="g"><b>Скачать архив</b><span>Файл придёт в чат с ботом</span></div>${ic("chev").replace("<svg", '<svg class="chev"')}</button>
     <button class="row b red" data-a="wipeq"><span class="ico">${ic("trash")}</span><div class="g"><b>Удалить мои данные</b><span>Архив и настройки будут стёрты</span></div></button>
   </div>
-  <div class="mu sm" style="text-align:center;margin-top:22px">ZetGram · версия 7</div>`;
+  <div class="mu sm" style="text-align:center;margin-top:22px">ZetGram · версия 8</div>`;
 }
 
 function vProf() {
@@ -419,6 +421,14 @@ function vProf() {
   <div class="lb">Аккаунт</div>
   <div class="card grp in"><button class="row b" data-a="copy" data-v="${u.id}"><span class="ico">${ic("copy")}</span><div class="g"><b>Мой ID</b><span class="num">${u.id}</span></div><span class="mu sm">Скопировать</span></button>
   <div class="row"><span class="ico">${ic("star")}</span><div class="g"><b>${u.premium ? "Premium активен" : "Бесплатный тариф"}</b><span>${u.premium && until ? "До " + until : "Архив хранится бессрочно, базовые лимиты ИИ"}</span></div></div></div>
+  <div class="lb">Истории и конкурс</div>
+  <div class="card in" style="padding:16px;margin-bottom:12px">
+    <b>Выкладывай итоги в историю</b>
+    <div class="mu sm" style="margin-top:4px">Каждые ${(S.story || {}).per || 5} историй дают +${(S.story || {}).days || 3} дня Premium. В день засчитывается одна. Все участники ещё попадают в розыгрыш Premium навсегда: чем больше историй, тем выше шанс.</div>
+    ${S.story ? `<div class="bar"><i style="width:${Math.round(S.story.c / S.story.per * 100)}%"></i></div><div class="mu sm" style="margin-top:8px">До бонуса: ${S.story.c} из ${S.story.per} · всего в конкурсе у тебя: ${S.story.n}</div>` : ""}
+    <button class="btn" style="margin-top:14px" data-a="wrapped">Опубликовать итоги</button>
+    ${u.admin ? '<button class="btn sec" style="margin-top:10px" data-a="sadm">Участники конкурса</button>' : ""}
+  </div>
   <div class="lb">Premium</div>
   <div class="card in" style="padding:6px 16px 4px;margin-bottom:12px">${["Повышенные лимиты ИИ", "Полный экспорт архива"].map(t => `<div class="row nd" style="min-height:44px;padding:8px 0;gap:12px"><span style="color:var(--ac)">${ic("check", 18)}</span><span>${t}</span></div>`).join("")}</div>
   ${!u.premium && !u.trial_used ? `<button class="btn sec" style="margin-bottom:12px" data-a="trial">Попробовать бесплатно</button>` : ""}
@@ -659,8 +669,10 @@ async function wCanvas() {
 }
 const wBlob = async () => { const c = await wCanvas(); return new Promise(r => c.toBlob(r, "image/jpeg", .9)); };
 async function wOpen() {
+  loadStory();
   sheet(`<h2>Твои итоги</h2><div id="wp" style="min-height:120px">${sk(1)}</div>
   <div class="row" style="padding:6px 0;min-height:48px"><div class="g"><b>Скрыть имена</b><span>Вместо имён будет «Имя скрыто»</span></div><button class="tg ${WS.hide ? "on" : ""}" data-a="whide" role="switch" aria-checked="${WS.hide}"></button></div>
+  <div id="wprog">${storyLine()}</div>
   <button class="btn" data-a="wstory">Поделиться в историю</button><button class="btn sec" data-a="wsave">Сохранить картинку</button><button class="btn sec" data-a="unsheet">Закрыть</button>`);
   try { const c = await wCanvas(), el = $("#wp"); if (el) el.innerHTML = `<img alt="Итоги" src="${c.toDataURL("image/jpeg", .85)}" style="display:block;max-height:46vh;max-width:100%;margin:6px auto;border-radius:16px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto">`; }
   catch (e) { const el = $("#wp"); if (el) el.innerHTML = '<div class="empty" style="padding:20px 0">Не получилось нарисовать картинку</div>'; }
@@ -672,6 +684,19 @@ async function wSave(blob) {
   toast("Если не скачалось, удерживай картинку и сохрани");
 }
 
+/* ═══ истории: бонус и конкурс ═══ */
+const storyLine = () => { const c = S.story; return c ? `<div class="mu sm" style="text-align:center;margin:6px 0 2px">За ${c.per} историй +${c.days} дня Premium. Сейчас ${c.c} из ${c.per}${c.today ? " · сегодня уже засчитана" : ""}</div>` : ""; };
+function storyPaint() { const e = $("#wprog"); if (e) e.innerHTML = storyLine(); if (S.tab === "prof") render(); }
+async function loadStory() { if (DEMO) return; try { S.story = await api("story_state", {}, 12000); storyPaint(); } catch (e) {} }
+const nm2 = r => esc(r.name || (r.username ? "@" + r.username : "ID " + r.id));
+async function storyAdmin() {
+  sheet(`<h2>Конкурс историй</h2>${sk(2)}`);
+  let r; try { r = await api("story_admin", {}, 20000); } catch (e) { return sheet(`<h2>Конкурс историй</h2><p class="mu">Не загрузилось: ${esc(String(e && e.message || e))}</p><button class="btn sec" data-a="unsheet">Закрыть</button>`); }
+  const last = r.last ? `<div class="mu sm" style="margin-bottom:8px">Прошлый победитель: ${esc(r.last.name || (r.last.username ? "@" + r.last.username : r.last.id))} (${r.last.n} ист.)</div>` : "";
+  sheet(`<h2>Конкурс историй</h2><div class="mu sm" style="margin-bottom:8px">Сезон ${esc(r.season)} · участников: ${r.players} · историй: ${r.stories}</div>${last}
+  <div style="max-height:44vh;overflow-y:auto">${r.rows.length ? r.rows.map((x, i) => `<div class="kv"><span>${i + 1}. ${nm2(x)}${x.username && x.name ? ` <span class="mu">@${esc(x.username)}</span>` : ""}</span><span class="num">${x.n}</span></div>`).join("") : '<div class="empty" style="padding:20px 0"><b>Пока никто не выкладывал</b></div>'}</div>
+  ${r.players ? '<button class="btn" data-a="sdrawq">Разыграть Premium навсегда</button>' : ""}<button class="btn sec" data-a="unsheet">Закрыть</button>`);
+}
 /* ═══ профиль собеседника: по тапу на аватарку ═══ */
 const PI = {};
 const MON = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
@@ -731,7 +756,7 @@ function retry() {
 
 /* ═══ действия ═══ */
 const A = {
-  tab: d => { S.tab = d.k; render(); hap("light"); if (d.k === "chats" && !S.chats) loadChats(); $("#app").scrollTop = 0; },
+  tab: d => { S.tab = d.k; render(); hap("light"); if (d.k === "chats" && !S.chats) loadChats(); if (d.k === "prof") loadStory(); $("#app").scrollTop = 0; },
   cf: d => { S.cf = d.k; render(); },
   open: d => { hap(); openChat(d.id, d.n); },
   close: closeChat,
@@ -762,16 +787,33 @@ const A = {
   whide: () => { WS.hide = !WS.hide; wOpen(); },
   wsave: async () => { try { await wSave(await wBlob()); } catch (e) { toast("Не получилось сохранить"); } },
   wstory: async (d, el) => {
-    el.disabled = true; const old = el.textContent; el.textContent = "Готовлю историю…";
+    if (WS.pub) return;
+    if (DEMO) return toast("В демо-режиме истории недоступны");
+    if (!(tg && typeof tg.shareToStory === "function") || (tg.isVersionAtLeast && !tg.isVersionAtLeast("7.8")))
+      return toast("Нужен Telegram версии 7.8 или новее. Сейчас: " + ((tg && tg.version) || "неизвестно") + ". Обнови Telegram");
+    WS.pub = true; el.disabled = true; const old = el.textContent;
     try {
-      const blob = await wBlob();
-      if (!DEMO && tg && tg.shareToStory && (!tg.isVersionAtLeast || tg.isVersionAtLeast("7.8"))) {
-        const data = await new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.onerror = no; fr.readAsDataURL(blob); });
-        const r = await api("story_upload", { img: data }, 40000);
-        tg.shareToStory(r.url, { text: "Я поймал " + fmt((S.me.stats || {}).deleted || 0) + " удалённых сообщений. @" + BOT, widget_link: { url: "https://t.me/" + BOT, name: "@" + BOT } }); hap("medium");
-      } else { await wSave(blob); }
-    } catch (e) { toast("Историю открыть не вышло, сохраняю картинку"); try { await wSave(await wBlob()); } catch (x) {} }
-    el.disabled = false; el.textContent = old;
+      el.textContent = "Рисую картинку…";
+      const data = (await wCanvas()).toDataURL("image/jpeg", .88);
+      el.textContent = "Загружаю…";
+      const r = await api("story_upload", { img: data }, 45000);
+      if (!r || !r.url) throw new Error("нет ссылки на картинку");
+      tg.shareToStory(r.url, { text: "Я поймал " + fmt((S.me.stats || {}).deleted || 0) + " удалённых сообщений. @" + BOT, widget_link: { url: "https://t.me/" + BOT, name: "@" + BOT } });
+      hap("medium");
+      try {
+        const c = await api("story_count", {}, 15000); S.story = c; storyPaint();
+        toast(!c.counted ? "Сегодняшняя история уже засчитана. Следующая будет завтра" : c.bonus ? "+" + c.bonus + " дня Premium за " + c.per + " историй!" : "Засчитано: " + c.c + " из " + c.per);
+        if (c.bonus) refreshMe().catch(() => {});
+      } catch (e) {}
+    } catch (e) { toast("Не получилось: " + String((e && e.message) || e).slice(0, 90)); }
+    WS.pub = false; el.disabled = false; el.textContent = old;
+  },
+  sadm: () => storyAdmin(),
+  sdrawq: () => sheet(`<h2>Разыграть Premium навсегда?</h2><p class="mu">Победитель выбирается случайно среди всех участников. Чем больше историй, тем выше шанс. Premium навсегда включится сразу, бот напишет победителю, а конкурс начнётся с нуля.</p><button class="btn" data-a="sdraw">Разыграть</button><button class="btn sec" data-a="unsheet">Отмена</button>`),
+  sdraw: async () => {
+    try { const r = await api("story_draw", {}, 25000), w = r.winner; hap("medium");
+      sheet(`<h2>Победитель</h2><div style="text-align:center;padding:14px 0"><div class="big" style="font-size:40px;margin:6px 0">${esc(w.name || (w.username ? "@" + w.username : "ID " + w.id))}</div><div class="mu">${w.username ? "@" + esc(w.username) + " · " : ""}ID ${w.id}<br>${w.n} ист. из ${r.players} участников</div></div><button class="btn sec" data-a="unsheet">Закрыть</button>`);
+    } catch (e) { toast(/no_players/.test(String(e && e.message)) ? "Пока нет участников" : "Не получилось провести розыгрыш"); }
   },
   who: () => { try { peerSheet().catch(e => toast("Ошибка профиля: " + (e && e.message || e))); } catch (e) { toast("Ошибка профиля: " + (e && e.message || e)); } },
   cpy: d => { try { navigator.clipboard.writeText(d.v); } catch (e) {} toast("Скопировано"); hap(); },

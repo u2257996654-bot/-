@@ -334,10 +334,10 @@ function demo(a, p) {
   if (a === "media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#444"/></svg>') };
   if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
   if (a === "peer_info") return { ok: true, photo: null, profile: { first_name: "Алина", username: "alina", bio: "Дизайнер. Пишу редко, отвечаю быстро.", birthdate: { day: 14, month: 3, year: 1998 } }, stats: { total: 842, mine: 410, theirs: 432, deleted: 12, edited: 7, media: 96, first_at: new Date(now - 4e10).toISOString(), last_at: new Date(now - 3e5).toISOString() }, flags: { mute: false, nomute: false } };
-  if (a === "ref_state") return { link: "https://t.me/ZetGramBot?start=ref_1", n: 14, sn: 6, d: 0, block: 10, bdays: 5, per: 0, friend: 3 };
+  if (a === "ref_state") return { link: "https://t.me/ZetGramBot?start=ref_1", n: 4, d: 12, m: [3], per: 3, friend: 3, cap: 30, steps: [{ n: 3, days: 7 }, { n: 10, days: 30 }, { n: 25, days: 90 }, { n: 50, days: 0 }] };
+  if (a === "ref_admin") return { inviters: 2, friends: 7, rows: [{ id: 9, n: 4, name: "Алина", username: "alina" }, { id: 8, n: 3, name: "Макс", username: null }] };
   if (a === "story_state" || a === "story_count") return { counted: true, bonus: 0, n: 3, c: 3, per: 5, days: 3, rw: 0, max: 4, today: false, players: 12 };
-  if (a === "contest_admin") return { season: "1", month: "2026-11", last: null, stories: { players: 3, total: 14, today: 2, rows: [{ id: 9, n: 7, name: "Алина", username: "alina" }, { id: 8, n: 5, name: "Макс", username: null }, { id: 7, n: 2, name: "Мама", username: null }] }, invites: { players: 2, total: 9, rows: [{ id: 9, n: 6, name: "Алина", username: "alina" }, { id: 8, n: 3, name: "Макс", username: null }] } };
-  if (a === "contest_draw") return { ok: true, winners: { stories: { id: 9, name: "Алина", username: "alina", n: 7, players: 3 }, invites: { id: 8, name: "Макс", username: null, n: 3, players: 2 } } };
+  if (a === "story_admin") return { season: "1", players: 3, stories: 14, last: null, rows: [{ id: 9, n: 7, name: "Алина", username: "alina" }, { id: 8, n: 5, name: "Макс", username: null }, { id: 7, n: 2, name: "Мама", username: null }] };
   if (a === "chat_counts") return { all: 842, deleted: 12, edited: 3, media: 40 };
   return { ok: true };
 }
@@ -411,7 +411,7 @@ function vSet() {
     <button class="row b" data-a="exp"><span class="ico">${ic("down")}</span><div class="g"><b>Скачать архив</b><span>Файл придёт в чат с ботом</span></div>${ic("chev").replace("<svg", '<svg class="chev"')}</button>
     <button class="row b red" data-a="wipeq"><span class="ico">${ic("trash")}</span><div class="g"><b>Удалить мои данные</b><span>Архив и настройки будут стёрты</span></div></button>
   </div>
-  <div class="mu sm" style="text-align:center;margin-top:22px">ZetGram · версия 9</div>`;
+  <div class="mu sm" style="text-align:center;margin-top:22px">ZetGram · версия 10</div>`;
 }
 
 function vProf() {
@@ -427,7 +427,7 @@ function vProf() {
   <div class="card in" style="padding:6px 16px 4px;margin-bottom:12px">${["Повышенные лимиты ИИ", "Полный экспорт архива"].map(t => `<div class="row nd" style="min-height:44px;padding:8px 0;gap:12px"><span style="color:var(--ac)">${ic("check", 18)}</span><span>${t}</span></div>`).join("")}</div>
   ${!u.premium && !u.trial_used ? `<button class="btn sec" style="margin-bottom:12px" data-a="trial">Попробовать бесплатно</button>` : ""}
   <div class="lb">Бесплатный Premium</div>
-  ${contestCard(u)}${refCard(u)}${storyCard(u)}
+  ${refCard(u)}${storyCard(u)}
   <div class="lb">Купить за Stars</div>
   ${Object.entries(plans).map(([s, d]) => `<button class="card plan" data-a="buy" data-s="${s}"><span><b>${d} ${plural(d, ["день", "дня", "дней"])}</b><br><span class="mu sm">${(s / d).toFixed(1)} ★ в день</span></span><span class="star">${s} <svg viewBox="0 0 24 24">${P.star}</svg></span></button>`).join("")}`;
 }
@@ -665,28 +665,14 @@ async function wCanvas() {
   return c;
 }
 const wBlob = async () => { const c = await wCanvas(); return new Promise(r => c.toBlob(r, "image/jpeg", .9)); };
-/* картинку для истории готовим и загружаем заранее, пока человек смотрит превью: тогда по тапу история открывается мгновенно, внутри жеста нажатия */
-async function wPrep(c, hide) {
-  const key = String(hide);
-  if (WS.up && WS.up.key === key) return WS.up.p;
-  const o = { key, url: "", p: null };
-  o.p = (async () => {
-    const cv = c || await wCanvas();
-    const r = await api("story_upload", { img: cv.toDataURL("image/jpeg", .88) }, 45000);
-    if (!r || !r.url) throw new Error("нет ссылки на картинку");
-    o.url = r.url; return r.url;
-  })();
-  o.p.catch(() => { if (WS.up === o) WS.up = null; });
-  WS.up = o; return o.p;
-}
 async function wOpen() {
   loadStory();
-  const hide = WS.hide;
   sheet(`<h2>Твои итоги</h2><div id="wp" style="min-height:120px">${sk(1)}</div>
   <div class="row" style="padding:6px 0;min-height:48px"><div class="g"><b>Скрыть имена</b><span>Вместо имён будет «Имя скрыто»</span></div><button class="tg ${WS.hide ? "on" : ""}" data-a="whide" role="switch" aria-checked="${WS.hide}"></button></div>
   <div id="wprog">${storyLine()}</div>
-  <button class="btn" data-a="wstory">Поделиться в историю</button><button class="btn sec" data-a="wsave">Сохранить картинку</button><button class="btn sec" data-a="unsheet">Закрыть</button>`);
-  try { const c = await wCanvas(), el = $("#wp"); if (el) el.innerHTML = `<img alt="Итоги" src="${c.toDataURL("image/jpeg", .85)}" style="display:block;max-height:46vh;max-width:100%;margin:6px auto;border-radius:16px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto">`; if (!DEMO) wPrep(c, hide).catch(() => {}); }
+  <div id="wstat" class="mu sm" style="text-align:center;margin:4px 0 0"></div>
+  <button class="btn" data-a="wstory">Поделиться в историю</button><button class="btn sec" data-a="wsend">Прислать в чат</button><button class="btn sec" data-a="wsave">Сохранить картинку</button><button class="btn sec" data-a="unsheet">Закрыть</button>`);
+  try { const c = await wCanvas(), el = $("#wp"); if (el) el.innerHTML = `<img alt="Итоги" src="${c.toDataURL("image/jpeg", .85)}" style="display:block;max-height:46vh;max-width:100%;margin:6px auto;border-radius:16px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto">`; }
   catch (e) { const el = $("#wp"); if (el) el.innerHTML = '<div class="empty" style="padding:20px 0">Не получилось нарисовать картинку</div>'; }
 }
 async function wSave(blob) {
@@ -703,78 +689,59 @@ function tgPost(type, data) {
   if (window.external && window.external.notify) return window.external.notify(JSON.stringify({ eventType: type, eventData: data || {} }));
   window.parent.postMessage(JSON.stringify({ eventType: type, eventData: data || {} }), "*");
 }
+const tgPlat = () => (tg && tg.platform) || new URLSearchParams(location.hash.slice(1)).get("tgWebAppPlatform") || "";
 const tgVer = () => (tg && tg.version) || new URLSearchParams(location.hash.slice(1)).get("tgWebAppVersion") || "";
 const verGE = (v, m) => { const a = String(v).split(".").map(Number), b = m.split(".").map(Number); for (let i = 0; i < 3; i++) { if ((a[i] || 0) > b[i]) return true; if ((a[i] || 0) < b[i]) return false; } return true; };
 function shareStory(url, params) {
   if (tg && typeof tg.shareToStory === "function") return tg.shareToStory(url, params);
   tgPost("web_app_share_to_story", { media_url: url, ...params });
 }
-function wShare(url) {
-  const usr = tg && tg.initDataUnsafe && tg.initDataUnsafe.user, prem = !!(usr && usr.is_premium);
-  /* у обычных пользователей подпись до 200 символов, а ссылка-виджет (widget_link) доступна только Telegram Premium: с ней у остальных редактор не открывается */
-  const params = { text: ("Я поймал " + fmt((S.me.stats || {}).deleted || 0) + " удалённых сообщений. @" + BOT).slice(0, prem ? 2000 : 200) };
-  if (prem) params.widget_link = { url: "https://t.me/" + BOT, name: "@" + BOT };
-  try { shareStory(url, params); } catch (e) { toast("Не получилось открыть историю: " + String((e && e.message) || e).slice(0, 80)); return false; }
-  hap("medium"); WS.pend = true; countStory(); return true;
-}
-/* счёт засчитываем сразу при открытии редактора; если приложение ушло в фон и запрос не дошёл, повторим при возврате */
-async function countStory() {
-  if (WS.cnt) return; WS.cnt = true;
-  try {
-    const c = await api("story_count", {}, 15000); WS.pend = false; S.story = c; storyPaint();
-    toast(!c.counted ? "Сегодняшняя история уже засчитана. Следующая будет завтра" : c.bonus ? "+" + c.bonus + " дня Premium за " + c.per + " историй!" : "Засчитано: " + c.c + " из " + c.per);
-    if (c.bonus) refreshMe().catch(() => {});
-  } catch (e) {}
-  WS.cnt = false;
-}
-document.addEventListener("visibilitychange", () => { if (!document.hidden && WS.pend) countStory(); });
 function openTgLink(u) { if (tg && typeof tg.openTelegramLink === "function") return tg.openTelegramLink(u); tgPost("web_app_open_tg_link", { path_full: u.replace(/^https?:\/\/t\.me/, "") }); }
 /* ═══ истории: бонус и конкурс ═══ */
 const storyLine = () => { const c = S.story; return c ? `<div class="mu sm" style="text-align:center;margin:6px 0 2px">За ${c.per} историй +${c.days} дня Premium. Сейчас ${c.c} из ${c.per}${c.today ? " · сегодня уже засчитана" : ""}</div>` : ""; };
 function storyPaint() { const e = $("#wprog"); if (e) e.innerHTML = storyLine(); if (S.tab === "prof") render(); }
 async function loadStory() { if (DEMO) return; try { S.story = await api("story_state", {}, 12000); storyPaint(); } catch (e) {} }
 const nm2 = r => esc(r.name || (r.username ? "@" + r.username : "ID " + r.id));
-const monthLeft = () => { const d = new Date(Date.now() + 3 * 36e5), left = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)) - d; return Math.max(1, Math.ceil(left / 864e5)); };
-const dLeft = () => { const n = monthLeft(); return n + " " + plural(n, ["день", "дня", "дней"]); };
-const rankRows = (rows, empty) => rows.length ? rows.map((x, i) => `<div class="kv"><span>${i + 1}. ${nm2(x)}${x.username && x.name ? ` <span class="mu">@${esc(x.username)}</span>` : ""}</span><span class="num">${x.n}</span></div>`).join("") : `<div class="empty" style="padding:14px 0"><b>${empty}</b></div>`;
-async function contestAdmin() {
-  sheet(`<h2>Конкурс месяца</h2>${sk(2)}`);
-  let r; try { r = await api("contest_admin", {}, 20000); } catch (e) { return sheet(`<h2>Конкурс месяца</h2><p class="mu">Не загрузилось: ${esc(String(e && e.message || e))}</p><button class="btn sec" data-a="unsheet">Закрыть</button>`); }
-  const lw = r.last ? `<div class="mu sm" style="margin-bottom:8px">Прошлый розыгрыш: истории — ${r.last.stories ? nm2(r.last.stories) : "никто"}, приглашения — ${r.last.invites ? nm2(r.last.invites) : "никто"}</div>` : "";
-  const any = r.stories.players || r.invites.players;
-  sheet(`<h2>Конкурс месяца</h2><div class="mu sm" style="margin-bottom:8px">До розыгрыша ${dLeft()}. Шанс на победу пропорционален числу историй / приглашённых друзей.</div>${lw}
-  <div style="max-height:52vh;overflow-y:auto">
-  <div class="lb">Истории · участников ${r.stories.players} · всего ${r.stories.total} · сегодня выложили ${r.stories.today}</div>${rankRows(r.stories.rows, "Пока никто не выкладывал")}
-  <div class="lb">Приглашения · участников ${r.invites.players} · всего ${r.invites.total}</div>${rankRows(r.invites.rows, "Пока никого не пригласили")}</div>
-  ${any ? '<button class="btn" data-a="sdrawq">Разыграть Premium навсегда</button>' : ""}<button class="btn sec" data-a="unsheet">Закрыть</button>`);
+async function storyAdmin() {
+  sheet(`<h2>Конкурс историй</h2>${sk(2)}`);
+  let r; try { r = await api("story_admin", {}, 20000); } catch (e) { return sheet(`<h2>Конкурс историй</h2><p class="mu">Не загрузилось: ${esc(String(e && e.message || e))}</p><button class="btn sec" data-a="unsheet">Закрыть</button>`); }
+  const last = r.last ? `<div class="mu sm" style="margin-bottom:8px">Прошлый победитель: ${esc(r.last.name || (r.last.username ? "@" + r.last.username : r.last.id))} (${r.last.n} ист.)</div>` : "";
+  sheet(`<h2>Конкурс историй</h2><div class="mu sm" style="margin-bottom:8px">Сезон ${esc(r.season)} · участников: ${r.players} · историй: ${r.stories}</div>${last}
+  <div style="max-height:44vh;overflow-y:auto">${r.rows.length ? r.rows.map((x, i) => `<div class="kv"><span>${i + 1}. ${nm2(x)}${x.username && x.name ? ` <span class="mu">@${esc(x.username)}</span>` : ""}</span><span class="num">${x.n}</span></div>`).join("") : '<div class="empty" style="padding:20px 0"><b>Пока никто не выкладывал</b></div>'}</div>
+  ${r.players ? '<button class="btn" data-a="sdrawq">Разыграть Premium навсегда</button>' : ""}<button class="btn sec" data-a="unsheet">Закрыть</button>`);
 }
 /* ═══ рефералы ═══ */
 async function loadRef() { if (DEMO) return; try { S.ref = await api("ref_state", {}, 12000); if (S.tab === "prof") render(); } catch (e) {} }
-const contestCard = u => `<div class="card in" style="padding:16px;margin-bottom:12px">
-    <b>Конкурс месяца: Premium навсегда</b>
-    <div class="mu sm" style="margin-top:4px">Каждый месяц разыгрываем Premium навсегда, два приза: среди тех, кто выложил больше всего историй, и среди тех, кто пригласил больше всего друзей. Чем больше у тебя за месяц, тем выше шанс. До розыгрыша ${dLeft()}.</div>
-    ${u.admin ? '<button class="btn sec" style="margin-top:12px" data-a="cadm">Кто сколько выложил и пригласил</button>' : ""}
-  </div>`;
+const refText = "Смотри, какая штука: ZetGram сохраняет удалённые и изменённые сообщения в Telegram. По моей ссылке получишь +" + 3 + " дня Premium.";
+async function refAdmin() {
+  sheet(`<h2>Рефералы</h2>${sk(2)}`);
+  let r; try { r = await api("ref_admin", {}, 20000); } catch (e) { return sheet(`<h2>Рефералы</h2><p class="mu">Не загрузилось: ${esc(String(e && e.message || e))}</p><button class="btn sec" data-a="unsheet">Закрыть</button>`); }
+  sheet(`<h2>Рефералы</h2><div class="mu sm" style="margin-bottom:8px">Пригласили друзей: ${r.inviters} · всего друзей: ${r.friends}</div>
+  <div style="max-height:50vh;overflow-y:auto">${r.rows.length ? r.rows.map((x, i) => `<div class="kv"><span>${i + 1}. ${nm2(x)}</span><span class="num">${x.n}</span></div>`).join("") : '<div class="empty" style="padding:20px 0"><b>Пока никого не пригласили</b></div>'}</div><button class="btn sec" data-a="unsheet">Закрыть</button>`);
+}
 const refCard = u => {
   const r = S.ref; if (!r) return `<div class="card in" style="padding:16px;margin-bottom:12px"><b>Пригласи друзей</b><div class="mu sm" style="margin-top:4px">Загружаю ссылку…</div></div>`;
-  const have = r.n % r.block, left = r.block - have, pct = Math.round(have / r.block * 100);
+  const next = (r.steps || []).find(x => r.n < x.n);
+  const pct = next ? Math.min(100, Math.round(r.n / next.n * 100)) : 100;
   return `<div class="card in" style="padding:16px;margin-bottom:12px">
     <b>Пригласи друзей и получи Premium</b>
-    <div class="mu sm" style="margin-top:4px">За каждые ${r.block} приглашённых друзей +${r.bdays} ${plural(r.bdays, ["день", "дня", "дней"])} Premium. Подписка продлевается, лимита нет. ${r.per > 0 ? "Плюс +" + r.per + " дн. за каждого друга. " : ""}Друг по твоей ссылке получает +${r.friend} дн. сразу.</div>
+    <div class="mu sm" style="margin-top:4px">За каждого друга по твоей ссылке: тебе +${r.per} дн., другу +${r.friend} дн. Плюс бонусы за число друзей.</div>
     <div class="bar"><i style="width:${pct}%"></i></div>
-    <div class="mu sm" style="margin-top:8px">Приглашено: ${r.n} · до +${r.bdays} дн.: ещё ${left}</div>
-    <div class="mu sm" style="margin-top:4px">В этом месяце: ${r.sn} · это твой шанс на Premium навсегда</div>
+    <div class="mu sm" style="margin-top:8px">Друзей: ${r.n}${next ? ` · до бонуса ${next.days ? "+" + next.days + " дн." : "Premium навсегда"}: ещё ${next.n - r.n}` : " · все бонусы получены"}</div>
+    <div style="margin-top:10px">${(r.steps || []).map(x => `<div class="row nd" style="min-height:34px;padding:4px 0;gap:10px;font-size:13.5px"><span style="color:${r.n >= x.n ? "var(--ac)" : "var(--mu)"}">${ic(r.n >= x.n ? "check" : "users", 16)}</span><span class="${r.n >= x.n ? "" : "mu"}">${x.n} друзей: ${x.days ? "+" + x.days + " дн." : "Premium навсегда"}</span></div>`).join("")}</div>
     <button class="btn" style="margin-top:12px" data-a="refshare">Пригласить друга</button>
     <button class="btn sec" style="margin-top:10px" data-a="refcopy">Скопировать ссылку</button>
+    ${u.admin ? '<button class="btn sec" style="margin-top:10px" data-a="refadm">Кто сколько пригласил</button>' : ""}
   </div>`;
 };
 const storyCard = u => {
-  const c = S.story;
+  const c = S.story, d = new Date(Date.now() + 3 * 36e5), left = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)) - d, days = Math.max(1, Math.ceil(left / 864e5));
   return `<div class="card in" style="padding:16px;margin-bottom:12px">
-    <b>Выкладывай истории</b>
-    <div class="mu sm" style="margin-top:4px">Выложи итоги в историю Telegram: каждые ${c ? c.per : 5} историй дают +${c ? c.days : 3} дня Premium (одна история в день). Каждая история ещё и повышает шанс на Premium навсегда.</div>
+    <b>Выкладывай истории, выиграй Premium навсегда</b>
+    <div class="mu sm" style="margin-top:4px">Раз в месяц среди всех, кто выкладывал итоги в историю, разыгрывается Premium навсегда. Чем больше историй, тем выше шанс. До розыгрыша ${days} ${plural(days, ["день", "дня", "дней"])}. Ещё каждые ${c ? c.per : 5} историй дают +${c ? c.days : 3} дня Premium (одна история в день).</div>
     ${c ? `<div class="bar"><i style="width:${Math.round(c.c / c.per * 100)}%"></i></div><div class="mu sm" style="margin-top:8px">До бонуса: ${c.c} из ${c.per} · твоих историй в этом месяце: ${c.n}</div>` : ""}
     <button class="btn" style="margin-top:12px" data-a="wrapped">Опубликовать итоги</button>
+    ${u.admin ? '<button class="btn sec" style="margin-top:10px" data-a="sadm">Кто сколько выложил историй</button>' : ""}
   </div>`;
 };
 /* ═══ профиль собеседника: по тапу на аватарку ═══ */
@@ -869,23 +836,47 @@ const A = {
   wstory: async (d, el) => {
     if (WS.pub) return;
     if (DEMO) return toast("В демо-режиме истории недоступны");
-    const ver = tgVer();
-    if (ver && !verGE(ver, "7.8")) return toast("Нужен Telegram версии 7.8 или новее. Сейчас: " + ver + ". Обнови Telegram");
-    if (WS.up && WS.up.url && WS.up.key === String(WS.hide)) return void wShare(WS.up.url); // картинка уже на сервере: история открывается сразу, прямо по тапу
-    WS.pub = true; el.disabled = true; const old = el.textContent; el.textContent = "Готовлю картинку…";
-    try { const url = await wPrep(null, WS.hide); wShare(url); }
-    catch (e) { toast("Не получилось: " + String((e && e.message) || e).slice(0, 90)); }
+    const ver = tgVer(), plat = tgPlat(), say = t => { const e = $("#wstat"); if (e) e.textContent = t; };
+    WS.pub = true; el.disabled = true; const old = el.textContent;
+    try {
+      el.textContent = "Рисую картинку…"; say("1/3 рисую картинку");
+      const data = (await wCanvas()).toDataURL("image/jpeg", .88);
+      el.textContent = "Загружаю…"; say("2/3 загружаю на сервер");
+      const desk = ["tdesktop", "weba", "webk", "web", "unigram"].includes(plat);
+      if (desk || (ver && !verGE(ver, "7.8"))) {
+        say(desk ? "На компьютере Telegram не умеет открывать истории из мини-приложений. Отправляю картинку в чат с ботом" : "Telegram " + ver + " старый для историй (нужен 7.8+). Отправляю картинку в чат с ботом");
+        await api("story_send", { img: data }, 45000);
+        toast("Картинка в чате с ботом. Открой её и выложи в историю"); hap("medium");
+      } else {
+        const r = await api("story_upload", { img: data }, 45000);
+        if (!r || !r.url) throw new Error("нет ссылки на картинку");
+        say("3/3 открываю редактор истории (Telegram " + (ver || "?") + ", " + (plat || "?") + "). Если он не открылся, нажми «Прислать в чат»");
+        shareStory(r.url, { text: (n => "Я поймал " + fmt(n) + " " + plural(n, ["удалённое сообщение", "удалённых сообщения", "удалённых сообщений"]) + ". @" + BOT)((S.me.stats || {}).deleted || 0) });
+        hap("medium");
+        try {
+          const c = await api("story_count", {}, 15000); S.story = c; storyPaint();
+          toast(!c.counted ? "Сегодняшняя история уже засчитана. Следующая будет завтра" : c.bonus ? "+" + c.bonus + " дня Premium за " + c.per + " историй!" : "Засчитано: " + c.c + " из " + c.per);
+          if (c.bonus) refreshMe().catch(() => {});
+        } catch (e) {}
+      }
+    } catch (e) { const m = String((e && e.message) || e).slice(0, 120); say("Ошибка: " + m + ". Нажми «Прислать в чат»"); toast("Не получилось: " + m); }
     WS.pub = false; el.disabled = false; el.textContent = old;
   },
-  cadm: () => contestAdmin(),
+  wsend: async (d, el) => {
+    if (DEMO) return toast("В демо-режиме недоступно");
+    el.disabled = true; const old = el.textContent; el.textContent = "Отправляю…";
+    try { await api("story_send", { img: (await wCanvas()).toDataURL("image/jpeg", .88) }, 45000); toast("Картинка в чате с ботом"); hap("medium"); const e = $("#wstat"); if (e) e.textContent = "Картинка отправлена в чат с ботом. Открой её и выложи в историю"; }
+    catch (e) { toast("Не отправилось: " + String((e && e.message) || e).slice(0, 100)); }
+    el.disabled = false; el.textContent = old;
+  },
+  sadm: () => storyAdmin(),
+  refadm: () => refAdmin(),
   refshare: () => { const r = S.ref; if (!r) return; hap(); openTgLink("https://t.me/share/url?url=" + encodeURIComponent(r.link) + "&text=" + encodeURIComponent("ZetGram сохраняет удалённые и изменённые сообщения в Telegram. По моей ссылке получишь +" + r.friend + " дн. Premium.")); },
   refcopy: () => { const r = S.ref; if (!r) return; try { navigator.clipboard.writeText(r.link); } catch (e) {} toast("Ссылка скопирована"); hap(); },
-  sdrawq: () => sheet(`<h2>Разыграть Premium навсегда?</h2><p class="mu">Выберу двух победителей случайно: одного среди выкладывавших истории, другого среди пригласивших друзей. Чем больше у человека за месяц, тем выше шанс. Premium навсегда включится сразу, бот напишет победителям, а счётчики начнутся с нуля.</p><button class="btn" data-a="sdraw">Разыграть</button><button class="btn sec" data-a="unsheet">Отмена</button>`),
+  sdrawq: () => sheet(`<h2>Разыграть Premium навсегда?</h2><p class="mu">Победитель выбирается случайно среди всех участников. Чем больше историй, тем выше шанс. Premium навсегда включится сразу, бот напишет победителю, а конкурс начнётся с нуля.</p><button class="btn" data-a="sdraw">Разыграть</button><button class="btn sec" data-a="unsheet">Отмена</button>`),
   sdraw: async () => {
-    try {
-      const r = await api("contest_draw", {}, 25000), w = r.winners; hap("medium");
-      const one = (t, x, u) => `<div style="text-align:center;padding:10px 0"><div class="mu sm">${t}</div><div class="big" style="font-size:32px;margin:6px 0">${x ? esc(x.name || (x.username ? "@" + x.username : "ID " + x.id)) : "—"}</div><div class="mu">${x ? (x.username ? "@" + esc(x.username) + " · " : "") + "ID " + x.id + "<br>" + x.n + " " + u + " из " + x.players + " участников" : "Участников не было"}</div></div>`;
-      sheet(`<h2>Победители</h2>${one("Приз за истории", w.stories, "ист.")}${one("Приз за приглашения", w.invites, "друзей")}<button class="btn sec" data-a="unsheet">Закрыть</button>`);
+    try { const r = await api("story_draw", {}, 25000), w = r.winner; hap("medium");
+      sheet(`<h2>Победитель</h2><div style="text-align:center;padding:14px 0"><div class="big" style="font-size:40px;margin:6px 0">${esc(w.name || (w.username ? "@" + w.username : "ID " + w.id))}</div><div class="mu">${w.username ? "@" + esc(w.username) + " · " : ""}ID ${w.id}<br>${w.n} ист. из ${r.players} участников</div></div><button class="btn sec" data-a="unsheet">Закрыть</button>`);
     } catch (e) { toast(/no_players/.test(String(e && e.message)) ? "Пока нет участников" : "Не получилось провести розыгрыш"); }
   },
   who: () => { try { peerSheet().catch(e => toast("Ошибка профиля: " + (e && e.message || e))); } catch (e) { toast("Ошибка профиля: " + (e && e.message || e)); } },
@@ -906,7 +897,7 @@ const A = {
   buy: async d => { try { const { link } = await api("invoice", { stars: +d.s }); tg.openInvoice(link, st => { if (st === "paid") { hap("medium"); toast("Premium включён"); setTimeout(refreshMe, 1200); } }); } catch (e) { toast("Не удалось создать счёт"); } },
   trial: async () => { try { await api("trial"); toast("Пробный период включён"); hap("medium"); refreshMe(); } catch (e) { toast("Пробный период уже использован"); } },
 };
-document.addEventListener("click", e => { const t = e.target.closest("[data-a]"); if (!t) return; const f = A[t.dataset.a]; if (f) f(t.dataset); });
+document.addEventListener("click", e => { const t = e.target.closest("[data-a]"); if (!t) return; const f = A[t.dataset.a]; if (f) f(t.dataset, t); });
 $("#scrim").addEventListener("click", unsheet);
 document.addEventListener("input", e => {
   if (e.target.id === "q") { S.q = e.target.value; $("#cl").innerHTML = chatRows((S.chats || []).filter(c => (S.cf === "all" || c.deleted_cnt > 0) && (!S.q.trim() || String(c.chat_name || "").toLowerCase().includes(S.q.trim().toLowerCase()) || String(c.username || "").toLowerCase().includes(S.q.trim().toLowerCase())))); }

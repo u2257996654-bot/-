@@ -119,6 +119,27 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 .ib{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--sf2);border:1px solid var(--bd);transition:transform .45s var(--sp)}
 .ib:active{transform:scale(.9);transition-duration:.1s}
 .ib svg{width:20px;height:20px}
+.ib.ac{background:var(--rd2);border-color:var(--rd);color:var(--rd)}
+/* выбор и удаление сообщений */
+.msg{position:relative}
+.sel-on .msg{cursor:pointer}
+.sel-on .msg::after{content:"";position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:2px solid var(--mu);box-sizing:border-box}
+.sel-on .msg.pick{box-shadow:0 0 0 2px var(--rd)}
+.sel-on .msg.pick::after{border-color:var(--rd);background:var(--rd) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4 8-9'/%3E%3C/svg%3E") center/12px no-repeat}
+.selbar{flex:none;display:flex;align-items:center;gap:10px;padding:10px 14px calc(var(--sab) + 10px);background:var(--glass);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid var(--bd)}
+.selbar .btn{height:46px;width:auto;flex:1;padding:0 16px}
+.selbar .btn.sec{flex:none}
+.selbar .btn[disabled]{opacity:.45;pointer-events:none}
+/* проверка собеседника */
+.ckh{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ckh svg{width:28px;height:28px;flex:none;color:var(--ac)}
+.ckv{display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:18px;background:var(--sf2);border:1px solid var(--bd)}
+.ckv .ckp{font-size:34px;font-weight:600;line-height:1;color:var(--c)}
+.ckv .g{flex:1;min-width:0}.ckv .g b{display:block;margin-bottom:8px}
+.rbar{height:8px;border-radius:99px;background:var(--sf2);overflow:hidden;border:1px solid var(--bd)}
+.rbar i{display:block;height:100%;border-radius:inherit;background:var(--c);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.ckr{display:flex;gap:10px;padding:7px 2px;font-size:14px;line-height:1.35}
+.ckr i{flex:none;width:8px;height:8px;border-radius:50%;margin-top:6px;background:var(--c)}
 .ch-t{flex:1;min-width:0} .ch-t b{display:block;font-weight:500}
 .ch-f{flex:none;padding:10px 14px 6px}
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:4px;border-radius:18px;background:var(--sf2);border:1px solid var(--bd)}
@@ -254,6 +275,7 @@ const P = {
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   chev: '<path d="m9 6 6 6-6 6"/>', back: '<path d="m15 6-6 6 6 6"/>',
+  shield: '<path d="M12 3 5 6v5.5c0 4.4 3 8 7 9.5 4-1.5 7-5.1 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.2 10"/>',
   bell: '<path d="M6 9a6 6 0 1 1 12 0c0 6 2 7.5 2 7.5H4S6 15 6 9zM10 20a2 2 0 0 0 4 0"/>',
   archive: '<rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
@@ -330,6 +352,8 @@ function demo(a, p) {
   if (a === "chats") return { chats: [{ chat_id: 9, chat_name: "Алина", username: "alina", cnt: 842, deleted_cnt: 12, last_at: new Date(now - 3e5).toISOString() }, { chat_id: 8, chat_name: "Макс", username: "max", cnt: 301, deleted_cnt: 0, last_at: new Date(now - 9e6).toISOString() }, { chat_id: 7, chat_name: "Мама", username: null, cnt: 128, deleted_cnt: 2, last_at: new Date(now - 864e5).toISOString() }] };
   if (a === "messages") return { more: false, messages: [M(6, "Ты видел это?", { del: 1 }), M(5, "Да, сейчас гляну", { me: 1 }), M(4, "Привет! Как дела?", {}), M(3, "Нормально, а у тебя?", { me: 1, ed: ["Норм, а у тебя?"] }), M(2, "Встретимся в семь у метро", {}), M(1, "Хорошо", { me: 1 })].filter(m => p.filter !== "deleted" || m.deleted_at) };
   if (a === "media_ai") return { text: "Голосовое: «Привет, я задержусь минут на десять, начинайте без меня»." };
+  if (a === "peer_check") return { ok: true, score: 52, thin: false, verdict: { title: "Высокий риск", tip: "Есть явные признаки обмана. Ничего не отправляй и перепроверь человека другим способом." }, bad: ["просит код из СМС", "ссылка на сайт-двойник банка", "написал первым, а вы ему ни разу не отвечали"], good: ["общение длится 40 дн."], era: "2024", ai: { risk: 48, type: "фишинг", why: "просит данные карты под предлогом возврата" }, st: { peer: 32, mine: 6, links: 4, files: 0, deleted: 3, edited: 1 } };
+  if (a === "msg_delete") return { ok: true, deleted: (p.ids || []).length, ids: p.ids || [] };
   if (a === "voice_text") return { text: "Привет! Короче, я сегодня освобожусь пораньше, давай встретимся в семь у метро." };
   if (a === "media") return { kind: "image", src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="180"><rect width="300" height="180" fill="#444"/></svg>') };
   if (a === "chat_info") return { owner: { id: 1, name: "Демо", username: "demo" }, peer: { id: 9, name: "Алина", username: "alina" } };
@@ -449,12 +473,34 @@ function chatHtml() {
   for (const m of S.msgs) {
     if (!last || !sameDay(last, m.sent_at)) out += `<div class="day">${dayLabel(m.sent_at)}</div>`; last = m.sent_at;
     const mine = m.from_id === (S.owner || me), eds = (m.edits || []).map(e => typeof e === "string" ? e : (e.text || e.old || "")).filter(Boolean);
-    out += `<div class="msg ${mine ? "me" : ""} ${m.deleted_at ? "del" : ""}">${m.deleted_at ? `<span class="tag">Удалено в ${hm(m.deleted_at)}</span>` : ""}${bodyP(m)}${mediaHtml(m)}${eds.length ? `<div class="ed">Было: ${eds.map(esc).join(" → ")}</div>` : ""}<div class="meta">${eds.length ? "изменено" : ""}<span>${hm(m.sent_at)}</span></div></div>`;
+    out += `<div class="msg ${mine ? "me" : ""} ${m.deleted_at ? "del" : ""} ${S.sel && S.sel.has(m.id) ? "pick" : ""}" data-mid="${m.id}">${m.deleted_at ? `<span class="tag">Удалено в ${hm(m.deleted_at)}</span>` : ""}${bodyP(m)}${mediaHtml(m)}${eds.length ? `<div class="ed">Было: ${eds.map(esc).join(" → ")}</div>` : ""}<div class="meta">${eds.length ? "изменено" : ""}<span>${hm(m.sent_at)}</span></div></div>`;
   }
   if (S.ld) out = `<div class="sk m"></div><div class="sk m r"></div><div class="sk m"></div><div class="sk m r"></div>`;
   else if (!S.msgs.length) out = `<div class="empty"><b>${S.mq ? "Ничего не найдено" : EM[S.mf] || "Ничего нет"}</b>${S.mq ? "Попробуй другое слово." : "В этом чате по этой вкладке пока пусто."}</div>`;
-  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu sm ell" style="display:block">${S.pp && S.pp.peer && S.pp.peer.username ? "@" + esc(S.pp.peer.username) + " · " : ""}Профиль и архив</span></button>${S.owner ? "" : `<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button>`}</header>${flt}<div class="ch-b" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}</div>`;
+  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu sm ell" style="display:block">${S.pp && S.pp.peer && S.pp.peer.username ? "@" + esc(S.pp.peer.username) + " · " : ""}Профиль и архив</span></button>${S.owner ? "" : `<button class="ib" data-a="chk" aria-label="Проверить собеседника">${ic("shield")}</button><button class="ib ${S.selm ? "ac" : ""}" data-a="selmode" id="selbtn" aria-label="Выбрать и удалить сообщения">${ic("trash")}</button><button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button>`}</header>${flt}<div class="ch-b ${S.selm ? "sel-on" : ""}" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}</div>${S.selm ? selBar() : ""}`;
 }
+/* ═══ выбор и удаление сообщений (из архива ZetGram) ═══ */
+const selBar = () => `<div class="selbar" id="selbar"><button class="btn sec" data-a="selall">Все</button><button class="btn bad" data-a="delq" id="selgo"${S.sel && S.sel.size ? "" : " disabled"}>${ic("trash", 18)}<span id="selcnt">${S.sel && S.sel.size ? "Удалить (" + S.sel.size + ")" : "Выбери сообщения"}</span></button><button class="btn sec" data-a="selmode">Отмена</button></div>`;
+function selUI() { // без перерисовки чата, чтобы не перезапускать загрузку медиа
+  const cb = $("#cb"); if (!cb) return;
+  cb.classList.toggle("sel-on", !!S.selm);
+  const b = $("#selbtn"); b && b.classList.toggle("ac", !!S.selm);
+  const old = $("#selbar"); old && old.remove();
+  if (S.selm) $("#chat").insertAdjacentHTML("beforeend", selBar());
+  else $$("#cb .msg.pick").forEach(n => n.classList.remove("pick"));
+}
+function selCount() {
+  const n = S.sel.size, g = $("#selgo"), c = $("#selcnt");
+  if (g) g.disabled = !n; if (c) c.textContent = n ? `Удалить (${n})` : "Выбери сообщения";
+}
+document.addEventListener("click", e => { // в режиме выбора тап по сообщению отмечает его, остальные кнопки внутри сообщения не срабатывают
+  if (!S.selm) return;
+  const m = e.target.closest("#cb .msg[data-mid]"); if (!m) return;
+  e.preventDefault(); e.stopPropagation();
+  const id = +m.dataset.mid, on = !S.sel.has(id);
+  on ? S.sel.add(id) : S.sel.delete(id);
+  m.classList.toggle("pick", on); selCount(); hap("light");
+}, true);
 async function loadMsgs(older) {
   const c = S.chat, lim = 50, before = older && S.msgs.length ? Math.min(...S.msgs.map(m => m.id)) : undefined;
   const r = S.owner ? await api("admin_messages", { owner_id: S.owner, chat_id: +c.id, limit: lim, before })
@@ -464,6 +510,7 @@ async function loadMsgs(older) {
 }
 async function openChat(id, n) {
   const row = (S.chats || []).find(c => String(c.chat_id) === String(id));
+  S.selm = false; S.sel = new Set();
   S.chat = { id, n }; S.msgs = []; S.more = false; S.mf = "all"; S.mq = ""; S.sq = false; S.ld = true;
   S.cc = row ? { all: row.cnt, deleted: row.deleted_cnt } : {}; S.pp = null;
   api("chat_info", { chat_id: +id, ...(S.owner ? { owner_id: S.owner } : {}) }).then(r => { if (S.chat && String(S.chat.id) === String(id)) { S.pp = r; paintChat(false); } }).catch(() => {});
@@ -485,12 +532,14 @@ function paintChat(bottom) {
   observeMedia(); observeVoice();
   if (keep) { const i = $("#mq"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
 }
-function closeChat() { S.chat = null; mio && mio.disconnect(); vio && vio.disconnect(); $("#chat").classList.remove("open"); try { tg.BackButton.hide(); } catch (e) {} }
+function closeChat() { S.selm = false; S.sel = new Set(); S.chat = null; mio && mio.disconnect(); vio && vio.disconnect(); $("#chat").classList.remove("open"); try { tg.BackButton.hide(); } catch (e) {} }
 
 /* ═══ медиа: очередь загрузок, кэш, плееры, автоматическая расшифровка ═══ */
 const MEDIA = new Set(["photo", "video_note", "video", "animation", "sticker", "voice", "audio"]);
 const VTYPES = new Set(["voice", "audio", "video_note", "video"]);
-const VT = {};
+const VT = load("vt") || {};   // готовые расшифровки живут и между запусками: повторное открытие чата показывает текст сразу
+let vtSave = 0;
+const vtPersist = () => { clearTimeout(vtSave); vtSave = setTimeout(() => { const k = Object.keys(VT); if (k.length > 400) k.slice(0, k.length - 400).forEach(x => delete VT[x]); save("vt", VT); }, 600); };
 const EXT = { photo: "jpg", video_note: "mp4", video: "mp4", animation: "mp4", voice: "ogg", audio: "mp3", sticker: "webp" };
 const bodyP = m => { const b = body(m); return b ? `<p>${b}</p>` : ""; };
 function mediaHtml(m) {
@@ -510,8 +559,18 @@ function observeMedia() {
 function observeVoice() {
   vio && vio.disconnect();
   const els = $$(".vt").filter(n => !n.querySelector(".vtt")); if (!els.length) return;
-  vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); loadVoice(e.target); } }), { root: $("#cb"), rootMargin: "300px" });
+  // начинаем заранее (за ~2 экрана) и по несколько штук сразу; самые свежие и только что показанные идут первыми
+  vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); vEnqueue(e.target); } }), { root: $("#cb"), rootMargin: "1500px" });
   els.forEach(n => vio.observe(n));
+}
+const VQ = []; let vRun = 0;
+function vEnqueue(n) { if (!VQ.includes(n)) VQ.push(n); vPump(); }
+function vPump() {
+  while (vRun < 4 && VQ.length) {
+    const n = VQ.pop();                                       // последний добавленный = ближе к низу, свежее
+    if (!n.isConnected || n.querySelector(".vtt")) continue;  // чат перерисован или уже есть текст
+    vRun++; loadVoice(n).finally(() => { vRun--; vPump(); });
+  }
 }
 const VBUSY = new Set();
 async function loadVoice(n) {
@@ -521,7 +580,7 @@ async function loadVoice(n) {
   let html;
   try {
     const r = await api("voice_text", { id: +id, ...(S.owner ? { owner_id: S.owner } : {}) }, 90000);
-    VT[id] = r.text || "Речи не найдено";
+    VT[id] = r.text || "Речи не найдено"; vtPersist();
     html = `<div class="vtt">${esc(VT[id])}</div>`;
   } catch (e) {
     const c = String(e && e.message || e);
@@ -891,7 +950,36 @@ async function peerSheet() {
     + `<div class="ps">${stat.map(([n, l]) => `<div><b class="num">${fmt(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`)
     + `<div>${rows.map(([l, v]) => `<button class="kv" data-a="cpy" data-v="${esc(v)}"><span>${l}</span><span>${esc(v)}</span></button>`).join("")}</div>`
     + (S.owner ? "" : `<div style="margin-top:6px">${tgl2("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl2("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`)
-    + `<button class="btn" data-a="wr" data-id="${esc(pp.id)}" data-u="${esc(un || "")}">Написать в Telegram</button><button class="btn sec" data-a="unsheet">Закрыть</button>`;
+    + (S.owner ? "" : `<button class="btn sec" style="margin-top:14px" data-a="chk">${ic("shield", 18)}Проверить на мошенника</button>`)
+    + `<button class="btn" style="margin-top:10px" data-a="wr" data-id="${esc(pp.id)}" data-u="${esc(un || "")}">Написать в Telegram</button><button class="btn sec" style="margin-top:10px" data-a="unsheet">Закрыть</button>`;
+}
+/* ═══ проверка собеседника на мошенника ═══ */
+const riskCol = (s, thin) => s >= 70 ? "#ff453a" : s >= 45 ? "#ff9f0a" : s >= 20 ? "#ffd60a" : thin ? "var(--mu)" : "#32d74b";
+async function checkSheet() {
+  const c = S.chat; if (!c || S.owner) return;
+  const cid = c.id;
+  sheet(`<div class="ckh">${ic("shield")}<div style="min-width:0"><b style="font-size:19px;display:block">Проверка собеседника</b><span class="mu sm ell" style="display:block">${esc(c.n || "")}</span></div></div><div id="ck">${sk(2)}<div class="mu sm" style="text-align:center;margin-top:4px">Смотрю переписку, ссылки и профиль…</div></div>`);
+  let r;
+  try { r = await api("peer_check", { chat_id: +cid }, 45000); }
+  catch (e) {
+    if (!S.chat || S.chat.id !== cid || !$("#ck")) return;
+    const m = String(e && e.message || e);
+    $("#ck").innerHTML = `<div class="empty" style="padding:14px 0"><b>${/limit/i.test(m) ? "Лимит проверок на сегодня исчерпан" : /no_data/.test(m) ? "Проверять пока нечего" : "Не получилось проверить"}</b>${/no_data/.test(m) ? "В архиве нет переписки с этим человеком через подключённого бота." : /limit/i.test(m) ? "Попробуй завтра." : "Попробуй ещё раз чуть позже."}</div>${/no_data|limit/i.test(m) ? "" : `<button class="btn" data-a="chk">Повторить</button>`}<button class="btn sec" style="margin-top:10px" data-a="unsheet">Закрыть</button>`;
+    return;
+  }
+  if (!S.chat || S.chat.id !== cid || !$("#ck")) return;
+  const col = riskCol(r.score, r.thin), st = r.st || {};
+  const li = a => a.map(t => `<div class="ckr"><i></i><span>${esc(t)}</span></div>`).join("");
+  const stat = [[st.peer, "от него"], [st.mine, "от тебя"], [st.links, "ссылок"], [st.files, "файлов"], [st.deleted, "удалил"], [st.edited, "изменил"]];
+  $("#ck").innerHTML = `<div class="ckv" style="--c:${col}"><div class="ckp num">${r.score}%</div><div class="g"><b>${esc(r.verdict.title)}</b><div class="rbar"><i style="width:0"></i></div></div></div>`
+    + (r.bad.length ? `<div class="lb" style="margin-top:18px;--c:#ff9f0a">Признаки риска</div><div style="--c:#ff9f0a">${li(r.bad.slice(0, 8))}</div>` : "")
+    + (r.good.length ? `<div class="lb" style="margin-top:14px">Что успокаивает</div><div style="--c:#32d74b">${li(r.good)}</div>` : "")
+    + (r.ai ? `<div class="lb" style="margin-top:14px">ИИ-разбор · ${r.ai.risk}%</div><div style="--c:var(--mu)">${li([[r.ai.type, r.ai.why].filter(Boolean).join(" — ")])}</div>` : "")
+    + `<div class="ps">${stat.map(([n, l]) => `<div><b class="num">${fmt(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`
+    + `<p class="mu sm" style="margin:6px 2px 2px">${esc(r.verdict.tip)}</p><p class="mu sm" style="margin:0 2px 14px">Оценка по признакам, а не приговор.</p>`
+    + `<button class="btn sec" data-a="unsheet">Закрыть</button>`;
+  requestAnimationFrame(() => { const b = $("#ck .rbar i"); b && (b.style.width = Math.max(3, r.score) + "%"); });
+  hap(r.score >= 45 ? "heavy" : "light");
 }
 /* ═══ окна ═══ */
 function sheet(html) { $("#sheet").innerHTML = html; $("#sheet").classList.add("on"); $("#scrim").classList.add("on"); }
@@ -1022,6 +1110,38 @@ const A = {
     try { const r = await api("story_draw", {}, 25000), w = r.winner; hap("medium");
       sheet(`<h2>Победитель</h2><div style="text-align:center;padding:14px 0"><div class="big" style="font-size:40px;margin:6px 0">${esc(w.name || (w.username ? "@" + w.username : "ID " + w.id))}</div><div class="mu">${w.username ? "@" + esc(w.username) + " · " : ""}ID ${w.id}<br>${w.n} ист. из ${r.players} участников</div></div><button class="btn sec" data-a="unsheet">Закрыть</button>`);
     } catch (e) { toast(/no_players/.test(String(e && e.message)) ? "Пока нет участников" : "Не получилось провести розыгрыш"); }
+  },
+  chk: () => { hap(); checkSheet().catch(e => toast("Ошибка проверки: " + (e && e.message || e))); },
+  selmode: () => { if (S.owner) return; S.selm = !S.selm; S.sel = new Set(); selUI(); hap(); },
+  selall: () => {
+    const all = $$("#cb .msg[data-mid]"); if (!all.length) return;
+    const every = all.every(n => S.sel.has(+n.dataset.mid));
+    all.forEach(n => { const id = +n.dataset.mid; every ? S.sel.delete(id) : S.sel.add(id); n.classList.toggle("pick", !every); });
+    selCount(); hap("light");
+  },
+  delq: () => {
+    const n = S.sel.size; if (!n) return toast("Выбери сообщения");
+    sheet(`<h2>Удалить ${n} ${plural(n, ["сообщение", "сообщения", "сообщений"])}?</h2><p class="mu">Они пропадут из архива ZetGram без возможности восстановления. В самом Telegram ничего не удалится.</p><button class="btn bad" data-a="del">Удалить</button><button class="btn sec" data-a="unsheet">Отмена</button>`);
+  },
+  del: async () => {
+    const ids = [...S.sel]; unsheet(); if (!ids.length || !S.chat) return;
+    const cid = S.chat.id;
+    try {
+      const r = await api("msg_delete", { ids }, 20000);
+      if (!S.chat || S.chat.id !== cid) return;
+      const gone = new Set((r.ids || ids).map(Number)), rm = S.msgs.filter(m => gone.has(m.id));
+      S.msgs = S.msgs.filter(m => !gone.has(m.id));
+      if (S.cc) {
+        S.cc.all = Math.max(0, (S.cc.all || 0) - rm.length);
+        S.cc.deleted = Math.max(0, (S.cc.deleted || 0) - rm.filter(m => m.deleted_at).length);
+        S.cc.edited = Math.max(0, (S.cc.edited || 0) - rm.filter(m => (m.edits || []).length).length);
+        S.cc.media = Math.max(0, (S.cc.media || 0) - rm.filter(m => m.type !== "text").length);
+      }
+      gone.forEach(id => delete VT[id]); vtPersist();
+      delete PI[cid]; S.selm = false; S.sel = new Set(); paintChat(false); hap("medium");
+      toast(`Удалено: ${gone.size}`);
+      loadChats(); refreshMe();
+    } catch (e) { toast("Не удалось удалить"); }
   },
   who: () => { try { peerSheet().catch(e => toast("Ошибка профиля: " + (e && e.message || e))); } catch (e) { toast("Ошибка профиля: " + (e && e.message || e)); } },
   cpy: d => { try { navigator.clipboard.writeText(d.v); } catch (e) {} toast("Скопировано"); hap(); },

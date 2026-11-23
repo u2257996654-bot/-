@@ -269,12 +269,10 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 .msg .ed span{opacity:.85;white-space:pre-wrap}
 /* реакции */
 .rxs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.rx{display:inline-flex;align-items:center;justify-content:center;height:26px;min-width:38px;padding:0 9px;border-radius:13px;background:rgba(127,127,127,.2);background:color-mix(in srgb,currentColor 14%,transparent);font-size:15px;line-height:1;transition:transform .3s var(--sp)}
-.rx:active{transform:scale(.9)}
-.rx.pop{animation:rxp .55s var(--sp)}
-@keyframes rxp{from{transform:scale(0)}}
-.fly{position:absolute;left:50%;top:50%;margin:-24px 0 0 -24px;font-size:46px;line-height:48px;width:48px;text-align:center;pointer-events:none;z-index:5;animation:fly .75s ease-out forwards}
-@keyframes fly{0%{transform:scale(.2);opacity:0}30%{transform:scale(1.25);opacity:1}100%{transform:translateY(-46px) scale(1);opacity:0}}
+.rx{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:26px;min-width:38px;padding:0 8px 0 9px;border-radius:13px;background:rgba(127,127,127,.2);background:color-mix(in srgb,currentColor 14%,transparent);font-size:15px;line-height:1}
+.rx b{font-size:12.5px;font-weight:700}
+.rxa{display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--bub);color:var(--tx);font-style:normal;font-size:9.5px;font-weight:700;box-shadow:inset 0 0 0 1px rgba(127,127,127,.35)}
+.msg.me .rxa{color:var(--btnt)}
 /* выбор сообщений: круги слева, как в Telegram */
 .sel-on .mr{padding-left:50px;cursor:pointer}
 .sel-on .mr::before{content:"";position:absolute;left:15px;top:50%;margin-top:-11px;width:22px;height:22px;border-radius:50%;border:2px solid var(--mu);background:var(--glass)}
@@ -293,12 +291,6 @@ h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em}
 #ctx.open .cx-bg{opacity:1}
 .cx-clone{position:fixed;margin:0!important;max-width:none!important;pointer-events:none;transition:transform .32s cubic-bezier(.2,.9,.3,1.25),opacity .2s}
 .cx-clone .sk{animation:none}
-.cx-rx{position:fixed;display:flex;gap:1px;padding:5px 6px;border-radius:99px;background:var(--glass);backdrop-filter:blur(30px) saturate(140%);-webkit-backdrop-filter:blur(30px) saturate(140%);border:1px solid var(--bd);border-top-color:var(--hl);box-shadow:0 14px 34px -10px rgba(0,0,0,.6);opacity:0;transform:scale(.5) translateY(14px);transition:transform .38s var(--sp),opacity .18s}
-#ctx.open .cx-rx{opacity:1;transform:none}
-.cx-rx button{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:25px;line-height:1;transform:scale(0);transition:transform .42s var(--sp) calc(var(--i)*28ms + 70ms),background .2s}
-#ctx.open .cx-rx button{transform:none}
-.cx-rx button:active{transform:scale(1.35);transition-duration:.12s}
-.cx-rx button.on{background:var(--sf2);box-shadow:inset 0 0 0 1.5px var(--hl)}
 .cx-menu{position:fixed;overflow:hidden;border-radius:16px;background:var(--glass);backdrop-filter:blur(30px) saturate(140%);-webkit-backdrop-filter:blur(30px) saturate(140%);border:1px solid var(--bd);border-top-color:var(--hl);box-shadow:0 20px 44px -12px rgba(0,0,0,.65);opacity:0;transform:scale(.8);transition:transform .34s var(--sp),opacity .18s}
 #ctx.open .cx-menu{opacity:1;transform:none}
 .cx-i{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;height:46px;padding:0 16px;font-size:16px;transition:background .15s}
@@ -355,6 +347,7 @@ const P = {
   users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.2A6.5 6.5 0 0 1 21.5 20"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
   file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
   pick: '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/>',
   share: '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>',
 };
@@ -418,7 +411,7 @@ function demo(a, p) {
   const now = Date.now(), M = (i, t, o = {}) => ({ id: i, chat_id: 9, from_id: o.me ? 1 : 9, from_name: o.me ? "Демо" : "Алина", type: "text", text: t, edits: o.ed || [], reactions: o.rx || [], deleted_at: o.del ? new Date(now - 36e5).toISOString() : null, sent_at: new Date(now - (60 - i) * 6e5).toISOString() });
   if (a === "me") return { user: { id: 1, name: "Демо", username: "demo", premium: false, trial_used: false, antidelete: true, notify: true, retention_days: 30, admin: false }, stats: { archive: 1284, deleted: 37, ai_today: 3, ai_limit: 20, connected: 1 }, plans: { 50: 10, 75: 15, 150: 30 }, recent_deleted: [{ id: 3, chat_id: 9, chat_name: "Алина", from_name: "Алина", text: "Привет! Короче, я сегодня освобожусь пораньше", deleted_at: new Date(now - 36e5).toISOString() }, { id: 4, chat_id: 8, chat_name: "Макс", from_name: "Макс", text: "скинь адрес ещё раз", deleted_at: new Date(now - 9e6).toISOString() }] };
   if (a === "chats") return { chats: [{ chat_id: 9, chat_name: "Алина", username: "alina", cnt: 842, deleted_cnt: 12, last_at: new Date(now - 3e5).toISOString() }, { chat_id: 8, chat_name: "Макс", username: "max", cnt: 301, deleted_cnt: 0, last_at: new Date(now - 9e6).toISOString() }, { chat_id: 7, chat_name: "Мама", username: null, cnt: 128, deleted_cnt: 2, last_at: new Date(now - 864e5).toISOString() }] };
-  if (a === "messages") return { more: false, messages: [M(8, "Ты видел это?", { del: 1 }), M(7, "Да, сейчас гляну", { me: 1, rx: ["👍"] }), M(6, "Только давай без опозданий, как в прошлый раз 😄", { rx: ["🔥", "😂"] }), M(5, "Ладно, ладно", { me: 1 }), M(4, "Привет! Как дела? Короче, я сегодня освобожусь пораньше, если что, пиши, заберу тебя по дороге и поедем вместе", {}), M(3, "Нормально, а у тебя?", { me: 1, ed: ["Норм, а у тебя?"], rx: ["❤️"] }), M(2, "Встретимся в семь у метро", {}), M(1, "Хорошо", { me: 1 })].filter(m => p.filter !== "deleted" || m.deleted_at) };
+  if (a === "messages") return { more: false, messages: [M(8, "Ты видел это?", { del: 1 }), M(7, "Да, сейчас гляну", { me: 1, rx: [{ e: "👍", u: 9 }] }), M(6, "Только давай без опозданий, как в прошлый раз 😄", { rx: [{ e: "🔥", u: 1 }, { e: "😂", u: 1 }, { e: "😂", u: 9 }] }), M(5, "Ладно, ладно", { me: 1 }), M(4, "Привет! Как дела? Короче, я сегодня освобожусь пораньше, если что, пиши, заберу тебя по дороге и поедем вместе", {}), M(3, "Нормально, а у тебя?", { me: 1, ed: ["Норм, а у тебя?"], rx: [{ e: "❤️", u: 9 }] }), M(2, "Встретимся в семь у метро", {}), M(1, "Хорошо", { me: 1 })].filter(m => p.filter !== "deleted" || m.deleted_at) };
   if (a === "media_ai") return { text: "Голосовое: «Привет, я задержусь минут на десять, начинайте без меня»." };
   if (a === "peer_check") return { ok: true, score: 52, thin: false, verdict: { title: "Высокий риск", tip: "Есть явные признаки обмана. Ничего не отправляй и перепроверь человека другим способом." }, bad: ["просит код из СМС", "ссылка на сайт-двойник банка", "написал первым, а вы ему ни разу не отвечали"], good: ["общение длится 40 дн."], era: "2024", ai: { risk: 48, type: "фишинг", why: "просит данные карты под предлогом возврата" }, st: { peer: 32, mine: 6, links: 4, files: 0, deleted: 3, edited: 1 } };
   if (a === "msg_delete") return { ok: true, deleted: (p.ids || []).length, ids: p.ids || [] };
@@ -532,14 +525,20 @@ function render() {
 }
 
 /* ═══ переписка ═══ */
-const RXS = ["👍", "❤️", "🔥", "😂", "😮", "😢", "🙏", "👎"];
+/* реакции приходят из Telegram и только показываются: кто поставил (я или собеседник) и какую */
+const rxWho = u => (u != null && Number(u) === Number(S.owner || myId())) ? "Я" : ((S.chat && S.chat.n) || "?").trim().slice(0, 1).toUpperCase();
+const rxHtml = m => {
+  const g = new Map();
+  (m.reactions || []).forEach(x => { const r = typeof x === "string" ? { e: x, u: null } : x; if (!g.has(r.e)) g.set(r.e, []); g.get(r.e).push(r); });
+  return [...g].map(([e, a]) => `<span class="rx">${e}${a.length > 1 ? `<b>${a.length}</b>` : `<i class="rxa">${esc(rxWho(a[0].u))}</i>`}</span>`).join("");
+};
 const edList = m => (m.edits || []).map(e => typeof e === "string" ? e : (e.text || e.old || "")).filter(Boolean);
 const hasMedia = m => m.type === "document" || MEDIA.has(m.type);
 const inlineMeta = m => !hasMedia(m) && !!body(m) && !edList(m).length && !(m.reactions || []).length;
 const metaHtml = m => `<span class="meta">${edList(m).length ? "<i>изм.</i>" : ""}<span>${hm(m.sent_at)}</span></span>`;
 const txInner = m => body(m) + (inlineMeta(m) ? metaHtml(m) : "");
-const mfHtml = (m, pop) => {
-  const rx = (m.reactions || []).map(e => `<button class="rx${e === pop ? " pop" : ""}" data-a="rxtap" data-id="${m.id}" data-e="${e}" aria-label="Реакция ${e}">${e}</button>`).join("");
+const mfHtml = m => {
+  const rx = rxHtml(m);
   if (!rx && inlineMeta(m)) return "";
   return `<div class="mf">${rx ? `<div class="rxs">${rx}</div>` : ""}${metaHtml(m)}</div>`;
 };
@@ -564,7 +563,7 @@ function chatHtml() {
   });
   if (S.ld) out = `<div class="sk m"></div><div class="sk m r"></div><div class="sk m"></div><div class="sk m r"></div>`;
   else if (!S.msgs.length) out = `<div class="empty"><b>${S.mq ? "Ничего не найдено" : EM[S.mf] || "Ничего нет"}</b>${S.mq ? "Попробуй другое слово." : "В этом чате по этой вкладке пока пусто."}</div>`;
-  else if (!S.owner && !hintSeen()) out = `<div class="hint" data-a="hintx">Зажми сообщение: реакции, копирование и удаление из архива</div>` + out;
+  else if (!S.owner && !hintSeen()) out = `<div class="hint" data-a="hintx">Зажми сообщение, чтобы скопировать его или удалить из архива</div>` + out;
   const pu = S.pp && S.pp.peer && S.pp.peer.username;
   const sub = (pu ? "@" + esc(pu) + " · " : "") + (cc.all != null ? `${fmt(cc.all)} сообщ.` : "архив");
   return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu ell" style="display:block">${sub}</span></button>${S.owner ? "" : `<button class="ib" data-a="chk" aria-label="Проверить собеседника">${ic("shield")}</button>`}<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button></header>${flt}<div class="ch-b ${S.selm ? "sel-on" : ""}" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}</div><button class="fab" id="tobot" data-a="tobot" aria-label="Вниз">${ic("chev")}</button>${S.selm ? selBar() : ""}`;
@@ -585,7 +584,7 @@ function selCount() {
 const IGN = "button,a,input,audio,video,.apl,.aps";
 let LP = null, lpAt = 0;
 document.addEventListener("click", e => { // сразу после удержания тап не считается; в режиме выбора тап по сообщению отмечает его
-  if (Date.now() - lpAt < 450 && !e.target.closest(".cx-menu,.cx-rx")) { e.preventDefault(); e.stopPropagation(); return; }
+  if (Date.now() - lpAt < 450 && !e.target.closest(".cx-menu")) { e.preventDefault(); e.stopPropagation(); return; }
   if (!S.selm) return;
   const m = e.target.closest("#cb .mr[data-mid]"); if (!m) return;
   e.preventDefault(); e.stopPropagation();
@@ -623,17 +622,16 @@ function ctxOpen(mr) {
   if (m.text) rows.push(it("cxcopy", "Копировать", "copy"));
   if (own && hasMedia(m)) rows.push(it("cxsave", "Сохранить в чат с ботом", "share"));
   if (own) { rows.push(it("cxsel", "Выбрать", "pick")); rows.push(it("cxdel", "Удалить из архива", "trash", "red")); }
-  const trayH = own ? 50 : 0, gap = 8, TOP = 58, BOT = 26, menuH = 34 + (rows.length - 1) * 46 + 2, menuW = Math.min(250, W - 24);
-  const avail = H - TOP - BOT - (own ? trayH + gap : 0) - menuH - gap, h = Math.min(r.height, Math.max(120, avail));
-  const minTop = TOP + (own ? trayH + gap : 0), maxTop = H - BOT - menuH - gap - h;
-  const top = Math.max(minTop, Math.min(r.top, maxTop)), dy = r.top - top;
+  rows.push(it("ctxclose", "Закрыть", "x"));
+  const gap = 8, TOP = 58, BOT = 26, menuH = 34 + (rows.length - 1) * 46 + 2, menuW = Math.min(250, W - 24);
+  const avail = H - TOP - BOT - menuH - gap, h = Math.min(r.height, Math.max(120, avail));
+  const maxTop = H - BOT - menuH - gap - h;
+  const top = Math.max(TOP, Math.min(r.top, maxTop)), dy = r.top - top;
   const cl = bub.cloneNode(true); cl.classList.add("cx-clone"); cl.querySelectorAll("audio,[data-a]").forEach(n => n.tagName === "AUDIO" ? n.remove() : n.removeAttribute("data-a"));
   cl.style.cssText = `left:${r.left}px;top:${top}px;width:${r.width}px;height:${h}px;${h < r.height ? "overflow:hidden;" : ""}transform:translateY(${dy}px);transform-origin:${mine ? "right" : "left"} center;transition:none`;
-  const place = (w, x0, x1) => Math.max(10, Math.min(mine ? x1 - w : x0, W - 10 - w));
-  ctx.innerHTML = `<div class="cx-bg" data-a="ctxclose"></div>${own ? `<div class="cx-rx" style="top:${top - gap - trayH}px;transform-origin:${mine ? "bottom right" : "bottom left"}">${RXS.map((e, i) => `<button style="--i:${i}" class="${(m.reactions || []).includes(e) ? "on" : ""}" data-a="cxrx" data-e="${e}" aria-label="${e}">${e}</button>`).join("")}</div>` : ""}<div class="cx-menu" style="top:${top + h + gap}px;width:${menuW}px;transform-origin:${mine ? "top right" : "top left"}">${rows.join("")}</div>`;
+  ctx.innerHTML = `<div class="cx-bg" data-a="ctxclose"></div><div class="cx-menu" style="top:${top + h + gap}px;width:${menuW}px;transform-origin:${mine ? "top right" : "top left"}">${rows.join("")}</div>`;
   ctx.appendChild(cl);
-  const tr = ctx.querySelector(".cx-rx"); if (tr) tr.style.left = place(tr.offsetWidth, r.left, r.right) + "px";
-  ctx.querySelector(".cx-menu").style.left = place(menuW, r.left, r.right) + "px";
+  ctx.querySelector(".cx-menu").style.left = Math.max(12, Math.min(mine ? r.right - menuW : r.left, W - 12 - menuW)) + "px";
   CX.id = id; CX.bub = bub; CX.dy = dy; bub.style.visibility = "hidden"; ctx.classList.add("on"); hap("medium");
   cl.offsetWidth; requestAnimationFrame(() => { ctx.classList.add("open"); cl.style.transition = ""; cl.style.transform = "scale(1.025)"; });
 }
@@ -643,34 +641,12 @@ function ctxClose() {
   const b = CX.bub; setTimeout(() => { if (!ctx.classList.contains("open")) { ctx.classList.remove("on"); ctx.innerHTML = ""; } if (b) b.style.visibility = ""; }, 240);
 }
 const cxMsg = () => S.msgs.find(x => x.id === CX.id);
-/* реакции хранятся в архиве ZetGram: Telegram не отдаёт боту реакции из бизнес-чатов */
-function rxPaint(id, pop) {
-  const mr = $(`#cb .mr[data-mid="${id}"]`), m = S.msgs.find(x => x.id === id); if (!mr || !m) return;
-  const bub = mr.querySelector(".msg"), t = txInner(m); let p = bub.querySelector(":scope > .tx");
-  if (p) p.innerHTML = t; else if (t) bub.insertAdjacentHTML("afterbegin", `<p class="tx">${t}</p>`);
-  const f = bub.querySelector(":scope > .mf"), nf = mfHtml(m, pop);
-  if (f) { nf ? f.outerHTML = nf : f.remove(); } else if (nf) bub.insertAdjacentHTML("beforeend", nf);
-}
-async function react(id, em) {
-  const m = S.msgs.find(x => x.id === id); if (!m || S.owner) return;
-  const cur = (m.reactions || []).slice(), had = cur.includes(em);
-  m.reactions = had ? cur.filter(e => e !== em) : [...cur, em].slice(-3);
-  rxPaint(id, had ? null : em); hap(had ? "light" : "medium");
-  if (DEMO) return;
-  try { const r = await api("msg_react", { id, emoji: em }, 12000); if (r && Array.isArray(r.reactions)) { m.reactions = r.reactions; rxPaint(id); } }
-  catch (e) { m.reactions = cur; rxPaint(id); toast("Реакция не сохранилась"); }
-}
-let LT = { id: 0, t: 0 };
-document.addEventListener("click", e => { // двойной тап: быстрое ❤️
-  if (S.selm || S.owner) return;
-  const mr = e.target.closest("#cb .mr[data-mid]"); if (!mr || e.target.closest(IGN)) return;
-  const id = +mr.dataset.mid, now = Date.now();
-  if (LT.id === id && now - LT.t < 320) {
-    LT.t = 0; const m = S.msgs.find(x => x.id === id);
-    if (m && !(m.reactions || []).includes("❤️")) { const b = mr.querySelector(".msg"); b.insertAdjacentHTML("beforeend", '<span class="fly">❤️</span>'); setTimeout(() => { const f = b.querySelector(".fly"); f && f.remove(); }, 800); react(id, "❤️"); }
-    else hap("light");
-  } else LT = { id, t: now };
-});
+/* выйти из меню можно тапом по фону, свайпом, кнопкой «Закрыть», «Назад» или Esc */
+(() => { let p = null;
+  document.addEventListener("pointerdown", e => { p = e.target.closest("#ctx") ? { x: e.clientX, y: e.clientY } : null; }, { passive: true });
+  document.addEventListener("pointermove", e => { if (p && Math.hypot(e.clientX - p.x, e.clientY - p.y) > 14) { p = null; ctxClose(); } }, { passive: true });
+  document.addEventListener("wheel", e => { if (e.target.closest && e.target.closest("#ctx")) ctxClose(); }, { passive: true });
+})();
 async function loadMsgs(older) {
   const c = S.chat, lim = 50, before = older && S.msgs.length ? Math.min(...S.msgs.map(m => m.id)) : undefined;
   const r = S.owner ? await api("admin_messages", { owner_id: S.owner, chat_id: +c.id, limit: lim, before })
@@ -1160,9 +1136,7 @@ const A = {
     all.forEach(n => { const id = +n.dataset.mid; every ? S.sel.delete(id) : S.sel.add(id); n.classList.toggle("pick", !every); });
     selCount(); hap("light");
   },
-  rxtap: d => react(+d.id, d.e),
-  cxclose: () => ctxClose(),
-  cxrx: d => { const id = CX.id; ctxClose(); setTimeout(() => react(id, d.e), 120); },
+  ctxclose: () => ctxClose(),
   cxcopy: () => { const m = cxMsg(); ctxClose(); if (m && m.text) { copyTxt(m.text); toast("Скопировано"); hap(); } },
   cxsave: () => { const id = CX.id; ctxClose(); A.msave({ id }, {}); },
   cxsel: () => { const id = CX.id; ctxClose(); S.selm = true; S.sel = new Set([id]); selUI(); const n = $(`#cb .mr[data-mid="${id}"]`); n && n.classList.add("pick"); selCount(); },

@@ -350,10 +350,125 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .lb-nav.l{left:12px}.lb-nav.r{right:12px}.lb-nav svg{width:20px;height:20px}
 @media (hover:hover){.lb-nav.show{display:grid}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
+
+/* ═══ v7: огонёк-серия, команды, кейсы ═══ */
+.nv{grid-template-columns:repeat(5,1fr)!important}
+.nv button{font-size:10px}
+
+/* огонёк: слои пламени мерцают, весь огонёк парит, искры летят вверх */
+.fl{position:relative;display:inline-block;flex:none;width:var(--fs);height:calc(var(--fs)*1.25);animation:flfloat 2.8s ease-in-out infinite;filter:drop-shadow(0 0 calc(var(--fs)*.22) rgba(255,110,0,.75)) drop-shadow(0 0 calc(var(--fs)*.5) rgba(255,60,0,.35))}
+.fl-s{width:100%;height:100%;overflow:visible;fill:initial;stroke:none}
+.fl-s g{transform-box:fill-box;transform-origin:50% 100%}
+.f1{animation:fl1 1.15s ease-in-out infinite alternate}
+.f2{animation:fl2 .8s ease-in-out infinite alternate}
+.f3{animation:fl3 .62s ease-in-out infinite alternate}
+@keyframes fl1{0%{transform:scale(1,1) skewX(0)}50%{transform:scale(.96,1.06) skewX(-3deg)}100%{transform:scale(1.03,.97) skewX(3deg)}}
+@keyframes fl2{0%{transform:scale(1,1) skewX(2deg)}100%{transform:scale(.94,1.08) skewX(-3deg)}}
+@keyframes fl3{0%{transform:scale(1,1)}100%{transform:scale(.9,1.12) skewX(2deg)}}
+@keyframes flfloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-7%) rotate(1.5deg)}}
+.fl .em{position:absolute;left:50%;bottom:50%;width:var(--s);height:var(--s);margin-left:calc(var(--s)/-2);border-radius:50%;background:#ffd25a;box-shadow:0 0 6px 1px #ff9a1f;opacity:0;pointer-events:none;animation:ember var(--d) ease-out var(--w) infinite}
+@keyframes ember{0%{opacity:0;transform:translate(0,0) scale(1)}12%{opacity:1}100%{opacity:0;transform:translate(var(--x),calc(var(--fs)*-1.15)) scale(.15)}}
+.fl.cold{filter:saturate(.55) brightness(.8) drop-shadow(0 0 6px rgba(255,120,0,.25))}
+.fl.cold .f1,.fl.cold .f2,.fl.cold .f3{animation-duration:2.2s}
+.stk{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 8px 0 4px;margin-left:6px;border-radius:99px;background:rgba(255,120,20,.14);border:1px solid rgba(255,140,30,.35);color:#ffab4d;font-size:12px;font-weight:800;vertical-align:middle}
+.stk .fl{margin-top:-2px}
+.stkc{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 8px;border-radius:99px;background:rgba(255,120,20,.14);border:1px solid rgba(255,140,30,.4);color:#ffb15a;font-weight:800;font-size:15px}
+.stkh{display:flex;align-items:center;gap:18px;padding:18px 20px;margin-top:12px;background:radial-gradient(120% 140% at 0% 100%,rgba(255,100,10,.26),transparent 60%),var(--sf)}
+.stkf{flex:none;width:92px;height:104px;display:grid;place-items:center}
+.stkh .g{min-width:0}
+.stkn{font-size:52px;line-height:1;font-weight:800;letter-spacing:-.04em;background:linear-gradient(180deg,#fff2b0,#ff9a2e 60%,#ff4d17);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stkh b{display:block;margin-top:2px;font-size:16px}
+
+/* команды */
+.cg{display:flex;align-items:center;gap:8px;margin:24px 4px 10px;font-size:11.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--tx)}
+.cg svg{width:16px;height:16px;color:#7cc8ff;filter:drop-shadow(0 0 6px rgba(124,200,255,.7))}
+.cm{margin-bottom:10px;overflow:hidden}
+.cm-r{display:flex;align-items:center;gap:13px;width:100%;padding:12px 12px 12px 14px;text-align:left}
+.cm-i{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--sf2);border:1px solid var(--bd);box-shadow:inset 0 0 14px rgba(124,200,255,.14)}
+.cm-i svg{width:20px;height:20px}
+.cm-t{flex:1;min-width:0}
+.cm-t b{display:block;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.cm-t span{display:block;font-size:13px;color:var(--mu);margin-top:1px}
+.cm-c{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--sf2);border:1px solid var(--bd);transition:transform .4s var(--sp),background .2s}
+.cm-c:active{transform:scale(.88);background:var(--hl)}
+.cm-c svg{width:18px;height:18px}
+.plus{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:99px;background:rgba(40,200,120,.16);border:1px solid rgba(40,200,120,.5);color:#38e08c;font-size:10.5px;font-weight:800;letter-spacing:.06em;vertical-align:2px}
+.cm-d{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s cubic-bezier(.2,.8,.2,1)}
+.cm.open .cm-d{grid-template-rows:1fr}
+.cm-d>div{overflow:hidden}
+.cm-x{padding:2px 16px 14px;border-top:1px dashed var(--bd);margin:0 14px;padding-left:2px;padding-right:2px}
+.cm-x p{margin:12px 0 8px;font-size:14px;line-height:1.45}
+.cm-ex{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:10px 12px;border-radius:12px;background:var(--sf2);border:1px solid var(--bd);font:600 13.5px ui-monospace,SFMono-Regular,Menlo,monospace;text-align:left}
+.cm-ex svg{width:16px;height:16px;color:var(--mu);flex:none}
+
+/* кейсы */
+.csm{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-6px 0 14px}
+.csn{margin:0 2px 14px;padding:11px 14px;border-radius:14px;font-size:12.5px;line-height:1.4;background:rgba(124,200,255,.09);border:1px solid rgba(124,200,255,.25);color:var(--tx)}
+.csn.real{background:rgba(255,200,60,.09);border-color:rgba(255,200,60,.3)}
+.csh{display:flex;align-items:center;justify-content:center;gap:8px;margin:26px 0 14px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+.csh svg{width:16px;height:16px;color:var(--tx)}
+.csg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cs{position:relative;display:flex;flex-direction:column;align-items:center;gap:11px;padding:14px 12px;border-radius:26px;text-align:center;overflow:hidden;background:var(--sf);border:1px solid var(--c);background:linear-gradient(170deg,color-mix(in srgb,var(--c) 24%,transparent),rgba(255,255,255,.02) 62%),var(--sf);border-color:color-mix(in srgb,var(--c) 55%,transparent);box-shadow:0 0 30px -12px var(--c),inset 0 1px 0 rgba(255,255,255,.08);transition:transform .45s var(--sp)}
+.cs:active{transform:scale(.97);transition-duration:.1s}
+.cs::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.12),transparent);transform:skewX(-18deg);animation:csshine 5.5s ease-in-out infinite;animation-delay:var(--sd,0s);pointer-events:none}
+@keyframes csshine{0%,60%{left:-60%}100%{left:130%}}
+.cs-a{position:relative;width:100%;max-width:118px;aspect-ratio:1;display:grid;place-items:center;border-radius:22px;background:radial-gradient(circle at 50% 62%,color-mix(in srgb,var(--c) 38%,#000),#07070a 78%);border:1px solid color-mix(in srgb,var(--c) 60%,transparent);box-shadow:0 0 22px -4px var(--c)}
+.crt{width:94%;height:auto;overflow:visible;animation:crbob 3.4s ease-in-out infinite;fill:initial;stroke:none}
+.crt text{font-family:var(--fb)}
+.crt-g{animation:crglow 2.6s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+.crt-s{animation:crseam 1.8s ease-in-out infinite}
+@keyframes crbob{0%,100%{transform:translateY(1px) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}
+@keyframes crglow{0%,100%{opacity:.65;transform:scale(.95)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes crseam{0%,100%{opacity:.5}50%{opacity:1}}
+.cs-sp{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);opacity:0;animation:cssp 2.6s ease-in-out infinite;animation-delay:var(--w)}
+@keyframes cssp{0%{opacity:0;transform:translateY(8px) scale(.4)}40%{opacity:1}100%{opacity:0;transform:translateY(-22px) scale(1)}}
+.cs-n{font-size:17px;font-weight:800;letter-spacing:-.01em}
+.cs-b{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:44px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.03));border:1px solid var(--bd);color:var(--c);font-weight:800;font-size:15px;transition:transform .4s var(--sp)}
+.cs-b:active{transform:scale(.94)}
+.cs-b svg{width:15px;height:15px;fill:currentColor;stroke:none}
+.cs-b.mu{color:var(--mu)}
+.cs.lock .cs-a{filter:grayscale(.9) brightness(.7)}
+.cs-pr{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd)}
+.cs-pr:last-child{border:0}
+.cs-pd{flex:none;width:86px;white-space:nowrap;padding:6px 10px;border-radius:11px;text-align:center;font-weight:800;color:var(--rc);background:color-mix(in srgb,var(--rc) 14%,transparent);border:1px solid color-mix(in srgb,var(--rc) 45%,transparent)}
+.cs-pg{flex:1;min-width:0}
+.cs-pg b{display:block;font-size:13.5px;font-weight:600}
+.cs-pg i{display:block;height:4px;margin-top:6px;border-radius:9px;background:var(--sf2);overflow:hidden}
+.cs-pg i::after{content:"";display:block;height:100%;width:var(--w);background:var(--rc);border-radius:9px}
+.cs-pp{flex:none;font-weight:700;font-size:13.5px;min-width:46px;text-align:right}
+.cs-hd{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.cs-hd .cs-a{width:88px;flex:none}
+
+/* окно открытия кейса */
+#cso{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:20px;background:radial-gradient(120% 90% at 50% 40%,rgba(30,22,50,.96),rgba(4,4,8,.98));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden}
+#cso.on{display:flex;animation:in .3s both}
+.cso-in{width:100%;max-width:420px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.cso-tag{padding:4px 12px;border-radius:99px;background:rgba(124,200,255,.16);border:1px solid rgba(124,200,255,.5);color:#8fd2ff;font-size:11px;font-weight:800;letter-spacing:.14em}
+.cso-art{width:190px}
+.cso-art .crt{animation:crshake .5s ease-in-out infinite}
+@keyframes crshake{0%,100%{transform:rotate(-3deg) scale(1)}25%{transform:rotate(3deg) scale(1.04)}50%{transform:rotate(-2deg) scale(1)}75%{transform:rotate(2.5deg) scale(1.05)}}
+.cso-t{font-size:18px;font-weight:700}
+.cso-s{color:var(--mu);font-size:13.5px}
+.cso-rl{position:relative;width:calc(100% + 40px);margin:0 -20px;height:124px;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+.cso-pt{position:absolute;z-index:2;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;border-radius:3px;background:#fff;box-shadow:0 0 14px 3px rgba(255,255,255,.7)}
+.cso-st{position:absolute;top:10px;left:0;display:flex;gap:8px;will-change:transform}
+.cso-ti{flex:none;width:92px;height:104px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--rc);background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 26%,#0b0b10),#0b0b10);border:1px solid color-mix(in srgb,var(--rc) 70%,transparent);box-shadow:inset 0 -16px 24px -14px var(--rc)}
+.cso-ti b{font-size:30px;line-height:1;font-weight:800}
+.cso-ti span{font-size:11.5px;font-weight:700;opacity:.85}
+.cso-ti svg{width:16px;height:16px;fill:currentColor;stroke:none}
+.cso-win{display:flex;flex-direction:column;align-items:center;gap:10px;animation:pop .6s var(--sp) both}
+@keyframes pop{from{opacity:0;transform:scale(.6)}}
+.cso-big{font-size:64px;line-height:1;font-weight:900;letter-spacing:-.04em;color:var(--rc);text-shadow:0 0 36px var(--rc)}
+.cso-rar{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--rc)}
+.cso-in .btn{margin-top:4px}
+.cf{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:0;animation:cfall var(--t) linear var(--w) forwards;pointer-events:none}
+@keyframes cfall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:1;transform:translateY(110vh) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){.fl,.fl .em,.f1,.f2,.f3,.crt,.crt-g,.crt-s,.cs::after,.cs-sp{animation:none!important}}
 </style>
 </head>
 <body>
 <main id="app"></main>
+<div id="flamedefs"></div><div id="cso" role="dialog" aria-label="Открытие кейса"></div>
 <nav class="nv" id="nv"></nav>
 <section id="chat" aria-label="Переписка"></section>
 <div id="ctx"></div>
@@ -467,7 +582,7 @@ async function api(action, p = {}, ms) {
 function demo(a, p) {
   const now = Date.now(), M = (i, t, o = {}) => ({ id: i, chat_id: 9, from_id: o.me ? 1 : 9, from_name: o.me ? "Демо" : "Алина", type: o.ty || "text", text: t, message_id: i, reply: o.rp || null, edits: o.ed || [], reactions: o.rx || [], deleted_at: o.del ? new Date(now - 36e5).toISOString() : null, sent_at: new Date(now - (60 - i) * 6e5).toISOString() });
   if (a === "me") return { user: { id: 1, name: "Демо", username: "demo", premium: false, trial_used: false, antidelete: true, notify: true, retention_days: 30, admin: false }, stats: { archive: 1284, deleted: 37, ai_today: 3, ai_limit: 20, connected: 1 }, plans: { 50: 10, 75: 15, 150: 30 }, recent_deleted: [{ id: 3, chat_id: 9, chat_name: "Алина", from_name: "Алина", text: "Привет! Короче, я сегодня освобожусь пораньше", deleted_at: new Date(now - 36e5).toISOString() }, { id: 4, chat_id: 8, chat_name: "Макс", from_name: "Макс", text: "скинь адрес ещё раз", deleted_at: new Date(now - 9e6).toISOString() }] };
-  if (a === "chats") return { chats: [{ chat_id: 9, chat_name: "Алина", username: "alina", cnt: 842, deleted_cnt: 12, last_at: new Date(now - 3e5).toISOString() }, { chat_id: 8, chat_name: "Макс", username: "max", cnt: 301, deleted_cnt: 0, last_at: new Date(now - 9e6).toISOString() }, { chat_id: 7, chat_name: "Мама", username: null, cnt: 128, deleted_cnt: 2, last_at: new Date(now - 864e5).toISOString() }] };
+  if (a === "chats") return { chats: [{ chat_id: 9, chat_name: "Алина", username: "alina", cur: 42, best: 60, cnt: 842, deleted_cnt: 12, last_at: new Date(now - 3e5).toISOString() }, { chat_id: 8, chat_name: "Макс", username: "max", cur: 7, best: 12, at_risk: true, cnt: 301, deleted_cnt: 0, last_at: new Date(now - 9e6).toISOString() }, { chat_id: 7, chat_name: "Мама", username: null, cnt: 128, deleted_cnt: 2, last_at: new Date(now - 864e5).toISOString() }] };
   if (a === "messages" || a === "admin_messages") {
     const rp = (id, n, t, y) => ({ m: id, n, t, y });
     let L = [M(1, "Хорошо", { me: 1 }), M(2, "Встретимся в семь у метро", {}), M(3, "Нормально, а у тебя?", { me: 1, ed: ["Норм, а у тебя?"], rx: [{ e: "❤️", u: 9 }] }), M(4, "Привет! Как дела? Короче, я сегодня освобожусь пораньше, если что, пиши, заберу тебя по дороге и поедем вместе", {}), M(5, "Ладно, ладно", { me: 1, rp: rp(2, "Алина", "Встретимся в семь у метро", "text") }), M(6, "Только давай без опозданий, как в прошлый раз 😄", { rx: [{ e: "🔥", u: 1 }, { e: "😂", u: 1 }, { e: "😂", u: 9 }] }), M(7, "", { ty: "photo" }), M(8, "Смотри, какой закат вчера был 😍", {}), M(9, "Красота!", { me: 1, rp: rp(7, "Алина", "", "photo") }), M(10, "", { ty: "photo", me: 1 }), M(11, "Да, сейчас гляну", { me: 1, rx: [{ e: "👍", u: 9 }] }), M(12, "Ты видел это?", { del: 1 })];
@@ -486,6 +601,7 @@ function demo(a, p) {
   if (a === "ref_admin") return { inviters: 2, friends: 7, rows: [{ id: 9, n: 4, name: "Алина", username: "alina" }, { id: 8, n: 3, name: "Макс", username: null }] };
   if (a === "story_state" || a === "story_count") return { counted: true, bonus: 0, n: 3, c: 3, per: 5, days: 3, rw: 0, max: 4, today: false, players: 12 };
   if (a === "story_admin") return { season: "1", players: 3, stories: 14, last: null, rows: [{ id: 9, n: 7, name: "Алина", username: "alina" }, { id: 8, n: 5, name: "Макс", username: null }, { id: 7, n: 2, name: "Мама", username: null }] };
+  if (a === "cases_state") return csFallbackState();
   if (a === "chat_counts") return { all: 842, deleted: 12, edited: 3, media: 40 };
   return { ok: true };
 }
@@ -497,8 +613,8 @@ const save = (k, v) => { try { localStorage.setItem("zg:" + k, JSON.stringify(v)
 const load = k => { try { return JSON.parse(localStorage.getItem("zg:" + k)); } catch (e) { return null; } };
 
 /* ═══ экраны ═══ */
-const TABS = [["home", "Главная", "home"], ["chats", "Чаты", "chats"], ["set", "Настройки", "gear"], ["prof", "Профиль", "user"]];
-function nav() { $("#nv").innerHTML = TABS.map(([k, t, i]) => `<button data-a="tab" data-k="${k}" class="${S.tab === k ? "on" : ""}">${ic(i)}<span>${t}</span></button>`).join(""); }
+const TABS = [["home", "Главная", "home"], ["chats", "Чаты", "chats"], ["cmds", "Команды", "cmd"], ["cases", "Кейсы", "gift"], ["prof", "Профиль", "user"]];
+function nav() { const cur = S.tab === "set" ? "prof" : S.tab; $("#nv").innerHTML = TABS.map(([k, t, i]) => `<button data-a="tab" data-k="${k}" class="${cur === k ? "on" : ""}">${ic(i)}<span>${t}</span></button>`).join(""); }
 const prem = u => u.premium ? `<span class="pill ac">Premium</span>` : `<span class="pill">Free</span>`;
 const sk = n => Array.from({ length: n }, () => `<div class="sk" style="height:76px;margin-bottom:10px"></div>`).join("");
 
@@ -506,8 +622,9 @@ function vHome() {
   if (!S.me) return `<div class="top"><h1>ZetGram</h1></div>${sk(3)}`;
   const { user: u, stats: st, recent_deleted: rd } = S.me, on = st.connected > 0 && u.antidelete;
   const pct = st.ai_limit ? Math.min(100, Math.round(st.ai_today / st.ai_limit * 100)) : 0;
-  return `<div class="top"><h1>ZetGram</h1>${prem(u)}</div>
-  <section class="card hero in"><div class="st"><i class="dot ${on ? "" : "off"}"></i>${on ? "Архив ведётся" : st.connected ? "Сохранение выключено" : "Бот не подключён"}</div>
+  return `<div class="top"><h1>ZetGram</h1><div class="r">${stkOrNone()}${prem(u)}</div></div>
+  ${streakHero()}
+  <section class="card hero in" style="margin-top:12px"><div class="st"><i class="dot ${on ? "" : "off"}"></i>${on ? "Архив ведётся" : st.connected ? "Сохранение выключено" : "Бот не подключён"}</div>
     <div class="big num">${st.archive == null ? "—" : fmt(st.archive)}</div><div class="mu">${st.archive == null ? "Считаю архив…" : plural(st.archive, ["сообщение", "сообщения", "сообщений"]) + " в архиве"} · поймано удалённых: <b style="color:var(--tx)">${st.deleted == null ? "—" : fmt(st.deleted)}</b></div>
     ${st.connected ? `<button class="btn" data-a="tab" data-k="chats">Открыть архив</button>` : `<div class="mu sm" style="margin-top:14px">Подключи бота: Настройки Telegram → Business → Чат-боты.</div>`}
   </section>
@@ -537,7 +654,7 @@ function vChats() {
 function chatRows(list) {
   if (S.cerr && !(S.chats && S.chats.length)) return `<div class="card empty"><b>Не удалось загрузить чаты</b>Архив на месте, просто сервер не ответил.<button class="btn" style="margin-top:16px" data-a="reload">Повторить</button></div>`;
   if (!list.length) return `<div class="card empty"><b>${S.chats && S.chats.length ? "Ничего не найдено" : "Чатов пока нет"}</b>${S.chats && S.chats.length ? "" : "Они появятся, как только бот сохранит первые сообщения."}</div>`;
-  return list.map((c, i) => `<button class="card chat in" style="animation-delay:${Math.min(i, 8) * 30}ms" data-a="open" data-id="${c.chat_id}" data-n="${esc(c.chat_name || "")}">${av(c.chat_name, c.chat_id)}<div class="g"><div class="l1"><b class="ell">${esc(c.chat_name || "Чат " + c.chat_id)}</b><span class="mu sm">${c.last_at ? ago(c.last_at) : ""}</span></div><div class="mu sm ell">${c.username ? "@" + esc(c.username) + " · " : ""}${fmt(c.cnt)} ${plural(c.cnt, ["сообщение", "сообщения", "сообщений"])}${c.deleted_cnt > 0 ? ` <span class="badge">${c.deleted_cnt} удал.</span>` : ""}</div></div></button>`).join("");
+  return list.map((c, i) => `<button class="card chat in" style="animation-delay:${Math.min(i, 8) * 30}ms" data-a="open" data-id="${c.chat_id}" data-n="${esc(c.chat_name || "")}">${av(c.chat_name, c.chat_id)}<div class="g"><div class="l1"><b class="ell">${esc(c.chat_name || "Чат " + c.chat_id)}${stkChip(c)}</b><span class="mu sm">${c.last_at ? ago(c.last_at) : ""}</span></div><div class="mu sm ell">${c.username ? "@" + esc(c.username) + " · " : ""}${fmt(c.cnt)} ${plural(c.cnt, ["сообщение", "сообщения", "сообщений"])}${c.deleted_cnt > 0 ? ` <span class="badge">${c.deleted_cnt} удал.</span>` : ""}</div></div></button>`).join("");
 }
 
 const tgl = (k, v) => `<button class="tg ${v ? "on" : ""}" data-a="tog" data-k="${k}" role="switch" aria-checked="${!!v}" aria-label="${k}"></button>`;
@@ -571,6 +688,7 @@ function vProf() {
   <div class="lb">Аккаунт</div>
   <div class="card grp in"><button class="row b" data-a="copy" data-v="${u.id}"><span class="ico">${ic("copy")}</span><div class="g"><b>Мой ID</b><span class="num">${u.id}</span></div><span class="mu sm">Скопировать</span></button>
   <div class="row"><span class="ico">${ic("star")}</span><div class="g"><b>${u.premium ? "Premium активен" : "Бесплатный тариф"}</b><span>${u.premium && until ? "До " + until : "Архив хранится бессрочно, базовые лимиты ИИ"}</span></div></div></div>
+  <button class="card chat in" style="margin-top:4px" data-a="tab" data-k="set"><span class="av">${ic("gear", 20)}</span><div class="g"><b>Настройки</b><div class="mu sm">Архив, оформление, данные</div></div></button>
   <div class="lb">Premium</div>
   <div class="card in" style="padding:6px 16px 4px;margin-bottom:12px">${["Повышенные лимиты ИИ", "Полный экспорт архива"].map(t => `<div class="row nd" style="min-height:44px;padding:8px 0;gap:12px"><span style="color:var(--ac)">${ic("check", 18)}</span><span>${t}</span></div>`).join("")}</div>
   ${!u.premium && !u.trial_used ? `<button class="btn sec" style="margin-bottom:12px" data-a="trial">Попробовать бесплатно</button>` : ""}
@@ -582,7 +700,7 @@ function vProf() {
 
 function render() {
   nav();
-  const f = { home: vHome, chats: vChats, set: vSet, prof: vProf }[S.tab];
+  const f = { home: vHome, chats: vChats, set: vSet, prof: vProf, cmds: vCmds, cases: vCases }[S.tab];
   const a = $("#app"), st = a.scrollTop;
   a.innerHTML = f(); a.scrollTop = st;
 }
@@ -645,7 +763,7 @@ function chatHtml() {
   else if (!S.owner && !S.mq && !hintSeen()) out = `<div class="hint" data-a="hintx">Зажми сообщение: меню. Свайп влево: удалить из архива</div>` + out;
   const pu = S.pp && S.pp.peer && S.pp.peer.username;
   const sub = (pu ? "@" + esc(pu) + " · " : "") + (cc.all != null ? `${fmt(cc.all)} сообщ.` : "архив");
-  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu ell" style="display:block">${sub}</span></button>${S.owner ? "" : `<button class="ib" data-a="chk" aria-label="Проверить собеседника">${ic("shield")}</button>`}<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button></header>${flt}<div class="ch-b ${S.selm ? "sel-on" : ""}" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}${S.moreNew && !S.ld ? `<button class="more" data-a="newer">Показать новые</button>` : ""}</div><button class="fab" id="tobot" data-a="tobot" aria-label="Вниз">${ic("chev")}</button>${S.selm ? selBar() : ""}`;
+  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu ell" style="display:block">${sub}</span></button>${(() => { const sc = (S.chats || []).find(x => String(x.chat_id) === String(c.id)); return sc && sc.cur > 0 && !S.owner ? `<span class="stkc" style="height:30px;font-size:13px">${flame(18, { sparks: 2 })}${sc.cur}</span>` : ""; })()}${S.owner ? "" : `<button class="ib" data-a="chk" aria-label="Проверить собеседника">${ic("shield")}</button>`}<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button></header>${flt}<div class="ch-b ${S.selm ? "sel-on" : ""}" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}${S.moreNew && !S.ld ? `<button class="more" data-a="newer">Показать новые</button>` : ""}</div><button class="fab" id="tobot" data-a="tobot" aria-label="Вниз">${ic("chev")}</button>${S.selm ? selBar() : ""}`;
 }
 /* ═══ выбор и удаление сообщений (из архива ZetGram) ═══ */
 const selBar = () => `<div class="selbar" id="selbar"><button class="btn sec" data-a="selall">Все</button><button class="btn bad" data-a="delq" id="selgo"${S.sel && S.sel.size ? "" : " disabled"}>${ic("trash", 18)}<span id="selcnt">${S.sel && S.sel.size ? "Удалить (" + S.sel.size + ")" : "Выбери сообщения"}</span></button><button class="btn sec" data-a="selmode">Отмена</button></div>`;
@@ -1259,7 +1377,7 @@ function retry() {
 
 /* ═══ действия ═══ */
 const A = {
-  tab: d => { S.tab = d.k; render(); hap("light"); if (d.k === "chats" && !S.chats) loadChats(); if (d.k === "prof") { loadStory(); loadRef(); } $("#app").scrollTop = 0; },
+  tab: d => { S.tab = d.k; render(); hap("light"); if (d.k === "chats" && !S.chats) loadChats(); if (d.k === "prof") { loadStory(); loadRef(); } if (d.k === "cases") loadCases(); $("#app").scrollTop = 0; },
   cf: d => { S.cf = d.k; render(); },
   open: d => { hap(); openChat(d.id, d.n); },
   close: closeChat,
@@ -1405,6 +1523,318 @@ const A = {
   trial: async () => { try { await api("trial"); toast("Пробный период включён"); hap("medium"); refreshMe(); } catch (e) { toast("Пробный период уже использован"); } },
 };
 document.addEventListener("click", e => { const t = e.target.closest("[data-a]"); if (!t) return; const f = A[t.dataset.a]; if (f) f(t.dataset, t); });
+/* ═══════════════ v7: огонёк-серия · команды · кейсы ═══════════════ */
+Object.assign(P, {
+  cmd: '<path d="m5 8 4 4-4 4M12 17h7"/><rect x="2.5" y="3.5" width="19" height="17" rx="3"/>',
+  gift: '<rect x="3" y="9" width="18" height="4" rx="1"/><path d="M12 9v12M19 13v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6M7.5 9a2.5 2.5 0 0 1 0-5C11 4 12 9 12 9s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+  bolt: '<path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+  pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  img: '<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 4 4 3-3 4 4"/>',
+  game: '<rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7 10.5v4M5 12.5h4M16 11.5h.01M18 13.5h.01"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  mask: '<path d="M4 6c5 2 11 2 16 0v6c0 4.5-3.5 8-8 8s-8-3.5-8-8z"/><path d="M8.5 11h.01M15.5 11h.01M9 15c2 1.4 4 1.4 6 0"/>',
+  usr: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+});
+const sleepMs = ms => new Promise(r => setTimeout(r, ms));
+
+/* ── огонёк: слоями мерцает, парит и роняет искры; размер задаёт --fs ── */
+const FLAME_DEFS = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="fg1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff2a00"/><stop offset=".5" stop-color="#ff6a00"/><stop offset="1" stop-color="#ffb21a"/></linearGradient>
+<linearGradient id="fg2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff7a00"/><stop offset="1" stop-color="#ffd23a"/></linearGradient>
+<linearGradient id="fg3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffe45a"/><stop offset="1" stop-color="#fffbe6"/></linearGradient>
+</defs></svg>`;
+const flame = (px = 28, o = {}) => {
+  const n = o.sparks == null ? 5 : o.sparks;
+  const em = Array.from({ length: n }, (_, i) => `<i class="em" style="--x:${((i * 37) % 47) - 23}px;--d:${(1.2 + (i % 3) * 0.45).toFixed(2)}s;--w:${(i * 0.33).toFixed(2)}s;--s:${2 + (i % 3)}px"></i>`).join("");
+  return `<span class="fl ${o.cold ? "cold" : ""}" style="--fs:${px}px"><svg class="fl-s" viewBox="0 0 64 80" aria-hidden="true">
+<g class="f1"><path fill="url(#fg1)" d="M33 2C35 17 54 27 55 47C56 65 46 78 32 78C18 78 8 66 9 49C10 38 17 31 22 21C23 30 27 35 30 35C28 24 29 11 33 2Z"/></g>
+<g class="f2"><path fill="url(#fg2)" d="M32 25C34 36 46 42 46 55C46 67 40 75 32 75C24 75 18 67 18 57C18 50 22 45 26 39C27 45 29 48 31 48C30 40 30 32 32 25Z"/></g>
+<g class="f3"><path fill="url(#fg3)" d="M32 46C34 53 40 57 40 64C40 71 36 75 32 75C28 75 24 71 24 65C24 60 28 57 30 53C31 56 31 58 32 58Z"/></g></svg>${em}</span>`;
+};
+const topStk = () => (S.chats || []).filter(c => c.cur > 0).sort((a, b) => b.cur - a.cur)[0];
+const stkChip = c => c && c.cur > 0 ? `<span class="stk">${flame(16, { sparks: 2, cold: false })}${c.cur}</span>` : "";
+function streakHero() {
+  const t = topStk(), all = (S.chats || []).filter(c => c.cur > 0).length;
+  const days = t ? t.cur : 0;
+  return `<section class="card in stkh"><div class="stkf">${flame(78, { sparks: 9, cold: !t })}</div><div class="g"><div class="stkn num">${days}</div>
+    <b>${t ? plural(days, ["день", "дня", "дней"]) + " подряд" : "Серия не началась"}</b>
+    <div class="mu sm" style="margin-top:3px">${t ? `Вы с ${esc(t.chat_name || "собеседником")} на связи${t.best > t.cur ? ` · рекорд ${t.best}` : ""}${t.at_risk ? ". Напишите сегодня, чтобы не потерять огонёк" : ""}${all > 1 ? ` · серий: ${all}` : ""}` : "Пишитесь с человеком каждый день, и огонёк загорится"}</div></div></section>`;
+}
+
+/* ── каталог команд: коротко и по делу ── */
+/* [команда, заголовок, что делает, пример, plus] */
+const CMD_CAT = [
+  ["Модерация", "shield", [
+    [".del", "Массовое удаление", "Удаляет твои последние сообщения в этом чате. Без числа — 20, максимум 20.", ".del 10"],
+    [".mute", "Замутить собеседника", "Всё, что он пишет, сразу удаляется. Снять: .unmute.", ".mute"],
+    [".mute {1d/1h/1m}", "Мут на время", "Мут снимется сам: 30m — минуты, 2h — часы, 1d — дни.", ".mute 1h"],
+    [".unmute", "Размутить", "Снимает мут с собеседника.", ".unmute"],
+    [".nomute", "Защита от мута", "Если замутили тебя, бот сразу сообщит тебе.", ".nomute"],
+    [".stop", "Мут и очистка чата", "Мут, удаление чата и записей архива. .stop save — оставить архив, .stop off — вернуть.", ".stop"],
+    [".shield", "Щит чата", "Удаляет его ссылки и файлы. .nolinks — только ссылки, .nofiles — только файлы.", ".shield"],
+    [".timer", "Сообщение с таймером", "Отправленное сообщение удалится само через N минут.", ".timer 10 текст"],
+    [".stopall", "Остановить всё", "Выключает мут, игры, паузы и идущий .spam.", ".stopall"],
+  ]],
+  ["Защита", "shield", [
+    [".check", "Проверка на мошенника", "Анимация и вердикт в чате, подробный разбор придёт тебе.", ".check"],
+    [".radar", "Тихий радар", "Бот сам предупредит, если собеседник пишет как мошенник. .radar all — везде.", ".radar"],
+    [".link", "Проверка ссылки", "Находит подделки, сокращатели и опасные сайты. Ответом на сообщение или со ссылкой.", ".link адрес"],
+    [".who", "Досье собеседника", "Имя, ID, возраст аккаунта и статистика переписки. Видишь только ты.", ".who"],
+    [".scan", "Проверка файла", "Ответом на файл: ищет вирусы.", ".scan"],
+    [".report", "Текст жалобы", "ИИ составит жалобу по переписке. Подаёшь её сам.", ".report"],
+  ]],
+  ["ИИ-помощник", "spark", [
+    [".ai", "Вопрос ИИ", "Подробный ответ на вопрос. Можно ответом на сообщение.", ".ai что такое ипотека"],
+    [".translate", "Перевод", "Переводит сообщение на нужный язык.", ".translate en"],
+    [".summary", "Пересказ чата", "Коротко пересказывает переписку.", ".summary"],
+    [".reply", "Подсказать ответ", "Предложит короткий ответ на сообщение.", ".reply"],
+    [".rewrite", "Переписать лучше", "Улучшает формулировку. Похожие: .short, .expand, .formal, .friendly.", ".rewrite"],
+    [".grammar", "Исправить ошибки", "Правит орфографию и пунктуацию.", ".grammar"],
+    [".explain", "Объяснить просто", "Растолкует, что имел в виду автор.", ".explain"],
+    [".ideas", "Идеи", "7 идей по теме.", ".ideas подарок другу"],
+    [".code", "Помощь с кодом", "Рабочий код и короткое пояснение.", ".code сортировка на python"],
+    [".calc", "Калькулятор", "Считает выражение.", ".calc 2+2*3"],
+  ]],
+  ["Фото и голос", "mic", [
+    [".vision", "Разбор фото", "Что на фото, детали и контекст. Ответом на фото.", ".vision"],
+    [".ocr", "Текст с фото", "Достаёт весь текст с картинки.", ".ocr"],
+    [".translatephoto", "Перевод с фото", "Переводит текст на фотографии.", ".translatephoto ru"],
+    [".screenshot", "Разбор скриншота", "Объясняет, что на скриншоте и где ошибка.", ".screenshot"],
+    [".transcribe", "Голос в текст", "Расшифровывает голосовое, кружок или аудио.", ".transcribe", 1],
+    [".audio-summary", "Пересказ аудио", "Расшифровка и короткое «что важного».", ".audio-summary", 1],
+  ]],
+  ["Шутки и розыгрыши", "mask", [
+    [".spam", "Быстрый спам", "Шлёт сообщение пачкой, каждое с другим «почерком» и эмодзи. Без числа — 10 раз.", ".spam 10 привет"],
+    [".spam plain", "Спам без оформления", "Те же повторы, но обычным текстом.", ".spam plain 5 привет"],
+    [".geo", "Геометка места", "Присылает в чат карточку карты с нужным местом.", ".geo Москва"],
+    [".livegeo", "Живая геолокация", "Геометка выглядит как «живая» на сутки. Остановить: .livegeo off.", ".livegeo Дубай"],
+    [".snos", "Анимация «снос»", "Шутка: «отправляем жалобы, аккаунт скоро снесут». Только анимация, ничего не отправляется.", ".snos"],
+    [".dox", "Анимация «поиск данных»", "Шутка: «ищем твои данные». Все данные выдуманные.", ".dox"],
+    [".hack", "Анимация «взлом»", "Киношная симуляция взлома, без реальных действий.", ".hack"],
+    [".anim", "Анимации", "Готовые анимации по номерам: .anim 1 … .anim 14, .anim 0 — случайная.", ".anim 3"],
+    [".ball", "Шар предсказаний", "Ответит на вопрос да/нет.", ".ball я сдам?"],
+    [".love", "Тест любви", "Процент «совместимости».", ".love"],
+    [".vibe", "Вайб", "Оценит настроение чата.", ".vibe"],
+    [".choose", "Выбор", "Выберет один вариант из списка.", ".choose пицца | суши"],
+    [".roll", "Случайное число", "Бросает число в диапазоне.", ".roll 1 100"],
+    [".redflags", "Красные флаги", "Шуточный разбор «флагов».", ".redflags"],
+    [".burn", "Подколоть", "Добрая шутливая подколка.", ".burn"],
+    [".ghost", "Призрак", "Считает, как долго игнорят.", ".ghost"],
+    [".iq", "Тест IQ", "Шуточный замер.", ".iq"],
+    [".aura", "Аура", "Шуточный цвет ауры.", ".aura"],
+    [".haha", "Шуточная версия", "Превращает текст в смешной.", ".haha текст"],
+    [".ironia", "С иронией", "Переписывает текст с мягкой иронией.", ".ironia текст"],
+    [".dumb", "Глупый стиль", "Текст с забавными ошибками.", ".dumb текст"],
+    [".oldtroll", "Ворчун", "Шуточный текст в стиле старого ворчуна.", ".oldtroll 3"],
+  ]],
+  ["Игры", "game", [
+    [".xo", "Крестики-нолики", "Поле кнопками прямо в чате. .xo bot — с ботом.", ".xo"],
+    [".dice", "Кубик", "Бросок: .dice darts, basket, foot, bowl, slot.", ".dice slot"],
+    [".coin", "Орёл или решка", "Подбрасывает монетку.", ".coin"],
+    [".rps", "Камень-ножницы-бумага", "Сыграть с собеседником.", ".rps"],
+  ]],
+  ["Анализ чата", "chart", [
+    [".wrapped", "Итоги переписки", "Кто пишет больше, любимые слова, серия дней и скорость ответов.", ".wrapped"],
+    [".streak", "Серия дней", "Сколько дней подряд вы общаетесь. .streak off — выключить серии.", ".streak"],
+    [".sync", "Телепатия", "Процент синхронности: общие слова и скорость ответов.", ".sync"],
+    [".court", "Суд над перепиской", "Шуточный приговор по вашему спору.", ".court"],
+    [".rift", "Когда отдалились", "Находит день, когда общение пошло на спад.", ".rift"],
+    [".oracle", "Оракул", "Предскажет ответ собеседника и время.", ".oracle"],
+    [".podcast", "Подкаст про вас", "Двое ведущих обсуждают вашу переписку.", ".podcast"],
+    [".series", "Сериал про вас", "Переписка превращается в сериал с сериями.", ".series"],
+  ]],
+  ["Личное", "usr", [
+    [".twin", "Двойник", "Отвечает за тебя, пока ты молчишь. Как напишешь сам, выключается.", ".twin"],
+    [".capsule", "Капсула времени", "Сообщение появится в чате через срок.", ".capsule 30д текст"],
+    [".deleted", "Удалённые", "Последние удалённые сообщения в чате.", ".deleted 5"],
+    [".export", "Экспорт архива", "Файл с перепиской. Полный архив — в Premium.", ".export", 1],
+    [".status", "Статус", "Подписка и лимиты.", ".status"],
+    [".ping", "Проверка связи", "Проверяет, что бот подключён и права на месте.", ".ping"],
+    [".help", "Справка", "Все команды в боте.", ".help"],
+  ]],
+];
+function cmdItem(it, open) {
+  const [c, t, w, ex, plus] = it;
+  const base = c.replace(/\s*\{.*$/, "");
+  return `<div class="card cm ${open ? "open" : ""}"><div class="cm-r"><button class="cm-i" data-a="cmdopen" aria-label="Подробнее">${ic(it._ic)}</button><button class="cm-t" data-a="cmdopen" style="text-align:left"><b>${esc(c)}${plus ? '<em class="plus" style="font-style:normal">PLUS</em>' : ""}</b><span class="ell">${esc(t)}</span></button><button class="cm-c" data-a="cmdcopy" data-v="${esc(base)}" aria-label="Скопировать">${ic("copy")}</button></div>
+  <div class="cm-d"><div><div class="cm-x"><p>${esc(w)}</p><button class="cm-ex" data-a="cmdcopy" data-v="${esc(ex)}"><span>${esc(ex)}</span>${ic("copy")}</button></div></div></div></div>`;
+}
+function cmdList(q) {
+  q = (q || "").trim().toLowerCase();
+  let out = "", n = 0;
+  for (const [g, icn, items] of CMD_CAT) {
+    const rows = items.filter(it => !q || (it[0] + " " + it[1] + " " + it[2]).toLowerCase().includes(q));
+    if (!rows.length) continue;
+    n += rows.length;
+    out += `<div class="cg">${ic(icn)}${esc(g)}</div>` + rows.map(it => { it._ic = icn; return cmdItem(it, false); }).join("");
+  }
+  return n ? out : `<div class="card empty"><b>Ничего не найдено</b>Попробуй другое слово: например «мут» или «геолокация».</div>`;
+}
+function vCmds() {
+  return `<div class="top"><h1>Команды</h1></div>
+  <label class="search">${ic("search")}<input id="cq" placeholder="Поиск команды или описания..." value="${esc(S.cq || "")}" autocomplete="off"></label>
+  <div class="mu sm" style="margin:-2px 4px 4px">Нажми на команду, чтобы увидеть, что она делает. Кнопка справа копирует её.</div>
+  <div id="cml">${cmdList(S.cq)}</div>`;
+}
+
+/* ── кейсы ── */
+const CS_PAL = { // [основной, тёмный, свечение, подпись]
+  cheap: ["#b9773d", "#6b3f1c", "#ffa24a", "ДЕШЁВКА"], econ: ["#5f86a6", "#2c4560", "#3aa8ff", "ЭКОНОМ"], std: ["#8d949e", "#4a5059", "#dbe3ec", "СТАНДАРТ"],
+  risk: ["#c43a2c", "#661810", "#ff5a46", "РИСК"], pro: ["#1fa371", "#0c4b36", "#35f2a4", "ПРОФИ"], elite: ["#7d4fd6", "#3a1f73", "#c08bff", "ЭЛИТА"],
+  mag: ["#16a9b8", "#0a4a55", "#5ff0ff", "МАГНАТ"], olig: ["#d9a521", "#6b4a08", "#ffe066", "ОЛИГАРХ"],
+  free: ["#2f7cff", "#173d85", "#8fd0ff", "БЕСПЛАТНЫЙ"], outsider: ["#56627a", "#232b3a", "#9fb0cf", "АУТСАЙДЕР"],
+};
+function crate(id, w) {
+  const [a, b, g, nm] = CS_PAL[id] || CS_PAL.std, u = "k" + id, big = ["pro", "elite", "mag", "olig", "risk"].includes(id);
+  return `<svg class="crt" viewBox="0 0 120 112" ${w ? `style="width:${w}px"` : ""} aria-hidden="true"><defs>
+<linearGradient id="${u}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+<linearGradient id="${u}l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset=".5" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+<radialGradient id="${u}g"><stop offset="0" stop-color="${g}" stop-opacity=".9"/><stop offset="1" stop-color="${g}" stop-opacity="0"/></radialGradient></defs>
+<ellipse class="crt-g" cx="60" cy="56" rx="58" ry="48" fill="url(#${u}g)"/>
+<ellipse cx="60" cy="104" rx="42" ry="6" fill="#000" opacity=".45"/>
+<path d="M16 56h88l-3 41a6 6 0 0 1-6 5H25a6 6 0 0 1-6-5z" fill="url(#${u}b)"/>
+<path d="M14 57 20 33Q60 19 100 33l6 24z" fill="url(#${u}l)"/>
+<path d="M21 34Q60 22 99 34" stroke="#fff" stroke-opacity=".6" stroke-width="2" fill="none"/>
+<rect x="28" y="28" width="11" height="73" rx="3" fill="#000" opacity=".26"/><rect x="81" y="28" width="11" height="73" rx="3" fill="#000" opacity=".26"/>
+<g fill="${g}" opacity=".9"><circle cx="33.5" cy="38" r="1.7"/><circle cx="33.5" cy="92" r="1.7"/><circle cx="86.5" cy="38" r="1.7"/><circle cx="86.5" cy="92" r="1.7"/></g>
+<rect class="crt-s" x="14" y="54" width="92" height="4.5" rx="2" fill="${g}"/>
+<rect x="48" y="49" width="24" height="28" rx="6" fill="${g}"/><rect x="51" y="52" width="18" height="22" rx="4" fill="#000" opacity=".28"/>
+<circle cx="60" cy="60.5" r="3.6" fill="#fff" opacity=".92"/><rect x="58.6" y="62" width="2.8" height="8" rx="1.2" fill="#fff" opacity=".92"/>
+<text x="60" y="94" text-anchor="middle" font-size="${nm.length > 8 ? 7 : 8.5}" font-weight="800" letter-spacing=".8" fill="${g}">${nm}</text>
+${big ? `<path d="M14 24l2 4 4 2-4 2-2 4-2-4-4-2 4-2zM104 12l1.6 3.2 3.2 1.6-3.2 1.6-1.6 3.2-1.6-3.2-3.2-1.6 3.2-1.6z" fill="${g}"/>` : ""}</svg>`;
+}
+const CS_NAMES = { cheap: "Дешёвка", econ: "Эконом", std: "Стандарт", risk: "Риск", pro: "Профи", elite: "Элита", mag: "Магнат", olig: "Олигарх", free: "Бесплатный", outsider: "Аутсайдер" };
+function csFallbackState() { // те же шансы, что на сервере: чтобы вкладка работала и без связи, и в демо
+  const R = [[0.2, 0.30], [0.4, 0.25], [0.7, 0.10], [1.05, 0.20], [1.4, 0.09], [2, 0.04], [4, 0.015], [10, 0.005]];
+  const mk = st => { const m = new Map(); R.forEach(([r, w]) => { const d = Math.max(1, Math.round(r * st / 5)); m.set(d, (m.get(d) || 0) + w); }); return [...m].map(([d, w]) => ({ d, p: Math.round(w * 1000) / 10 })).sort((x, y) => x.d - y.d); };
+  return { fb: true, cases: [["cheap", 10], ["econ", 30], ["std", 50], ["risk", 100], ["pro", 150], ["elite", 200], ["mag", 300], ["olig", 350]].map(([id, s]) => ({ id, name: CS_NAMES[id], stars: s, tiers: mk(s) })),
+    free: { ready: true, left: 0, tiers: [{ d: 0, p: 76 }, { d: 1, p: 20 }, { d: 2, p: 4 }] }, outsider: { need: 5, fails: 2, tiers: [{ d: 2, p: 50 }, { d: 3, p: 30 }, { d: 5, p: 15 }, { d: 10, p: 5 }] }, last_t: 0 };
+}
+const RAR = p => p >= 20 ? ["Обычный", "#aeb6c4"] : p >= 8 ? ["Необычный", "#4aa8ff"] : p >= 3 ? ["Редкий", "#b070ff"] : p >= 1 ? ["Эпический", "#ffc83d"] : ["Легендарный", "#ff5a46"];
+const dTxt = d => d > 0 ? `${d} ${plural(d, ["день", "дня", "дней"])}` : "Пусто";
+const starSvg = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
+const cmode = () => S.cmode || (S.cmode = load("cmode") || "demo");
+const cases = () => S.cs || csFallbackState();
+function leftTxt(ms) { const h = Math.floor(ms / 36e5), m = Math.ceil((ms % 36e5) / 6e4); return h ? `${h} ч ${m} м` : `${m} м`; }
+function csCard(id, name, lab, cls, sd) {
+  const [, , g] = CS_PAL[id];
+  const sp = ["pro", "elite", "mag", "olig", "risk"].includes(id) ? [0, 1, 2].map(i => `<i class="cs-sp" style="left:${22 + i * 28}%;top:${48 + (i % 2) * 14}%;--w:${i * 0.8}s"></i>`).join("") : "";
+  return `<div class="cs ${cls || ""}" style="--c:${g};--sd:${sd || 0}s" data-a="csinfo" data-id="${id}"><div class="cs-a">${crate(id)}${sp}</div><div class="cs-n">${esc(name)}</div>${lab}</div>`;
+}
+function vCases() {
+  const cs = cases(), demo = cmode() === "demo";
+  const seg = `<div class="seg" style="width:100%;margin-bottom:12px"><button data-a="cmode" data-k="demo" class="${demo ? "on" : ""}">Демо</button><button data-a="cmode" data-k="real" class="${!demo ? "on" : ""}">Реал</button></div>`;
+  const note = demo ? `<div class="csn"><b>Демо-режим.</b> Открывай любые кейсы бесплатно и смотри, что внутри. Призы ненастоящие, Stars не списываются.</div>`
+    : `<div class="csn real"><b>Реал.</b> Платишь Stars, приз настоящий: дни Premium добавляются сразу. Шансы каждого кейса видны внутри.</div>`;
+  const fr = cs.free, ou = cs.outsider, fails = Math.min(ou.fails, ou.need);
+  const freeBtn = demo ? `<button class="cs-b" data-a="csopen" data-id="free" style="color:var(--c)">Демо</button>` : fr.ready ? `<button class="cs-b" data-a="csopen" data-id="free">Открыть</button>` : `<button class="cs-b mu" data-a="csinfo" data-id="free">через ${leftTxt(fr.left)}</button>`;
+  const outReady = demo || fails >= ou.need;
+  const outBtn = outReady ? `<button class="cs-b" data-a="csopen" data-id="outsider">${demo ? "Демо" : "Открыть"}</button>` : `<button class="cs-b mu" data-a="csinfo" data-id="outsider">${fails}/${ou.need} неудач</button>`;
+  return `<div class="top"><h1>Кейсы</h1>${stkOrNone()}</div>${seg}${note}
+  <div class="csh">${ic("gift")}Бесплатные</div>
+  <div class="csg">${csCard("outsider", "Аутсайдер", outBtn, outReady ? "" : "lock", 0)}${csCard("free", "Бесплатный", freeBtn, "", 1.2)}</div>
+  <div class="csh">${ic("star")}Платные</div>
+  <div class="csg">${cs.cases.map((c, i) => csCard(c.id, c.name, `<button class="cs-b" data-a="${demo ? "csopen" : "csbuy"}" data-id="${c.id}">${demo ? `Демо <span class="mu sm" style="font-weight:600">${c.stars}</span>${starSvg}` : `${c.stars}${starSvg}`}</button>`, "", (i % 4) * 0.9)).join("")}</div>
+  <div class="mu sm" style="margin:18px 6px 0;text-align:center">Приз кейса — дни Premium. Хороший приз выпадает примерно каждому третьему, остальным достаются дни поменьше.</div>`;
+}
+const stkOrNone = () => { const t = topStk(); return t ? `<span class="stkc">${flame(20, { sparks: 2 })}${t.cur}</span>` : ""; };
+function csDef(id) {
+  const cs = cases();
+  if (id === "free") return { id, name: "Бесплатный", stars: 0, tiers: cs.free.tiers };
+  if (id === "outsider") return { id, name: "Аутсайдер", stars: 0, tiers: cs.outsider.tiers };
+  return cs.cases.find(c => c.id === id);
+}
+function csInfo(id) {
+  const c = csDef(id); if (!c) return;
+  const demo = cmode() === "demo", cs = cases();
+  const rows = c.tiers.slice().sort((a, b) => b.d - a.d).map(t => { const [rn, rc] = RAR(t.p); return `<div class="cs-pr" style="--rc:${rc}"><div class="cs-pd">${t.d > 0 ? dTxt(t.d) : "Пусто"}</div><div class="cs-pg"><b>${rn}</b><i style="--w:${Math.max(3, Math.min(100, t.p * 2.2))}%"></i></div><div class="cs-pp">${t.p}%</div></div>`; }).join("");
+  let btn;
+  if (id === "free") btn = demo ? `<button class="btn" data-a="csopen" data-id="free">Попробовать (демо)</button>` : cs.free.ready ? `<button class="btn" data-a="csopen" data-id="free">Открыть бесплатно</button>` : `<button class="btn sec" disabled style="opacity:.6">Следующий через ${leftTxt(cs.free.left)}</button>`;
+  else if (id === "outsider") btn = demo ? `<button class="btn" data-a="csopen" data-id="outsider">Попробовать (демо)</button>` : cs.outsider.fails >= cs.outsider.need ? `<button class="btn" data-a="csopen" data-id="outsider">Открыть бесплатно</button>` : `<button class="btn sec" disabled style="opacity:.6">Неудач подряд: ${cs.outsider.fails} из ${cs.outsider.need}</button>`;
+  else btn = demo ? `<button class="btn" data-a="csopen" data-id="${id}">Попробовать бесплатно (демо)</button>` : `<button class="btn" data-a="csbuy" data-id="${id}">Открыть за ${c.stars} ⭐</button>`;
+  const sub = id === "outsider" ? "Открывается после 5 неудачных кейсов подряд. Приз всегда есть." : id === "free" ? "Раз в сутки, бесплатно." : demo ? `Цена в реальном режиме: ${c.stars} ⭐` : `${c.stars} ⭐ · приз начисляется сразу`;
+  sheet(`<div class="cs-hd"><div class="cs-a" style="--c:${CS_PAL[id][2]}">${crate(id)}</div><div style="min-width:0"><b style="font-size:22px;display:block">${esc(c.name)}</b><span class="mu sm">${esc(sub)}</span></div></div>
+  <div class="lb" style="margin:14px 2px 2px">Что внутри</div>${rows}${btn}<button class="btn sec" data-a="unsheet">Закрыть</button>`);
+}
+function csPickTier(tiers) { const s = tiers.reduce((a, t) => a + t.p, 0); let x = Math.random() * s; for (const t of tiers) if ((x -= t.p) < 0) return t; return tiers[tiers.length - 1]; }
+function csClose() { const o = $("#cso"); o.classList.remove("on"); o.innerHTML = ""; }
+function confetti(col) {
+  const o = $("#cso"); if (!o) return;
+  const cols = [col, "#ffd23a", "#ff5a46", "#5fe0ff", "#fff"];
+  for (let i = 0; i < 46; i++) { const e = document.createElement("i"); e.className = "cf"; e.style.cssText = `left:${Math.random() * 100}%;background:${cols[i % cols.length]};--t:${(1.8 + Math.random() * 1.8).toFixed(2)}s;--w:${(Math.random() * 0.5).toFixed(2)}s;--r:${Math.round(240 + Math.random() * 600)}deg`; o.appendChild(e); }
+}
+/* анимация: тряска ящика → рулетка → приз */
+async function csPlay(o) { // o: {id, name, tiers, d, demo, until}
+  const ov = $("#cso");
+  ov.classList.add("on");
+  ov.innerHTML = `<div class="cso-in">${o.demo ? '<div class="cso-tag">ДЕМО</div>' : ""}<div class="cso-art" style="--c:${CS_PAL[o.id][2]}">${crate(o.id)}</div><div class="cso-t">Открываем «${esc(o.name)}»…</div><div class="cso-s">${o.demo ? "Тренировка: приз ненастоящий" : "Крутим барабан"}</div></div>`;
+  hap("medium"); await sleepMs(1100);
+  const N = 46, WIN = 38, tiles = [];
+  for (let i = 0; i < N; i++) tiles.push(i === WIN ? o.d : csPickTier(o.tiers).d);
+  const tileHtml = d => { const p = (o.tiers.find(t => t.d === d) || { p: 30 }).p, rc = RAR(p)[1]; return `<div class="cso-ti" style="--rc:${rc}"><b>${d > 0 ? d : "—"}</b><span>${d > 0 ? plural(d, ["день", "дня", "дней"]) : "пусто"}</span></div>`; };
+  ov.innerHTML = `<div class="cso-in">${o.demo ? '<div class="cso-tag">ДЕМО</div>' : ""}<div class="cso-t">«${esc(o.name)}»</div><div class="cso-rl"><div class="cso-pt"></div><div class="cso-st" id="cst">${tiles.map(tileHtml).join("")}</div></div><div class="cso-s">Что выпадет?</div></div>`;
+  const st = $("#cst"), rl = $(".cso-rl"), tw = 92, gap = 8;
+  const end = WIN * (tw + gap) + tw / 2 - rl.clientWidth / 2 + (Math.random() - 0.5) * tw * 0.55;
+  for (let i = 0; i < 16; i++) setTimeout(() => hap("light"), 260 * i + i * i * 14);
+  const an = st.animate([{ transform: "translateX(0)" }, { transform: `translateX(${-end}px)` }], { duration: 5400, easing: "cubic-bezier(.1,.75,.12,1)", fill: "forwards" });
+  try { await an.finished; } catch (e) {}
+  await sleepMs(350);
+  const p = (o.tiers.find(t => t.d === o.d) || { p: 30 }).p, [rn, rc] = o.d > 0 ? RAR(p) : ["Не повезло", "#8a93a3"];
+  const until = o.until ? new Date(o.until).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) : "";
+  ov.innerHTML = `<div class="cso-in" style="--rc:${rc}">${o.demo ? '<div class="cso-tag">ДЕМО</div>' : ""}<div class="cso-win"><div class="cso-rar">${rn}</div><div class="cso-big">${o.d > 0 ? "+" + o.d : "0"}</div><div class="cso-t">${o.d > 0 ? plural(o.d, ["день", "дня", "дней"]) + " Premium" : "Пусто. В следующий раз повезёт"}</div>
+  <div class="cso-s">${o.demo ? "Это демо: приз не начислен. Хочешь по-настоящему, переключись на «Реал»." : o.d > 0 && until ? "Premium действует до " + until : ""}</div></div>
+  <button class="btn" data-a="csagain" data-id="${o.id}">${o.demo ? "Ещё раз" : "К кейсам"}</button><button class="btn sec" data-a="csclose">Закрыть</button></div>`;
+  if (o.d > 0) { confetti(rc); hap("heavy"); } else hap("light");
+}
+async function csOpen(id) { // бесплатные и демо
+  const demo = cmode() === "demo", c = csDef(id); if (!c) return;
+  unsheet();
+  if (demo) return csPlay({ id, name: c.name, tiers: c.tiers, d: csPickTier(c.tiers).d, demo: true });
+  try {
+    const r = await api(id === "outsider" ? "case_outsider" : "case_free");
+    await csPlay({ id, name: c.name, tiers: c.tiers, d: r.d, until: r.until, demo: false });
+    refreshMe(); loadCases();
+  } catch (e) { toast(/cooldown|not_ready/.test(String(e && e.message)) ? "Пока недоступно" : "Не получилось открыть"); loadCases(); }
+}
+async function csBuy(id) {
+  const c = csDef(id); if (!c) return;
+  if (DEMO) return toast("Реальные кейсы доступны внутри Telegram");
+  unsheet();
+  let link;
+  try { ({ link } = await api("case_invoice", { id })); } catch (e) { return toast("Не удалось создать счёт"); }
+  const after = (S.cs && S.cs.last_t) || 0;
+  tg.openInvoice(link, async st => {
+    if (st !== "paid") { if (st === "failed") toast("Оплата не прошла"); return; }
+    hap("medium");
+    const ov = $("#cso"); ov.classList.add("on");
+    ov.innerHTML = `<div class="cso-in"><div class="cso-art" style="--c:${CS_PAL[id][2]}">${crate(id)}</div><div class="cso-t">Оплата прошла</div><div class="cso-s">Готовим приз…</div></div>`;
+    let r = null;
+    for (let i = 0; i < 30 && !r; i++) { await sleepMs(i < 3 ? 600 : 1000); try { const x = await api("case_result", { after }, 9000); if (x && x.ready) r = x; } catch (e) {} }
+    if (!r) { csClose(); toast("Приз придёт сообщением в чат с ботом"); setTimeout(() => { refreshMe(); loadCases(); }, 3000); return; }
+    if (S.cs) S.cs.last_t = r.t || Date.now();
+    await csPlay({ id, name: c.name, tiers: c.tiers, d: r.d, until: r.until, demo: false });
+    refreshMe(); loadCases();
+  });
+}
+async function loadCases() {
+  try { S.cs = await api("cases_state"); if (!S.cs || !S.cs.cases) throw 0; } catch (e) { if (!S.cs) S.cs = csFallbackState(); }
+  if (S.tab === "cases" && !$("#cso.on")) render();
+}
+Object.assign(A, {
+  cmdopen: (d, el) => { el.closest(".cm").classList.toggle("open"); hap("light"); },
+  cmdcopy: d => { try { navigator.clipboard.writeText(d.v); } catch (e) {} toast("Скопировано: " + d.v); hap("light"); },
+  cmode: d => { S.cmode = d.k; save("cmode", d.k); hap("light"); render(); },
+  csinfo: d => { hap("light"); csInfo(d.id); },
+  csopen: d => csOpen(d.id),
+  csbuy: d => { hap("light"); csBuy(d.id); },
+  csagain: d => { if (cmode() === "demo") csOpen(d.id); else csClose(); },
+  csclose: () => { csClose(); render(); },
+});
+document.addEventListener("input", e => { if (e.target.id === "cq") { S.cq = e.target.value; $("#cml").innerHTML = cmdList(S.cq); } });
+
+$("#flamedefs").innerHTML = FLAME_DEFS;
 $("#scrim").addEventListener("click", unsheet);
 document.addEventListener("input", e => {
   if (e.target.id === "q") { S.q = e.target.value; $("#cl").innerHTML = chatRows((S.chats || []).filter(c => (S.cf === "all" || c.deleted_cnt > 0) && (!S.q.trim() || String(c.chat_name || "").toLowerCase().includes(S.q.trim().toLowerCase()) || String(c.username || "").toLowerCase().includes(S.q.trim().toLowerCase())))); }

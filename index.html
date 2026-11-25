@@ -356,7 +356,8 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .nv button{font-size:10px}
 
 /* огонёк: пламя дышит, весь огонёк летает по лёгкой траектории, искры уносятся вверх */
-.fl{position:relative;display:inline-block;flex:none;width:var(--fs);height:calc(var(--fs)*1.25);animation:flfly var(--fy,3.6s) ease-in-out infinite;filter:drop-shadow(0 0 calc(var(--fs)*.16) rgba(255,150,20,.95)) drop-shadow(0 calc(var(--fs)*.05) calc(var(--fs)*.42) rgba(255,60,0,.5))}
+.fl{position:relative;display:inline-block;flex:none;width:var(--fs);height:calc(var(--fs)*1.25);filter:drop-shadow(0 0 3px rgba(255,140,20,.75))}
+.fl.fly{animation:flfly var(--fy,3.6s) ease-in-out infinite;filter:drop-shadow(0 0 calc(var(--fs)*.16) rgba(255,150,20,.95)) drop-shadow(0 calc(var(--fs)*.05) calc(var(--fs)*.42) rgba(255,60,0,.5))}
 .fl-s{width:100%;height:100%;overflow:visible;fill:initial;stroke:none}
 .fl-s g{transform-box:fill-box;transform-origin:50% 100%}
 .f1{animation:fl1 1.1s ease-in-out infinite alternate}
@@ -370,7 +371,7 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 @keyframes ember{0%{opacity:0;transform:translate(0,0) scale(1)}12%{opacity:1}60%{opacity:.9}100%{opacity:0;transform:translate(var(--x),calc(var(--fs)*-1.3)) scale(.15)}}
 .fl.cold{filter:saturate(.45) brightness(.75) drop-shadow(0 0 6px rgba(255,120,0,.2))}
 .fl.cold .f1,.fl.cold .f2,.fl.cold .f3{animation-duration:2.4s}
-.fl.cold{animation-duration:6s}
+.fl.cold.fly{animation-duration:6s}
 .stk{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 8px 0 4px;margin-left:6px;border-radius:99px;background:rgba(255,120,20,.14);border:1px solid rgba(255,140,30,.35);color:#ffab4d;font-size:12px;font-weight:800;vertical-align:middle}
 .stk .fl{margin-top:-2px}
 .stkc{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 8px;border-radius:99px;background:rgba(255,120,20,.14);border:1px solid rgba(255,140,30,.4);color:#ffb15a;font-weight:800;font-size:15px}
@@ -379,7 +380,7 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .stkf::before{content:"";position:absolute;left:50%;bottom:6px;width:86px;height:86px;margin-left:-43px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,30,.55),transparent 68%);animation:halo 2.4s ease-in-out infinite}
 @keyframes halo{0%,100%{transform:scale(.9);opacity:.7}50%{transform:scale(1.18);opacity:1}}
 .of{position:absolute;left:50%;top:56%;width:0;height:0;animation:orbit var(--od) linear var(--ow) infinite}
-.of .fl{position:absolute;left:calc(var(--fs)*-.5);top:calc(var(--fs)*-.62);animation-duration:2.2s}
+.of .fl{position:absolute;left:calc(var(--fs)*-.5);top:calc(var(--fs)*-.62)}
 @keyframes orbit{from{transform:rotate(0) translateX(var(--or)) rotate(0)}to{transform:rotate(360deg) translateX(var(--or)) rotate(-360deg)}}
 .stkh .g{min-width:0;position:relative}
 .stkn{font-size:56px;line-height:1;font-weight:800;letter-spacing:-.04em;background:linear-gradient(180deg,#fff4bd,#ffa032 58%,#ff4d17);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 18px rgba(255,100,20,.35))}
@@ -408,6 +409,29 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .cm-ex svg{width:16px;height:16px;color:var(--mu);flex:none}
 
 /* кейсы */
+/* v9: карточки кейсов */
+.cs{color:#fff;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 34%,#15151d),#0c0c12 78%);border:1px solid color-mix(in srgb,var(--c) 70%,transparent);box-shadow:0 14px 34px -16px var(--c),0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.18) inset}
+.cs::before{background:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 2px,transparent 2px 10px)}
+.cs::after{content:"";position:absolute;left:12%;right:12%;bottom:78px;height:22px;border-radius:50%;background:radial-gradient(ellipse,color-mix(in srgb,var(--c) 75%,transparent),transparent 70%);filter:blur(6px);animation:crglow2 3s ease-in-out infinite;pointer-events:none}
+@keyframes crglow2{0%,100%{opacity:.5}50%{opacity:1}}
+.cs-n{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.cs-rk svg{width:13px;height:13px}
+.cs-rk svg.off{fill:rgba(255,255,255,.2)}
+.cs-a{aspect-ratio:1.05;margin-top:12px}
+.cs-a::before{width:140%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 55%,transparent),transparent 62%)}
+.cs-b{color:#fff;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 55%,#000),color-mix(in srgb,var(--c) 28%,#000));border:1px solid color-mix(in srgb,var(--c) 80%,transparent);box-shadow:0 6px 18px -8px var(--c),inset 0 1px 0 rgba(255,255,255,.3);overflow:hidden;position:relative}
+.cs-b::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);animation:csshine 3.8s ease-in-out infinite;animation-delay:var(--sd,0s)}
+.cs-b.mu{color:rgba(255,255,255,.6);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);box-shadow:none}
+.cs-b.mu::after{display:none}
+.cs-b .mu{color:rgba(255,255,255,.7)}
+.cs-pt{position:absolute;bottom:28%;width:5px;height:5px;border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);opacity:0;animation:cspt 3.2s ease-in infinite;animation-delay:var(--w)}
+@keyframes cspt{0%{opacity:0;transform:translateY(0) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translateY(-80px) scale(1)}}
+.crt .lid{animation:lidpeek 5.2s ease-in-out infinite;animation-delay:var(--sd,0s);transform-box:view-box;transform-origin:112px 62px}
+.crt .inl{animation:inlpeek 5.2s ease-in-out infinite;animation-delay:var(--sd,0s);opacity:0}
+@keyframes lidpeek{0%,76%,100%{transform:translateY(0) rotate(0)}84%{transform:translateY(-7px) rotate(-2.4deg)}92%{transform:translateY(-3px) rotate(-1deg)}}
+@keyframes inlpeek{0%,76%,100%{opacity:0}84%,90%{opacity:1}}
+.cso-art .crt .lid,.cso-art .crt .inl{animation:none}
+.cs.lock::after{display:none}
 .csn{margin:0 2px 14px;padding:11px 14px;border-radius:14px;font-size:12.5px;line-height:1.4;background:rgba(124,200,255,.09);border:1px solid rgba(124,200,255,.25);color:var(--tx)}
 .csn.real{background:rgba(255,200,60,.09);border-color:rgba(255,200,60,.3)}
 .csh{display:flex;align-items:center;justify-content:center;gap:8px;margin:26px 0 14px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
@@ -1609,11 +1633,12 @@ const FL_C = ["M32 46C34 53 40 57 40 64C40 71 36 75 32 75C28 75 24 71 24 65C24 6
 const flMorph = (set, dur, w) => `<animate attributeName="d" dur="${dur}s" begin="-${w}s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.25;.5;.75;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="${set[0]};${set[1]};${set[2]};${set[1]};${set[0]}"/>`;
 const flame = (px = 28, o = {}) => {
   const n = o.sparks == null ? 5 : o.sparks, w = ((o.k || 0) * 0.37) % 1.5;
-  const em = Array.from({ length: n }, (_, i) => `<i class="em" style="--x:${((i * 37) % 53) - 26}px;--d:${(1.1 + (i % 4) * 0.4).toFixed(2)}s;--w:${(i * 0.29).toFixed(2)}s;--s:${2 + (i % 3)}px"></i>`).join("");
-  return `<span class="fl ${o.cold ? "cold" : ""}" style="--fs:${px}px;--fy:${(3 + (o.k || 0) % 3 * 0.5).toFixed(1)}s"><svg class="fl-s" viewBox="0 0 64 80" aria-hidden="true">
-<g class="f1"><path fill="url(#fg1)" d="${FL_O[0]}">${flMorph(FL_O, 1.7, w)}</path></g>
-<g class="f2"><path fill="url(#fg2)" d="${FL_I[0]}">${flMorph(FL_I, 1.3, w)}</path></g>
-<g class="f3"><path fill="url(#fg3)" d="${FL_C[0]}">${flMorph(FL_C, 1.0, w)}</path></g>
+  const em = Array.from({ length: px < 40 ? Math.min(n, 2) : n }, (_, i) => `<i class="em" style="--x:${((i * 37) % 53) - 26}px;--d:${(1.1 + (i % 4) * 0.4).toFixed(2)}s;--w:${(i * 0.29).toFixed(2)}s;--s:${2 + (i % 3)}px"></i>`).join("");
+  const big = px >= 40;
+  return `<span class="fl ${big ? "fly" : ""} ${o.cold ? "cold" : ""}" style="--fs:${px}px;--fy:${(3 + (o.k || 0) % 3 * 0.5).toFixed(1)}s"><svg class="fl-s" viewBox="0 0 64 80" aria-hidden="true">
+<g class="f1"><path fill="url(#fg1)" d="${FL_O[0]}">${big ? flMorph(FL_O, 1.7, w) : ""}</path></g>
+<g class="f2"><path fill="url(#fg2)" d="${FL_I[0]}">${big ? flMorph(FL_I, 1.3, w) : ""}</path></g>
+<g class="f3"><path fill="url(#fg3)" d="${FL_C[0]}">${big ? flMorph(FL_C, 1.0, w) : ""}</path></g>
 <path fill="#fff" opacity=".22" d="M17 46C16 40 19 35 22 31C20 38 20 43 22 49C19 49 17 48 17 46Z"/></svg>${em}</span>`;
 };
 const topStk = () => (S.chats || []).filter(c => c.cur > 0).sort((a, b) => b.cur - a.cur)[0];
@@ -1670,7 +1695,8 @@ const CMD_CAT = [
     [".audio-summary", "Пересказ аудио", "Расшифровка и короткое «что важного».", ".audio-summary", 1],
   ]],
   ["Шутки и розыгрыши", "mask", [
-    [".spam", "Быстрый спам", "Очень быстро шлёт сообщение пачкой. Каждое с другим почерком (жирный, курсив, рукописный, готика, цитата, скрытый текст) и с эффектом сообщения: огонь, лайк, сердце, праздник. До 50 раз, в Premium до 300.", ".spam 10 привет"],
+    [".spam", "Быстрый спам", "Очень быстро шлёт обычные одинаковые сообщения подряд. До 50 раз, в Premium до 300.", ".spam 10 привет"],
+    [".spamx", "Спам с эффектами", "У каждого сообщения свой почерк (жирный, курсив, рукописный, готика, цитата, скрытый текст) и эффект Telegram: огонь, лайк, сердце, праздник.", ".spamx 10 привет"],
     [".spam plain", "Спам без оформления", "Те же повторы, но обычным текстом.", ".spam plain 5 привет"],
     [".geo", "Геометка места", "Присылает в чат карту с нужным местом. Можно город или точный адрес.", ".geo Москва, Боровское шоссе 28"],
     [".livegeo", "Живая геолокация", "Геометка «живая», с пульсирующей точкой, на 24 часа. Работает и .live geo. Остановить: .livegeo off.", ".live geo Дубай"],
@@ -1816,7 +1842,7 @@ function leftTxt(ms) { const h = Math.floor(ms / 36e5), m = Math.ceil((ms % 36e5
 function csCard(id, name, lab, cls, sd) {
   const [, , g, , rk] = CS_PAL[id], hi = rk >= 3;
   const rks = [0, 1, 2, 3, 4].map(i => `<svg viewBox="0 0 24 24" class="${i < rk ? "" : "off"}"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>`).join("");
-  return `<div class="cs ${cls || ""}" style="--c:${g};--sd:${sd || 0}s" data-a="csinfo" data-id="${id}"><div class="cs-rk">${rks}</div><div class="cs-a">${hi ? '<i class="cs-ry"></i>' : ""}${crate(id)}</div><div class="cs-n">${esc(name)}</div>${lab}</div>`;
+  return `<div class="cs ${cls || ""}" style="--c:${g};--sd:${sd || 0}s" data-a="csinfo" data-id="${id}"><div class="cs-rk">${rks}</div><div class="cs-a">${hi ? '<i class="cs-ry"></i>' : ""}${[18, 50, 78].map((x, i) => `<i class="cs-pt" style="left:${x}%;--w:${i * 1.05}s"></i>`).join("")}${crate(id)}</div><div class="cs-n">${esc(name)}</div>${lab}</div>`;
 }
 function vCases() {
   const cs = cases(), demo = cmode() === "demo";

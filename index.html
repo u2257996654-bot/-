@@ -571,7 +571,14 @@ const hap = k => { try { tg.HapticFeedback.impactOccurred(k || "light"); } catch
 /* ═══ розыгрыш «Привет»: если открыли по кнопке-ловушке, мини-приложение «вылетает» ═══ */
 (function () {
   let cid = null;
-  try { cid = DEMO ? null : new URLSearchParams(location.search).get("crash"); } catch (e) {}
+  try {
+    if (!DEMO) {
+      // запущено по t.me-ссылке .crash: параметр приходит как start_param (initData) или tgWebAppStartParam (хэш)
+      const sp = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || new URLSearchParams(location.hash.slice(1)).get("tgWebAppStartParam") || new URLSearchParams(location.search).get("crash") || "";
+      const m = /^crash_([a-z0-9]+)$/i.exec(sp);
+      cid = m ? m[1] : null;
+    }
+  } catch (e) {}
   if (!cid) return;
   const ov = document.createElement("div");
   ov.style.cssText = "position:fixed;inset:0;z-index:999999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;font:600 15px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;text-align:center;padding:24px";
@@ -1722,7 +1729,7 @@ const CMD_CAT = [
     [".audio-summary", "Пересказ аудио", "Расшифровка и короткое «что важного».", ".audio-summary", 1],
   ]],
   ["Шутки и розыгрыши", "mask", [
-    [".spam", "Быстрый спам", "Очень быстро шлёт обычные одинаковые сообщения подряд. До 50 раз, в Premium до 300.", ".spam 10 привет"],
+    [".spam", "Быстрый спам", "Очень быстро шлёт обычные одинаковые сообщения подряд, у каждого свой эффект Telegram (огонь, лайк, сердце, праздник). До 50 раз, в Premium до 300.", ".spam 10 привет"],
     [".spamx", "Спам с эффектами", "У каждого сообщения свой почерк (жирный, курсив, рукописный, готика, цитата, скрытый текст) и эффект Telegram: огонь, лайк, сердце, праздник.", ".spamx 10 привет"],
     [".spam plain", "Спам без оформления", "Те же повторы, но обычным текстом.", ".spam plain 5 привет"],
     [".geo", "Геометка места", "Присылает в чат карту с нужным местом. Можно город или точный адрес.", ".geo Москва, Боровское шоссе 28"],
@@ -1840,11 +1847,13 @@ function crate(id, w) {
 <radialGradient id="${u}g"><stop offset="0" stop-color="${g}" stop-opacity=".75"/><stop offset="1" stop-color="${g}" stop-opacity="0"/></radialGradient>
 <radialGradient id="${u}i"><stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="${g}"/><stop offset="1" stop-color="${g}" stop-opacity="0"/></radialGradient>
 <linearGradient id="${u}b" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${g}" stop-opacity=".95"/><stop offset="1" stop-color="${g}" stop-opacity="0"/></linearGradient>
+<linearGradient id="${u}ao" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>
 <clipPath id="${u}k"><path d="${body}"/><path d="${side}"/><path d="${lidT}"/><path d="${lidF}"/><path d="${lidS}"/></clipPath></defs>
 <ellipse class="crt-g" cx="110" cy="100" rx="108" ry="84" fill="url(#${u}g)"/>
 <ellipse cx="110" cy="177" rx="92" ry="9" fill="#000" opacity=".48"/>
 ${sp}
-<path d="${body}" fill="url(#${u}f)"/><path d="${side}" fill="url(#${u}s)"/>
+<g clip-path="url(#${u}k)"><rect x="18" y="130" width="186" height="50" fill="url(#${u}ao)" style="mix-blend-mode:multiply"/><path d="M-20 50L40 -10H90L30 50Z" fill="#fff" opacity=".08" style="mix-blend-mode:screen"/></g>
+<path d="${body}" fill="url(#${u}f)" stroke="${DD}" stroke-width="1.6" stroke-linejoin="round"/><path d="${side}" fill="url(#${u}s)" stroke="${DD}" stroke-width="1.6" stroke-linejoin="round"/>
 <path d="M164 112L194 100M164 124L194 112M164 136L194 124" stroke="#000" stroke-opacity=".32" stroke-width="3" stroke-linecap="round"/><path d="M164 114.5L194 102.5M164 126.5L194 114.5M164 138.5L194 126.5" stroke="#fff" stroke-opacity=".2" stroke-width="1.2" stroke-linecap="round"/>
 <rect x="38" y="106" width="16" height="62" rx="3" fill="${D}" opacity=".6"/><rect x="128" y="106" width="16" height="62" rx="3" fill="${D}" opacity=".6"/>
 <rect x="40" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".22"/><rect x="130" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".22"/>
@@ -1855,7 +1864,7 @@ ${sp}
 ${rivets}${wear}
 <g class="inl"><path d="M26 76L64 60H198L158 76Z" fill="${DD}"/><ellipse cx="112" cy="68" rx="78" ry="8" fill="url(#${u}i)"/></g>
 <path class="beam" d="M32 70L-14 -80H234L190 70Z" fill="url(#${u}b)" style="mix-blend-mode:screen"/>
-<g class="lid"><path d="${lidS}" fill="url(#${u}s)"/><path d="${lidF}" fill="url(#${u}l)"/><path d="${lidT}" fill="url(#${u}t)"/>
+<g class="lid"><path d="${lidS}" fill="url(#${u}s)" stroke="${DD}" stroke-width="1.4" stroke-linejoin="round"/><path d="${lidF}" fill="url(#${u}l)" stroke="${DD}" stroke-width="1.4" stroke-linejoin="round"/><path d="${lidT}" fill="url(#${u}t)" stroke="${mixc(a,"#000000",.35)}" stroke-width="1.4" stroke-linejoin="round"/>
 <path d="M44 72L70 62.5H176" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M20 76H162" stroke="#000" stroke-opacity=".25" stroke-width="1.4"/><path d="M22 104.5H161" stroke="#000" stroke-opacity=".35" stroke-width="2"/>${stars}
 <path d="M168 70L196 60V80L168 91Z" fill="#000" opacity=".16"/><path d="M180 82L196 76V92L180 98Z" fill="url(#${u}m)" stroke="#333a42" stroke-width=".8"/></g>
 ${latch(48)}${latch(136)}

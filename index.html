@@ -568,6 +568,33 @@ const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const sleep = ms => new Promise(o => setTimeout(o, ms));
 const hap = k => { try { tg.HapticFeedback.impactOccurred(k || "light"); } catch (e) {} };
 
+/* ═══ розыгрыш «Привет»: если открыли по кнопке-ловушке, мини-приложение «вылетает» ═══ */
+(function () {
+  let cid = null;
+  try { cid = DEMO ? null : new URLSearchParams(location.search).get("crash"); } catch (e) {}
+  if (!cid) return;
+  const ov = document.createElement("div");
+  ov.style.cssText = "position:fixed;inset:0;z-index:999999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;font:600 15px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;text-align:center;padding:24px";
+  ov.innerHTML = '<style>@keyframes crspin{to{transform:rotate(360deg)}}@keyframes crsh{10%,90%{transform:translate(-1px,0)}20%,80%{transform:translate(2px,0)}30%,50%,70%{transform:translate(-3px,0)}40%,60%{transform:translate(3px,0)}}</style><div style="width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.22);border-top-color:#fff;animation:crspin .7s linear infinite"></div><div id="crtx">Загрузка…</div>';
+  document.documentElement.appendChild(ov);
+  (async () => {
+    let active = false;
+    try {
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("t")), 4500));
+      const r = await Promise.race([api("crash_check", { cid }), timeout]);
+      active = !!(r && r.active);
+    } catch (e) { active = false; }
+    if (!active) { ov.remove(); return; } // владелец остановил розыгрыш — открываем обычное приложение
+    await sleep(500);
+    ov.style.animation = "crsh .35s linear 2";
+    try { hap("heavy"); } catch (e) {}
+    await sleep(450);
+    try { tg.close(); } catch (e) {}
+    setTimeout(() => { ov.innerHTML = '<div style="font-size:15px;opacity:.7">Не удалось открыть</div>'; }, 500);
+  })();
+})();
+
+
 /* ═══ иконки (24×24, штрих 1.75) ═══ */
 const P = {
   home: '<path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
@@ -1702,6 +1729,7 @@ const CMD_CAT = [
     [".livegeo", "Живая геолокация", "Геометка «живая», с пульсирующей точкой, на 24 часа. Работает и .live geo. Остановить: .livegeo off.", ".live geo Дубай"],
     [".snos", "Анимация «снос»", "Идёт отправка жалоб, счётчик растёт, аккаунт «уходит на удаление». Только анимация, ничего не отправляется.", ".snos"],
     [".dox", "Анимация «поиск данных»", "Сканирование, пробив, сборка досье с полоской прогресса. Только анимация, реальные данные не ищутся.", ".dox"],
+    [".crash", "Розыгрыш «Привет»", "В чат уходит кнопка «Привет»: пока розыгрыш включён, у собеседника при нажатии приложение сразу закрывается — сколько раз ни жми. Остановить: .crash off.", ".crash"],
     [".rain", "Дождь из эмодзи", "Эмодзи сыплются дождём прямо в сообщении. Эмодзи можно выбрать.", ".rain 🔥", 1],
     [".countdown", "Обратный отсчёт", "Цифры идут вниз, в конце появляется твоё сообщение.", ".countdown 5 Поехали!", 1],
     [".typing", "Печатает…", "У собеседника нужное время горит «печатает…», максимум 120 секунд. С пометкой «голос» будет «записывает голосовое».", ".typing 60", 1],
@@ -1785,46 +1813,53 @@ let _cn = 0;
 /* ящик в стиле армейского контейнера: крышка со звёздами, замки, решётка с шевронами. Крышка и замки — отдельные слои для анимации вскрытия */
 function crate(id, w) {
   const [a, b, g, nm, rk] = CS_PAL[id] || CS_PAL.std, u = "c" + (++_cn), hi = rk >= 3;
-  const L = mixc(a, "#ffffff", .55), M = mixc(a, "#ffffff", .2), D = mixc(a, "#000000", .36), DD = mixc(b, "#000000", .4);
+  const L = mixc(a, "#ffffff", .5), M = mixc(a, "#ffffff", .16), D = mixc(a, "#000000", .46), DD = mixc(b, "#000000", .5);
   const body = "M26 76H158V164Q158 171 151 171H33Q26 171 26 164Z", side = "M158 76L200 60V150Q200 156 194 158L158 171Z";
   const lidT = "M20 76L62 58H204L162 76Z", lidF = "M20 76H162V104Q162 106 160 106H22Q20 106 20 104Z", lidS = "M162 76L204 58V88L162 106Z";
-  let slats = ""; for (let i = 0; i < 6; i++) { const y = 110 + i * 9.4; slats += `<rect x="60" y="${y}" width="62" height="6" rx="2.5" fill="url(#${u}v)"/><rect x="60" y="${y + 6}" width="62" height="2.2" fill="#3f4853" opacity=".7"/>`; }
+  let slats = ""; for (let i = 0; i < 6; i++) { const y = 110 + i * 9.4; slats += `<rect x="60" y="${y}" width="62" height="6" rx="1.5" fill="url(#${u}v)"/><rect x="60" y="${y}" width="62" height="1.6" fill="#fff" opacity=".4"/><rect x="60" y="${y + 6}" width="62" height="2.2" fill="#232931" opacity=".85"/>`; }
   const nch = Math.min(rk, 3);
-  let chev = ""; for (let i = 0; i < nch; i++) { const cy = 136 + (i - (nch - 1) / 2) * 10; chev += `<path transform="translate(91 ${cy})" d="M-15 4.5L0 -5.5L15 4.5V9.5L0 0L-15 9.5Z" fill="url(#${u}c)" stroke="${DD}" stroke-width="1.2" stroke-linejoin="round"/>`; }
+  let chev = ""; for (let i = 0; i < nch; i++) { const cy = 136 + (i - (nch - 1) / 2) * 10; chev += `<path transform="translate(91 ${cy})" d="M-15 4.5L0 -5.5L15 4.5V9.5L0 0L-15 9.5Z" fill="url(#${u}c)" stroke="${DD}" stroke-width="1.2" stroke-linejoin="round"/><path transform="translate(91 ${cy})" d="M-15 4.5L0 -5.5L15 4.5" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width=".8" stroke-linecap="round"/>`; }
   const order = [2, 1, 3, 0, 4], xs = [62, 87, 112, 137, 162], rs = [5.2, 6.4, 8, 6.4, 5.2];
   const stars = xs.map((x, i) => { const lit = order.indexOf(i) < rk; return `<g transform="translate(${x} 66) skewX(-24) scale(1 .5) scale(${rs[i]})"><polygon points="${STAR_PTS}" fill="${lit ? "#ffe27a" : "#000"}" opacity="${lit ? 1 : .22}" stroke="${lit ? mixc(g, "#a86a00", .55) : "none"}" stroke-width=".18"/></g>`; }).join("");
-  const latch = x => `<g class="ltc"><g transform="translate(${x} 0)"><rect x="-10" y="88" width="20" height="14" rx="3.5" fill="url(#${u}m)" stroke="#59636f" stroke-width=".9"/><path d="M-7.5 100H7.5V127Q7.5 133 2 133H-2Q-7.5 133 -7.5 127Z" fill="url(#${u}m)" stroke="#59636f" stroke-width=".9"/><rect x="-3.2" y="106" width="6.4" height="15" rx="2.4" fill="#262d36" opacity=".75"/><circle cx="0" cy="94.5" r="2.2" fill="#6a7683"/><path d="M-9 90H9" stroke="#fff" stroke-opacity=".7" stroke-width="1.2" stroke-linecap="round"/></g></g>`;
+  // болты по углам и рёбрам — мелкая деталь, которая убирает «мультяшность»
+  const rivet = (x, y) => `<circle cx="${x}" cy="${y}" r="2.1" fill="url(#${u}m)" stroke="#2b323b" stroke-width=".5"/><circle cx="${x - .5}" cy="${y - .5}" r=".6" fill="#fff" opacity=".8"/>`;
+  const rivets = [[31, 82], [31, 164], [153, 82], [153, 164], [92, 82], [92, 164]].map(([x, y]) => rivet(x, y)).join("");
+  const latch = x => `<g class="ltc"><g transform="translate(${x} 0)"><rect x="-1" y="85" width="2" height="48" fill="#000" opacity=".3"/><rect x="-10.5" y="87" width="21" height="15" rx="3" fill="url(#${u}m)" stroke="#333a42" stroke-width="1"/><rect x="-10.5" y="87" width="21" height="4" rx="2" fill="#fff" opacity=".35"/>${rivet(-6.5, 94.5)}${rivet(6.5, 94.5)}<path d="M-8 101H8V128Q8 134 2.4 134H-2.4Q-8 134 -8 128Z" fill="url(#${u}m)" stroke="#333a42" stroke-width="1"/><path d="M-8 101H8V106H-8Z" fill="#fff" opacity=".3"/><circle cx="0" cy="114" r="4.4" fill="#20262d"/><circle cx="0" cy="114" r="4.4" fill="none" stroke="#000" stroke-opacity=".5" stroke-width=".8"/><path d="M0 110.2V114L2.6 116.4" stroke="#6a7683" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M-9 90H9" stroke="#fff" stroke-opacity=".6" stroke-width="1" stroke-linecap="round"/></g></g>`;
   const sp = hi ? [[34, 40, 0], [190, 34, .7], [14, 118, 1.3], [208, 112, 1.9]].map(([x, y, d]) => `<g transform="translate(${x} ${y})"><path class="sp" style="--w:${d}s" d="M0-8Q1.2-1.2 8 0Q1.2 1.2 0 8Q-1.2 1.2-8 0Q-1.2-1.2 0-8Z" fill="${g}"/></g>`).join("") : "";
+  // потёртости металла — тонкие случайные царапины, затравка берётся от палитры кейса (детерминировано, не мигает между рендерами)
+  const seed = [...id].reduce((p, c) => (p * 31 + c.charCodeAt(0)) % 997, 7);
+  const wear = Array.from({ length: 5 }, (_, i) => { const k = (seed * (i + 3)) % 97, x = 34 + (k % 118), y = 80 + ((k * 7) % 82), ln = 6 + (k % 10), rot = (k % 70) - 35; return `<line x1="${x}" y1="${y}" x2="${x + ln}" y2="${y}" stroke="#fff" stroke-opacity="${.05 + (k % 5) * .02}" stroke-width="1" stroke-linecap="round" transform="rotate(${rot} ${x} ${y})"/>`; }).join("");
   return `<svg class="crt" viewBox="0 0 220 190" ${w ? `style="width:${w}px"` : ""} aria-hidden="true"><defs>
-<linearGradient id="${u}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${M}"/><stop offset=".08" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+<linearGradient id="${u}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${M}"/><stop offset=".08" stop-color="${a}"/><stop offset=".7" stop-color="${mixc(a,"#000000",.22)}"/><stop offset="1" stop-color="${b}"/></linearGradient>
 <linearGradient id="${u}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D}"/><stop offset="1" stop-color="${DD}"/></linearGradient>
-<linearGradient id="${u}t" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${M}"/><stop offset="1" stop-color="${L}"/></linearGradient>
-<linearGradient id="${u}l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mixc(a, "#ffffff", .34)}"/><stop offset=".55" stop-color="${a}"/><stop offset="1" stop-color="${mixc(a, "#000000", .18)}"/></linearGradient>
-<linearGradient id="${u}m" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a8"/><stop offset=".35" stop-color="#f6f9fc"/><stop offset="1" stop-color="#7f8b9a"/></linearGradient>
-<linearGradient id="${u}v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f6"/><stop offset="1" stop-color="#97a2af"/></linearGradient>
-<linearGradient id="${u}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mixc(g, "#ffffff", .35)}"/><stop offset="1" stop-color="${mixc(g, "#b85c00", .35)}"/></linearGradient>
+<linearGradient id="${u}t" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${M}"/><stop offset=".65" stop-color="${L}"/><stop offset="1" stop-color="${mixc(L,"#ffffff",.4)}"/></linearGradient>
+<linearGradient id="${u}l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mixc(a, "#ffffff", .3)}"/><stop offset=".5" stop-color="${a}"/><stop offset="1" stop-color="${mixc(a, "#000000", .3)}"/></linearGradient>
+<linearGradient id="${u}m" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#737f8d"/><stop offset=".35" stop-color="#eef2f6"/><stop offset=".55" stop-color="#c3ccd6"/><stop offset="1" stop-color="#5e6975"/></linearGradient>
+<linearGradient id="${u}v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3f6f9"/><stop offset=".5" stop-color="#c7d0db"/><stop offset="1" stop-color="#838e9b"/></linearGradient>
+<linearGradient id="${u}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mixc(g, "#ffffff", .3)}"/><stop offset="1" stop-color="${mixc(g, "#b85c00", .4)}"/></linearGradient>
 <radialGradient id="${u}g"><stop offset="0" stop-color="${g}" stop-opacity=".75"/><stop offset="1" stop-color="${g}" stop-opacity="0"/></radialGradient>
 <radialGradient id="${u}i"><stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="${g}"/><stop offset="1" stop-color="${g}" stop-opacity="0"/></radialGradient>
 <linearGradient id="${u}b" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${g}" stop-opacity=".95"/><stop offset="1" stop-color="${g}" stop-opacity="0"/></linearGradient>
 <clipPath id="${u}k"><path d="${body}"/><path d="${side}"/><path d="${lidT}"/><path d="${lidF}"/><path d="${lidS}"/></clipPath></defs>
 <ellipse class="crt-g" cx="110" cy="100" rx="108" ry="84" fill="url(#${u}g)"/>
-<ellipse cx="110" cy="177" rx="92" ry="9" fill="#000" opacity=".42"/>
+<ellipse cx="110" cy="177" rx="92" ry="9" fill="#000" opacity=".48"/>
 ${sp}
 <path d="${body}" fill="url(#${u}f)"/><path d="${side}" fill="url(#${u}s)"/>
-<path d="M164 112L194 100M164 124L194 112M164 136L194 124" stroke="#000" stroke-opacity=".28" stroke-width="3" stroke-linecap="round"/><path d="M164 114.5L194 102.5M164 126.5L194 114.5M164 138.5L194 126.5" stroke="#fff" stroke-opacity=".22" stroke-width="1.2" stroke-linecap="round"/>
-<rect x="38" y="106" width="16" height="62" rx="4.5" fill="${D}" opacity=".55"/><rect x="128" y="106" width="16" height="62" rx="4.5" fill="${D}" opacity=".55"/>
-<rect x="40" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".28"/><rect x="130" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".28"/>
-<g fill="#59636f"><circle cx="46" cy="152" r="2"/><circle cx="46" cy="162" r="2"/><circle cx="136" cy="152" r="2"/><circle cx="136" cy="162" r="2"/></g>
-<rect x="57" y="107" width="68" height="58" rx="5" fill="#2b323b"/>${slats}
-<rect x="62" y="124" width="58" height="24" rx="5" fill="#000" opacity=".22"/>${chev}
-<rect x="22" y="167" width="26" height="8" rx="3" fill="#8b929c"/><rect x="136" y="167" width="26" height="8" rx="3" fill="#7b828c"/>
+<path d="M164 112L194 100M164 124L194 112M164 136L194 124" stroke="#000" stroke-opacity=".32" stroke-width="3" stroke-linecap="round"/><path d="M164 114.5L194 102.5M164 126.5L194 114.5M164 138.5L194 126.5" stroke="#fff" stroke-opacity=".2" stroke-width="1.2" stroke-linecap="round"/>
+<rect x="38" y="106" width="16" height="62" rx="3" fill="${D}" opacity=".6"/><rect x="128" y="106" width="16" height="62" rx="3" fill="${D}" opacity=".6"/>
+<rect x="40" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".22"/><rect x="130" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".22"/>
+<g fill="#444d58"><circle cx="46" cy="152" r="2"/><circle cx="46" cy="162" r="2"/><circle cx="136" cy="152" r="2"/><circle cx="136" cy="162" r="2"/></g>
+<rect x="57" y="107" width="68" height="58" rx="3" fill="#1d2127"/><rect x="57" y="107" width="68" height="3" fill="#000" opacity=".5"/>${slats}
+<rect x="62" y="124" width="58" height="24" fill="#000" opacity=".3"/><rect x="62" y="124" width="58" height="2" fill="#000" opacity=".4"/>${chev}
+<rect x="22" y="167" width="26" height="8" rx="2" fill="#6b7480"/><rect x="136" y="167" width="26" height="8" rx="2" fill="#5e6672"/>
+${rivets}${wear}
 <g class="inl"><path d="M26 76L64 60H198L158 76Z" fill="${DD}"/><ellipse cx="112" cy="68" rx="78" ry="8" fill="url(#${u}i)"/></g>
 <path class="beam" d="M32 70L-14 -80H234L190 70Z" fill="url(#${u}b)" style="mix-blend-mode:screen"/>
 <g class="lid"><path d="${lidS}" fill="url(#${u}s)"/><path d="${lidF}" fill="url(#${u}l)"/><path d="${lidT}" fill="url(#${u}t)"/>
-<path d="M44 72L70 62.5H176" stroke="#fff" stroke-opacity=".5" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M20 76H162" stroke="#fff" stroke-opacity=".45" stroke-width="1.4"/><path d="M22 104.5H161" stroke="#000" stroke-opacity=".3" stroke-width="2"/>${stars}
-<path d="M168 70L196 60V80L168 91Z" fill="#000" opacity=".12"/><path d="M180 82L196 76V92L180 98Z" fill="url(#${u}m)" stroke="#59636f" stroke-width=".8"/></g>
+<path d="M44 72L70 62.5H176" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M20 76H162" stroke="#000" stroke-opacity=".25" stroke-width="1.4"/><path d="M22 104.5H161" stroke="#000" stroke-opacity=".35" stroke-width="2"/>${stars}
+<path d="M168 70L196 60V80L168 91Z" fill="#000" opacity=".16"/><path d="M180 82L196 76V92L180 98Z" fill="url(#${u}m)" stroke="#333a42" stroke-width=".8"/></g>
 ${latch(48)}${latch(136)}
-<g clip-path="url(#${u}k)"><rect class="shn" x="-80" y="40" width="26" height="150" fill="#fff" opacity=".3" style="transform:translateX(0) skewX(-20deg)"/></g></svg>`;
+<g clip-path="url(#${u}k)"><rect class="shn" x="-80" y="40" width="26" height="150" fill="#fff" opacity=".28" style="transform:translateX(0) skewX(-20deg)"/></g></svg>`;
 }
 const CS_NAMES = { cheap: "Дешёвка", econ: "Эконом", std: "Стандарт", risk: "Риск", pro: "Профи", elite: "Элита", mag: "Магнат", olig: "Олигарх", free: "Бесплатный", outsider: "Аутсайдер" };
 function csFallbackState() { // те же шансы, что на сервере: чтобы вкладка работала и без связи, и в демо

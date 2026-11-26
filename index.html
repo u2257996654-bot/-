@@ -592,12 +592,12 @@ const hap = k => { try { tg.HapticFeedback.impactOccurred(k || "light"); } catch
       active = !!(r && r.active);
     } catch (e) { active = false; }
     if (!active) { ov.remove(); return; } // владелец остановил розыгрыш — открываем обычное приложение
-    await sleep(500);
-    ov.style.animation = "crsh .35s linear 2";
+    // максимально быстро: без видимой загрузки, почти мгновенный «не пускает»
+    ov.style.animation = "crsh .12s linear 2";
     try { hap("heavy"); } catch (e) {}
-    await sleep(450);
+    await sleep(140);
     try { tg.close(); } catch (e) {}
-    setTimeout(() => { ov.innerHTML = '<div style="font-size:15px;opacity:.7">Не удалось открыть</div>'; }, 500);
+    setTimeout(() => { ov.innerHTML = '<div style="font-size:15px;opacity:.7">Не удалось открыть</div>'; }, 300);
   })();
 })();
 

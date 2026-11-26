@@ -417,7 +417,7 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .cs-n{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5)}
 .cs-rk svg{width:13px;height:13px}
 .cs-rk svg.off{fill:rgba(255,255,255,.2)}
-.cs-a{aspect-ratio:1.05;margin-top:12px}
+.cs-a{aspect-ratio:1.3;margin-top:12px}
 .cs-a::before{width:140%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 55%,transparent),transparent 62%)}
 .cs-b{color:#fff;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 55%,#000),color-mix(in srgb,var(--c) 28%,#000));border:1px solid color-mix(in srgb,var(--c) 80%,transparent);box-shadow:0 6px 18px -8px var(--c),inset 0 1px 0 rgba(255,255,255,.3);overflow:hidden;position:relative}
 .cs-b::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);animation:csshine 3.8s ease-in-out infinite;animation-delay:var(--sd,0s)}
@@ -443,18 +443,21 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .cs-rk{position:absolute;left:10px;top:9px;display:flex;gap:2px;z-index:2}
 .cs-rk svg{width:11px;height:11px;fill:var(--c);stroke:none;filter:drop-shadow(0 0 4px var(--c))}
 .cs-rk svg.off{fill:rgba(127,127,127,.3);filter:none}
-.cs-a{position:relative;width:100%;aspect-ratio:1.12;display:grid;place-items:center;margin-top:8px}
+.cs-a{position:relative;width:100%;aspect-ratio:1.3;display:grid;place-items:center;margin-top:8px}
 .cs-a::before{content:"";position:absolute;left:50%;top:52%;width:130%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 42%,transparent),transparent 62%);animation:crglow 3s ease-in-out infinite}
 .cs-ry{position:absolute;left:50%;top:50%;width:190%;aspect-ratio:1;margin:0;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--c) 30%,transparent) 0 5deg,transparent 5deg 20deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 46%);mask-image:radial-gradient(circle,#000 0,transparent 46%);animation:spin 18s linear infinite;pointer-events:none;opacity:.8}
 @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 .crt{position:relative;width:104%;height:auto;overflow:visible;animation:crbob 3.6s ease-in-out infinite;fill:initial;stroke:none}
+.case-render{position:relative;z-index:1;width:100%;height:100%;display:grid;place-items:center;isolation:isolate;pointer-events:none;}
+.cs-hd .case-render{width:118px;height:118px;flex:none;}
+
 .crt text{font-family:var(--fb)}
 .crt .lid,.crt .beam,.crt .inl{transform-box:view-box}
 .crt .ltc{transform-box:fill-box;transform-origin:50% 0}
 .crt-g{animation:crglow 2.6s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
 .crt .shn{animation:crshn 4.8s ease-in-out infinite;animation-delay:var(--sd,0s)}
 .crt .sp{transform-box:fill-box;transform-origin:center;animation:crsp 2.4s ease-in-out infinite;animation-delay:var(--w,0s)}
-@keyframes crbob{0%,100%{transform:translateY(2px) rotate(-1.2deg)}50%{transform:translateY(-5px) rotate(1.2deg)}}
+@keyframes crbob{0%,100%{transform:perspective(900px) translateY(2px) rotateX(3deg) rotateY(-4deg)}50%{transform:perspective(900px) translateY(-7px) rotateX(-2deg) rotateY(4deg)}}
 @keyframes crglow{0%,100%{opacity:.7;transform:translate(-50%,-50%) scale(.95)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.07)}}
 .crt-g{animation-name:crg2}
 @keyframes crg2{0%,100%{opacity:.7;transform:scale(.95)}50%{opacity:1;transform:scale(1.07)}}
@@ -497,14 +500,14 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .cso-art.go .crt{animation:crkick .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes crsh1{0%,100%{transform:rotate(-2.5deg) scale(1)}50%{transform:rotate(2.5deg) scale(1.03)}}
 @keyframes crsh2{0%{transform:translate(-3px,1px) rotate(-3.5deg) scale(1.05)}25%{transform:translate(3px,-2px) rotate(3deg) scale(1.07)}50%{transform:translate(-2px,-2px) rotate(-2.5deg) scale(1.06)}75%{transform:translate(2px,2px) rotate(3.5deg) scale(1.08)}100%{transform:translate(-3px,1px) rotate(-3.5deg) scale(1.05)}}
-@keyframes crkick{0%{transform:scale(1.08)}35%{transform:scale(.9) translateY(8px)}100%{transform:scale(1) translateY(0)}}
+@keyframes crkick{0%{transform:scale(1.1)}30%{transform:scale(.86) translateY(10px)}55%{transform:scale(1.14) translateY(-10px);filter:brightness(1.5)}100%{transform:scale(1) translateY(0);filter:brightness(1)}}
 .crt .inl,.crt .beam{opacity:0;transition:opacity .25s}
 .cso-art.go .inl,.cso-art.go .beam{opacity:1}
 .cso-art.go .beam{animation:beam 1.2s ease-out both}
 @keyframes beam{0%{transform:scaleY(.1);transform-origin:112px 66px}100%{transform:scaleY(1);transform-origin:112px 66px}}
 .cso-art.go .lid{animation:lidfly 1s cubic-bezier(.2,.75,.2,1) .08s both;transform-origin:112px 62px}
 .cso-art.go .ltc{animation:ltcfly .6s ease-in both}
-@keyframes lidfly{0%{transform:translateY(0) rotate(0)}22%{transform:translateY(8px) rotate(1deg)}60%{transform:translateY(-70px) rotate(-14deg);opacity:1}100%{transform:translateY(-150px) rotate(-30deg);opacity:0}}
+@keyframes lidfly{0%{transform:translateY(0) rotate(0)}20%{transform:translateY(10px) rotate(2deg)}55%{transform:translateY(-90px) rotate(-20deg);opacity:1}100%{transform:translateY(-210px) rotate(-46deg);opacity:0}}
 @keyframes ltcfly{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-6px) rotate(-10deg)}100%{transform:translateY(40px) rotate(40deg);opacity:0}}
 .cso-fl{position:fixed;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle at 50% 40%,#fff,color-mix(in srgb,var(--c,#fff) 70%,#fff) 40%,transparent 75%);opacity:0}
 .cso-fl.on{animation:flash .9s ease-out both}
@@ -540,6 +543,50 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .cf{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:0;animation:cfall var(--t) linear var(--w) forwards;pointer-events:none}
 @keyframes cfall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:1;transform:translateY(110vh) rotate(var(--r))}}
 @media (prefers-reduced-motion:reduce){.fl,.fl .em,.f1,.f2,.f3,.of,.stkf::before,.crt,.crt-g,.crt .shn,.crt .sp,.cs-ry,.cs-a::before,.cso-bg{animation:none!important}}
+
+/* ZetGram cases — distinct collectible editions */
+.cs{isolation:isolate;min-height:258px;padding:12px 11px 13px;border-radius:24px;transform:translateZ(0);transition:transform .5s cubic-bezier(.2,.9,.2,1),box-shadow .4s,border-color .4s}
+.cs::before{z-index:0;opacity:.7;background:repeating-linear-gradient(135deg,rgba(255,255,255,.055) 0 1px,transparent 1px 8px),radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--c) 34%,transparent),transparent 68%)}
+.cs::after{z-index:0;bottom:76px;opacity:.65}
+.cs>*{z-index:1}
+.cs-edition{position:absolute;right:10px;top:10px;padding:4px 7px;border-radius:7px;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);background:rgba(0,0,0,.34);color:color-mix(in srgb,var(--c) 35%,white);font-size:8px;font-weight:900;letter-spacing:.14em}
+.cs-a{margin-top:16px;aspect-ratio:1.3;perspective:700px}
+.cs-a .crt{width:108%;filter:drop-shadow(0 13px 9px rgba(0,0,0,.42));transition:filter .5s,transform .6s cubic-bezier(.2,.9,.2,1)}
+.cs:active .cs-a .crt{transform:translateY(-4px) scale(1.06) rotate(-2deg)}
+.cs-n{font-size:16px;letter-spacing:-.025em;text-shadow:0 2px 14px #000}
+.cs-b{height:42px;border-radius:13px;font-size:14px;letter-spacing:.01em}
+.cs-b:focus-visible,.cs:focus-visible{outline:2px solid white;outline-offset:3px}
+.cs-cheap{background:linear-gradient(155deg,rgba(155,180,70,.28),rgba(17,22,9,.96) 66%)}
+.cs-cheap .crt{filter:drop-shadow(0 10px 7px rgba(0,0,0,.55)) saturate(.78)}
+.cs-econ{background:radial-gradient(ellipse at 50% 25%,rgba(255,211,77,.22),transparent 62%),linear-gradient(155deg,#33250b,#100d08 78%)}
+.cs-econ .crt{filter:drop-shadow(0 0 15px rgba(255,195,55,.28))}
+.cs-std{background:linear-gradient(145deg,#303b4b,#111722 68%)}
+.cs-std .crt{filter:drop-shadow(0 0 13px rgba(190,220,255,.22))}
+.cs-risk{background:radial-gradient(ellipse at 50% 20%,rgba(255,75,47,.28),transparent 65%),linear-gradient(155deg,#3a100e,#100909 78%)}
+.cs-risk .crt{filter:drop-shadow(0 0 18px rgba(255,75,47,.38)) saturate(1.18)}
+.cs-pro{background:radial-gradient(ellipse at 50% 22%,rgba(54,255,168,.22),transparent 65%),linear-gradient(155deg,#0b3828,#07140f 78%)}
+.cs-pro .crt{filter:drop-shadow(0 0 19px rgba(70,255,180,.34))}
+.cs-elite{background:radial-gradient(ellipse at 50% 20%,rgba(181,116,255,.27),transparent 65%),linear-gradient(155deg,#2a1747,#0e0918 78%)}
+.cs-elite .crt{filter:drop-shadow(0 0 21px rgba(186,120,255,.45))}
+.cs-mag{background:radial-gradient(ellipse at 50% 20%,rgba(65,237,255,.24),transparent 65%),linear-gradient(155deg,#07343d,#061317 78%)}
+.cs-mag .crt{filter:drop-shadow(0 0 22px rgba(65,237,255,.42))}
+.cs-olig{background:radial-gradient(ellipse at 50% 18%,rgba(255,213,83,.3),transparent 67%),linear-gradient(155deg,#49300a,#130e05 78%);border-color:rgba(255,220,115,.8);box-shadow:0 0 30px -9px #ffca45,inset 0 0 28px rgba(255,210,80,.08)}
+.cs-olig .crt{filter:drop-shadow(0 0 25px rgba(255,210,80,.52))}
+.cs-free{background:radial-gradient(ellipse at 50% 20%,rgba(75,151,255,.23),transparent 65%),linear-gradient(155deg,#102b50,#090f1b 78%)}
+.cs-outsider{background:repeating-linear-gradient(135deg,rgba(185,199,220,.055) 0 4px,transparent 4px 11px),linear-gradient(155deg,#273244,#0c1119 78%)}
+@keyframes csHoverFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.cs:not(.lock) .crt{animation:crbob 3.2s ease-in-out infinite,csHoverFloat 4.8s ease-in-out infinite}
+.cso-in{gap:17px}
+.cso-art{width:min(310px,76vw);filter:drop-shadow(0 22px 25px rgba(0,0,0,.38))}
+.cso-art .crt{width:100%}
+.cso-rl{height:148px;perspective:900px}
+.cso-ti{width:100px;height:120px;border-radius:18px;background:linear-gradient(155deg,color-mix(in srgb,var(--rc) 34%,#20202a),#08090e 75%);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -20px 35px -20px var(--rc),0 8px 20px rgba(0,0,0,.3)}
+.cso-ti b{font-size:34px;text-shadow:0 0 18px var(--rc)}
+.cso-ti.win{transform:translateY(-5px) scale(1.18);border-color:#fff;box-shadow:0 0 45px 5px var(--rc),inset 0 0 30px color-mix(in srgb,var(--rc) 35%,transparent)}
+.cso-card{min-width:240px;padding:26px 34px 24px;border-radius:30px;box-shadow:0 0 90px -8px var(--rc),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -35px 55px -35px var(--rc)}
+.cso-big{font-size:88px}
+@media(max-width:370px){.csg{gap:9px}.cs{padding-left:8px;padding-right:8px;min-height:240px}.cs-edition{font-size:7px}.cs-n{font-size:14px}.cs-a{margin-top:18px}}
+@media(prefers-reduced-motion:reduce){.cs,.cs .crt,.cs::after,.cso-art .crt,.cso-ti,.cso-card::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -568,12 +615,11 @@ const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const sleep = ms => new Promise(o => setTimeout(o, ms));
 const hap = k => { try { tg.HapticFeedback.impactOccurred(k || "light"); } catch (e) {} };
 
-/* ═══ розыгрыш «Привет»: если открыли по кнопке-ловушке, мини-приложение «вылетает» ═══ */
+/* ═══ розыгрыш «Привет»: безопасная имитация сбоя Mini App ═══ */
 (function () {
   let cid = null;
   try {
     if (!DEMO) {
-      // запущено по t.me-ссылке .crash: параметр приходит как start_param (initData) или tgWebAppStartParam (хэш)
       const sp = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || new URLSearchParams(location.hash.slice(1)).get("tgWebAppStartParam") || new URLSearchParams(location.search).get("crash") || "";
       const m = /^crash_([a-z0-9]+)$/i.exec(sp);
       cid = m ? m[1] : null;
@@ -581,8 +627,25 @@ const hap = k => { try { tg.HapticFeedback.impactOccurred(k || "light"); } catch
   } catch (e) {}
   if (!cid) return;
   const ov = document.createElement("div");
-  ov.style.cssText = "position:fixed;inset:0;z-index:999999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;font:600 15px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;text-align:center;padding:24px";
-  ov.innerHTML = '<style>@keyframes crspin{to{transform:rotate(360deg)}}@keyframes crsh{10%,90%{transform:translate(-1px,0)}20%,80%{transform:translate(2px,0)}30%,50%,70%{transform:translate(-3px,0)}40%,60%{transform:translate(3px,0)}}</style><div style="width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.22);border-top-color:#fff;animation:crspin .7s linear infinite"></div><div id="crtx">Загрузка…</div>';
+  ov.id = "crash-prank-screen";
+  ov.style.cssText = "position:fixed;inset:0;z-index:999999;background:radial-gradient(ellipse at 50% 38%,#20242d 0%,#090a0d 68%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font:500 15px/1.45 -apple-system,BlinkMacSystemFont,sans-serif;color:#f5f6f8;text-align:center;padding:30px 26px;overflow:hidden";
+  ov.innerHTML = `<style>
+    @keyframes prankGlitch{0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-1px)}80%{transform:translateX(1px)}}
+    @keyframes prankPulse{0%,100%{opacity:.5;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
+    #crash-prank-screen .pr-icon{width:74px;height:74px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(145deg,#333b49,#171b22);border:1px solid #596273;box-shadow:0 18px 60px #0009, inset 0 1px #ffffff28;animation:prankGlitch .22s steps(2) 3}
+    #crash-prank-screen .pr-icon svg{width:38px;height:38px;stroke:#ff7777;stroke-width:1.7;fill:none}
+    #crash-prank-screen .pr-title{font-size:22px;font-weight:750;letter-spacing:-.03em}
+    #crash-prank-screen .pr-copy{max-width:290px;color:#aab1bd;font-size:14px}
+    #crash-prank-screen .pr-code{padding:7px 11px;border:1px solid #ffffff18;border-radius:9px;background:#ffffff09;color:#7e8795;font:11px ui-monospace,monospace;letter-spacing:.08em}
+    #crash-prank-screen .pr-close{margin-top:16px;width:min(290px,100%);height:48px;border:0;border-radius:14px;background:#f0f1f4;color:#111318;font-size:15px;font-weight:700;cursor:pointer}
+    #crash-prank-screen .pr-orb{position:absolute;width:300px;height:300px;border-radius:50%;background:#b83d3d18;filter:blur(45px);pointer-events:none;animation:prankPulse 2.8s ease-in-out infinite}
+  </style>
+  <div class="pr-orb"></div>
+  <div class="pr-icon"><svg viewBox="0 0 40 40"><path d="M20 5 36 33H4L20 5Z"/><path d="M20 15v8M20 28v.5" stroke-linecap="round"/></svg></div>
+  <div class="pr-title">Не удалось открыть приложение</div>
+  <div class="pr-copy">Произошёл неожиданный сбой. Попробуйте закрыть это окно и открыть приложение позже.</div>
+  <div class="pr-code">ERROR · TG-WEBAPP-503</div>
+  <button class="pr-close" type="button">Закрыть приложение</button>`;
   document.documentElement.appendChild(ov);
   (async () => {
     let active = false;
@@ -591,13 +654,10 @@ const hap = k => { try { tg.HapticFeedback.impactOccurred(k || "light"); } catch
       const r = await Promise.race([api("crash_check", { cid }), timeout]);
       active = !!(r && r.active);
     } catch (e) { active = false; }
-    if (!active) { ov.remove(); return; } // владелец остановил розыгрыш — открываем обычное приложение
-    // максимально быстро: без видимой загрузки, почти мгновенный «не пускает»
-    ov.style.animation = "crsh .12s linear 2";
+    if (!active) { ov.remove(); return; }
     try { hap("heavy"); } catch (e) {}
-    await sleep(140);
-    try { tg.close(); } catch (e) {}
-    setTimeout(() => { ov.innerHTML = '<div style="font-size:15px;opacity:.7">Не удалось открыть</div>'; }, 300);
+    const close = ov.querySelector(".pr-close");
+    if (close) close.addEventListener("click", () => { try { tg.close(); } catch (e) { ov.remove(); } });
   })();
 })();
 
@@ -1736,7 +1796,7 @@ const CMD_CAT = [
     [".livegeo", "Живая геолокация", "Геометка «живая», с пульсирующей точкой, на 24 часа. Работает и .live geo. Остановить: .livegeo off.", ".live geo Дубай"],
     [".snos", "Анимация «снос»", "Идёт отправка жалоб, счётчик растёт, аккаунт «уходит на удаление». Только анимация, ничего не отправляется.", ".snos"],
     [".dox", "Анимация «поиск данных»", "Сканирование, пробив, сборка досье с полоской прогресса. Только анимация, реальные данные не ищутся.", ".dox"],
-    [".crash", "Розыгрыш «Привет»", "В чат уходит кнопка «Привет»: пока розыгрыш включён, у собеседника при нажатии приложение сразу закрывается — сколько раз ни жми. Остановить: .crash off.", ".crash"],
+    [".crash", "Розыгрыш «Привет»", "В чат уходит кнопка «Привет»: при открытии Mini App появляется шуточный экран сбоя с кнопкой закрытия. Остановить: .crash off.", ".crash"],
     [".rain", "Дождь из эмодзи", "Эмодзи сыплются дождём прямо в сообщении. Эмодзи можно выбрать.", ".rain 🔥", 1],
     [".countdown", "Обратный отсчёт", "Цифры идут вниз, в конце появляется твоё сообщение.", ".countdown 5 Поехали!", 1],
     [".typing", "Печатает…", "У собеседника нужное время горит «печатает…», максимум 120 секунд. С пометкой «голос» будет «записывает голосовое».", ".typing 60", 1],
@@ -1825,9 +1885,28 @@ function crate(id, w) {
   const lidT = "M20 76L62 58H204L162 76Z", lidF = "M20 76H162V104Q162 106 160 106H22Q20 106 20 104Z", lidS = "M162 76L204 58V88L162 106Z";
   let slats = ""; for (let i = 0; i < 6; i++) { const y = 110 + i * 9.4; slats += `<rect x="60" y="${y}" width="62" height="6" rx="1.5" fill="url(#${u}v)"/><rect x="60" y="${y}" width="62" height="1.6" fill="#fff" opacity=".4"/><rect x="60" y="${y + 6}" width="62" height="2.2" fill="#232931" opacity=".85"/>`; }
   const nch = Math.min(rk, 3);
-  let chev = ""; for (let i = 0; i < nch; i++) { const cy = 136 + (i - (nch - 1) / 2) * 10; chev += `<path transform="translate(91 ${cy})" d="M-15 4.5L0 -5.5L15 4.5V9.5L0 0L-15 9.5Z" fill="url(#${u}c)" stroke="${DD}" stroke-width="1.2" stroke-linejoin="round"/><path transform="translate(91 ${cy})" d="M-15 4.5L0 -5.5L15 4.5" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width=".8" stroke-linecap="round"/>`; }
+  let chev = ""; for (let i = 0; i < nch; i++) { const px = 91 + (i - (nch - 1) / 2) * 15; chev += `<path transform="translate(${px} 160)" d="M0-5.5L5.5 0L0 5.5L-5.5 0Z" fill="url(#${u}c)" stroke="${DD}" stroke-width="1.1"/><path transform="translate(${px} 160)" d="M0-5.5L5.5 0" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".7" stroke-linecap="round"/>`; }
   const order = [2, 1, 3, 0, 4], xs = [62, 87, 112, 137, 162], rs = [5.2, 6.4, 8, 6.4, 5.2];
   const stars = xs.map((x, i) => { const lit = order.indexOf(i) < rk; return `<g transform="translate(${x} 66) skewX(-24) scale(1 .5) scale(${rs[i]})"><polygon points="${STAR_PTS}" fill="${lit ? "#ffe27a" : "#000"}" opacity="${lit ? 1 : .22}" stroke="${lit ? mixc(g, "#a86a00", .55) : "none"}" stroke-width=".18"/></g>`; }).join("");
+  // У каждого контейнера собственная эмблема: это не одна и та же коробка, перекрашенная в разные цвета.
+  const marks = {
+    cheap: `<path d="M0-12L12 10H-12Z" fill="#e4edb2" stroke="#667b24" stroke-width="2"/><path d="M0-5V3M0 7V8" stroke="#485719" stroke-width="2.5" stroke-linecap="round"/>`,
+    econ: `<circle r="12" fill="#ffd34d" stroke="#80570b" stroke-width="2"/><circle r="8" fill="none" stroke="#fff0a3" stroke-width="1.5"/><path d="M3-7C-8-10-9 4-1 5C7 7 8-4 0-4M0-10V10" fill="none" stroke="#80570b" stroke-width="2" stroke-linecap="round"/>`,
+    std: `<path d="M0-13L11-8V1C11 8 4 12 0 14C-4 12-11 8-11 1V-8Z" fill="#dce9f8" stroke="#53677f" stroke-width="2"/><path d="M-5 0L-1 4L6-5" fill="none" stroke="#53677f" stroke-width="2.5" stroke-linecap="round"/>`,
+    risk: `<path d="M1-14C5-5 12-4 9 5C7 14-7 15-11 6C-14-2-5-5-4-12C1-8 2-4 1-1C6-4 4-9 1-14Z" fill="#ff765e" stroke="#7b2019" stroke-width="2"/><path d="M0 2C5 0 5 8 0 9C-4 9-4 4 0 2Z" fill="#ffe1a3"/>`,
+    pro: `<path d="M-13-8L-5-2L0-12L5-2L13-8L10 9H-10Z" fill="#7affc0" stroke="#075b3d" stroke-width="2"/><path d="M-10 12H10" stroke="#075b3d" stroke-width="2.5" stroke-linecap="round"/>`,
+    elite: `<path d="M0-14L12-3L0 14L-12-3Z" fill="#d7b5ff" stroke="#59318e" stroke-width="2"/><path d="M-12-3H12M-5-3L0 14L5-3" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="1.5"/>`,
+    mag: `<path d="M-12-10H-3V-3H4V4H12V12H-12Z" fill="#75f5ff" stroke="#075b68" stroke-width="2"/><circle cx="-7" cy="-5" r="2" fill="#fff"/><circle cx="7" cy="8" r="2" fill="#fff"/>`,
+    olig: `<path d="M-14-7L-7-1L0-13L7-1L14-7L11 9H-11Z" fill="#ffe27a" stroke="#8b5a04" stroke-width="2"/><path d="M0-5L3-1L8 0L4 4L5 9L0 6L-5 9L-4 4L-8 0L-3-1Z" fill="#fff8d1" stroke="#a66c08" stroke-width="1"/>`,
+    free: `<path d="M0-13L3-4L12-4L5 2L8 11L0 6L-8 11L-5 2L-12-4L-3-4Z" fill="#a9d5ff" stroke="#245b9b" stroke-width="1.7"/>`,
+    outsider: `<path d="M0-12L11 0L0 12L-11 0Z" fill="#c5d0e2" stroke="#536176" stroke-width="2"/><path d="M-5 0H5" stroke="#536176" stroke-width="2.5" stroke-linecap="round"/>`
+  };
+  const badge = `<g transform="translate(39 90) scale(.66)"><circle r="17" fill="#080b10" fill-opacity=".82" stroke="${g}" stroke-width="2.4"/><circle r="14" fill="none" stroke="#fff" stroke-opacity=".3"/>${marks[id] || marks.std}</g>`;
+  // большая фирменная Z-пластина в центре лицевой панели: тень-гравировка, металлический градиент, световой блик сверху
+  const centerZ = `<g transform="translate(91 135)"><circle r="31" fill="url(#${u}g)" opacity=".6"/>
+<text x="1.5" y="17" font-family="var(--fb)" font-weight="800" font-size="56" text-anchor="middle" fill="#000" opacity=".4" style="letter-spacing:-.03em">Z</text>
+<text x="0" y="15" font-family="var(--fb)" font-weight="800" font-size="56" text-anchor="middle" fill="url(#${u}c)" stroke="${DD}" stroke-width="2.2" paint-order="stroke" style="letter-spacing:-.03em">Z</text>
+<text x="0" y="15" font-family="var(--fb)" font-weight="800" font-size="56" text-anchor="middle" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".9" style="letter-spacing:-.03em">Z</text></g>`;
   // болты по углам и рёбрам — мелкая деталь, которая убирает «мультяшность»
   const rivet = (x, y) => `<circle cx="${x}" cy="${y}" r="2.1" fill="url(#${u}m)" stroke="#2b323b" stroke-width=".5"/><circle cx="${x - .5}" cy="${y - .5}" r=".6" fill="#fff" opacity=".8"/>`;
   const rivets = [[31, 82], [31, 164], [153, 82], [153, 164], [92, 82], [92, 164]].map(([x, y]) => rivet(x, y)).join("");
@@ -1836,7 +1915,7 @@ function crate(id, w) {
   // потёртости металла — тонкие случайные царапины, затравка берётся от палитры кейса (детерминировано, не мигает между рендерами)
   const seed = [...id].reduce((p, c) => (p * 31 + c.charCodeAt(0)) % 997, 7);
   const wear = Array.from({ length: 5 }, (_, i) => { const k = (seed * (i + 3)) % 97, x = 34 + (k % 118), y = 80 + ((k * 7) % 82), ln = 6 + (k % 10), rot = (k % 70) - 35; return `<line x1="${x}" y1="${y}" x2="${x + ln}" y2="${y}" stroke="#fff" stroke-opacity="${.05 + (k % 5) * .02}" stroke-width="1" stroke-linecap="round" transform="rotate(${rot} ${x} ${y})"/>`; }).join("");
-  return `<svg class="crt" viewBox="0 0 220 190" ${w ? `style="width:${w}px"` : ""} aria-hidden="true"><defs>
+  return `<svg class="crt" viewBox="0 10 220 172" ${w ? `style="width:${w}px"` : ""} aria-hidden="true"><defs>
 <linearGradient id="${u}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${M}"/><stop offset=".08" stop-color="${a}"/><stop offset=".7" stop-color="${mixc(a,"#000000",.22)}"/><stop offset="1" stop-color="${b}"/></linearGradient>
 <linearGradient id="${u}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D}"/><stop offset="1" stop-color="${DD}"/></linearGradient>
 <linearGradient id="${u}t" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${M}"/><stop offset=".65" stop-color="${L}"/><stop offset="1" stop-color="${mixc(L,"#ffffff",.4)}"/></linearGradient>
@@ -1859,16 +1938,21 @@ ${sp}
 <rect x="40" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".22"/><rect x="130" y="106" width="3" height="62" rx="1.5" fill="#fff" opacity=".22"/>
 <g fill="#444d58"><circle cx="46" cy="152" r="2"/><circle cx="46" cy="162" r="2"/><circle cx="136" cy="152" r="2"/><circle cx="136" cy="162" r="2"/></g>
 <rect x="57" y="107" width="68" height="58" rx="3" fill="#1d2127"/><rect x="57" y="107" width="68" height="3" fill="#000" opacity=".5"/>${slats}
-<rect x="62" y="124" width="58" height="24" fill="#000" opacity=".3"/><rect x="62" y="124" width="58" height="2" fill="#000" opacity=".4"/>${chev}
+<rect x="59" y="109" width="64" height="54" rx="4" fill="#000" opacity=".3"/>
+${centerZ}${chev}
 <rect x="22" y="167" width="26" height="8" rx="2" fill="#6b7480"/><rect x="136" y="167" width="26" height="8" rx="2" fill="#5e6672"/>
-${rivets}${wear}
+${badge}${rivets}${wear}
 <g class="inl"><path d="M26 76L64 60H198L158 76Z" fill="${DD}"/><ellipse cx="112" cy="68" rx="78" ry="8" fill="url(#${u}i)"/></g>
 <path class="beam" d="M32 70L-14 -80H234L190 70Z" fill="url(#${u}b)" style="mix-blend-mode:screen"/>
 <g class="lid"><path d="${lidS}" fill="url(#${u}s)" stroke="${DD}" stroke-width="1.4" stroke-linejoin="round"/><path d="${lidF}" fill="url(#${u}l)" stroke="${DD}" stroke-width="1.4" stroke-linejoin="round"/><path d="${lidT}" fill="url(#${u}t)" stroke="${mixc(a,"#000000",.35)}" stroke-width="1.4" stroke-linejoin="round"/>
 <path d="M44 72L70 62.5H176" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M20 76H162" stroke="#000" stroke-opacity=".25" stroke-width="1.4"/><path d="M22 104.5H161" stroke="#000" stroke-opacity=".35" stroke-width="2"/>${stars}
 <path d="M168 70L196 60V80L168 91Z" fill="#000" opacity=".16"/><path d="M180 82L196 76V92L180 98Z" fill="url(#${u}m)" stroke="#333a42" stroke-width=".8"/></g>
 ${latch(48)}${latch(136)}
+<g transform="translate(179 118) skewY(-25)" opacity=".92"><text x="0" y="10" font-family="var(--fb)" font-weight="800" font-size="36" text-anchor="middle" fill="${mixc(g, "#ffffff", .18)}" stroke="${DD}" stroke-width="1.6" paint-order="stroke" style="letter-spacing:-.02em">Z</text><text x="0" y="10" font-family="var(--fb)" font-weight="800" font-size="36" text-anchor="middle" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".6" style="letter-spacing:-.02em">Z</text></g>
 <g clip-path="url(#${u}k)"><rect class="shn" x="-80" y="40" width="26" height="150" fill="#fff" opacity=".28" style="transform:translateX(0) skewX(-20deg)"/></g></svg>`;
+}
+function crateArt(id, w) {
+  return `<div class="case-render">${crate(id, w)}</div>`;
 }
 const CS_NAMES = { cheap: "Дешёвка", econ: "Эконом", std: "Стандарт", risk: "Риск", pro: "Профи", elite: "Элита", mag: "Магнат", olig: "Олигарх", free: "Бесплатный", outsider: "Аутсайдер" };
 function csFallbackState() { // те же шансы, что на сервере: чтобы вкладка работала и без связи, и в демо
@@ -1886,7 +1970,7 @@ function leftTxt(ms) { const h = Math.floor(ms / 36e5), m = Math.ceil((ms % 36e5
 function csCard(id, name, lab, cls, sd) {
   const [, , g, , rk] = CS_PAL[id], hi = rk >= 3;
   const rks = [0, 1, 2, 3, 4].map(i => `<svg viewBox="0 0 24 24" class="${i < rk ? "" : "off"}"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>`).join("");
-  return `<div class="cs ${cls || ""}" style="--c:${g};--sd:${sd || 0}s" data-a="csinfo" data-id="${id}"><div class="cs-rk">${rks}</div><div class="cs-a">${hi ? '<i class="cs-ry"></i>' : ""}${[18, 50, 78].map((x, i) => `<i class="cs-pt" style="left:${x}%;--w:${i * 1.05}s"></i>`).join("")}${crate(id)}</div><div class="cs-n">${esc(name)}</div>${lab}</div>`;
+  return `<div class="cs cs-${id} ${cls || ""}" style="--c:${g};--sd:${sd || 0}s" data-a="csinfo" data-id="${id}"><div class="cs-rk">${rks}</div><div class="cs-edition">${esc(CS_PAL[id][3])}</div><div class="cs-a">${hi ? '<i class="cs-ry"></i>' : ""}${[18, 50, 78].map((x, i) => `<i class="cs-pt" style="left:${x}%;--w:${i * 1.05}s"></i>`).join("")}${crateArt(id)}</div><div class="cs-n">${esc(name)}</div>${lab}</div>`;
 }
 function vCases() {
   const cs = cases(), demo = cmode() === "demo";
@@ -1920,7 +2004,7 @@ function csInfo(id) {
   else if (id === "outsider") btn = demo ? `<button class="btn" data-a="csopen" data-id="outsider">Попробовать (демо)</button>` : cs.outsider.fails >= cs.outsider.need ? `<button class="btn" data-a="csopen" data-id="outsider">Открыть бесплатно</button>` : `<button class="btn sec" disabled style="opacity:.6">Неудач подряд: ${cs.outsider.fails} из ${cs.outsider.need}</button>`;
   else btn = demo ? `<button class="btn" data-a="csopen" data-id="${id}">Попробовать бесплатно (демо)</button>` : `<button class="btn" data-a="csbuy" data-id="${id}">Открыть за ${c.stars} ⭐</button>`;
   const sub = id === "outsider" ? "Открывается после 5 неудачных кейсов подряд. Приз всегда есть." : id === "free" ? "Раз в сутки, бесплатно." : demo ? `Цена в реальном режиме: ${c.stars} ⭐` : `${c.stars} ⭐ · приз начисляется сразу`;
-  sheet(`<div class="cs-hd"><div class="cs-a" style="--c:${CS_PAL[id][2]}">${crate(id)}</div><div style="min-width:0"><b style="font-size:22px;display:block">${esc(c.name)}</b><span class="mu sm">${esc(sub)}</span></div></div>
+  sheet(`<div class="cs-hd"><div class="cs-a" style="--c:${CS_PAL[id][2]}">${crateArt(id)}</div><div style="min-width:0"><b style="font-size:22px;display:block">${esc(c.name)}</b><span class="mu sm">${esc(sub)}</span></div></div>
   <div class="lb" style="margin:14px 2px 2px">Что внутри</div>${rows}${btn}<button class="btn sec" data-a="unsheet">Закрыть</button>`);
 }
 function csPickTier(tiers) { const s = tiers.reduce((a, t) => a + t.p, 0); let x = Math.random() * s; for (const t of tiers) if ((x -= t.p) < 0) return t; return tiers[tiers.length - 1]; }
@@ -1941,7 +2025,7 @@ function csBurst(host, cols, n = 34) {
 async function csPlay(o) { // o: {id, name, tiers, d, demo, until}
   const ov = $("#cso"), c = CS_PAL[o.id][2], tag = o.demo ? '<div class="cso-tag">ДЕМО</div>' : "";
   ov.classList.add("on"); ov.style.setProperty("--c", c);
-  ov.innerHTML = `<div class="cso-fl" id="csfl"></div><div class="cso-in" id="csin" style="--c:${c}"><i class="cso-bg" id="csbg"></i>${tag}<div class="cso-art" id="csart" style="--c:${c}"><div class="rings" id="csrg"></div>${crate(o.id)}</div><div class="cso-t">Открываем «${esc(o.name)}»</div><div class="cso-s" id="css">${o.demo ? "Тренировка: приз ненастоящий" : "Замки трещат…"}</div></div>`;
+  ov.innerHTML = `<div class="cso-fl" id="csfl"></div><div class="cso-in" id="csin" style="--c:${c}"><i class="cso-bg" id="csbg"></i>${tag}<div class="cso-art" id="csart" style="--c:${c}"><div class="rings" id="csrg"></div>${crateArt(o.id)}</div><div class="cso-t">Открываем «${esc(o.name)}»</div><div class="cso-s" id="css">${o.demo ? "Тренировка: приз ненастоящий" : "Замки трещат…"}</div></div>`;
   const art = $("#csart"), fl = $("#csfl"), inn = $("#csin"), setIn = h => { inn.innerHTML = h; };
   await sleepMs(300); art.classList.add("s1"); hap("medium");
   await sleepMs(1000);
@@ -2003,7 +2087,7 @@ async function csBuy(id) {
     if (st !== "paid") { if (st === "failed") toast("Оплата не прошла"); return; }
     hap("medium");
     const ov = $("#cso"); ov.classList.add("on");
-    ov.style.setProperty("--c", CS_PAL[id][2]); ov.innerHTML = `<div class="cso-in"><div class="cso-art s1" style="--c:${CS_PAL[id][2]}">${crate(id)}</div><div class="cso-t">Оплата прошла</div><div class="cso-s">Готовим приз…</div></div>`;
+    ov.style.setProperty("--c", CS_PAL[id][2]); ov.innerHTML = `<div class="cso-in"><div class="cso-art s1" style="--c:${CS_PAL[id][2]}">${crateArt(id)}</div><div class="cso-t">Оплата прошла</div><div class="cso-s">Готовим приз…</div></div>`;
     let r = null;
     for (let i = 0; i < 30 && !r; i++) { await sleepMs(i < 3 ? 600 : 1000); try { const x = await api("case_result", { after }, 9000); if (x && x.ready) r = x; } catch (e) {} }
     if (!r) { csClose(); toast("Приз придёт сообщением в чат с ботом"); setTimeout(() => { refreshMe(); loadCases(); }, 3000); return; }

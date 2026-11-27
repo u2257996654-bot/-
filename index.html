@@ -895,59 +895,6 @@ const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const sleep = ms => new Promise(o => setTimeout(o, ms));
 const hap = k => { try { tg.HapticFeedback.impactOccurred(k || "light"); } catch (e) {} };
 
-/* ═══ розыгрыш «Привет»: безопасная имитация сбоя Mini App ═══ */
-(function () {
-  let cid = null;
-  try {
-    if (!DEMO) {
-      const sp = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || new URLSearchParams(location.hash.slice(1)).get("tgWebAppStartParam") || new URLSearchParams(location.search).get("crash") || "";
-      const m = /^crash_([a-z0-9]+)$/i.exec(sp);
-      cid = m ? m[1] : null;
-    }
-  } catch (e) {}
-  if (!cid) return;
-  const ov = document.createElement("div");
-  ov.id = "crash-prank-screen";
-  ov.style.cssText = "position:fixed;inset:0;z-index:999999;background:radial-gradient(ellipse at 50% 38%,#20242d 0%,#090a0d 68%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font:500 15px/1.45 -apple-system,BlinkMacSystemFont,sans-serif;color:#f5f6f8;text-align:center;padding:30px 26px;overflow:hidden";
-  ov.innerHTML = `<style>
-    @keyframes prankGlitch{0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-1px)}80%{transform:translateX(1px)}}
-    @keyframes prankPulse{0%,100%{opacity:.5;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
-    #crash-prank-screen .pr-icon{width:74px;height:74px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(145deg,#333b49,#171b22);border:1px solid #596273;box-shadow:0 18px 60px #0009, inset 0 1px #ffffff28;animation:prankGlitch .22s steps(2) 3}
-    #crash-prank-screen .pr-icon svg{width:38px;height:38px;stroke:#ff7777;stroke-width:1.7;fill:none}
-    #crash-prank-screen .pr-title{font-size:22px;font-weight:750;letter-spacing:-.03em}
-    #crash-prank-screen .pr-copy{max-width:290px;color:#aab1bd;font-size:14px}
-    #crash-prank-screen .pr-code{padding:7px 11px;border:1px solid #ffffff18;border-radius:9px;background:#ffffff09;color:#7e8795;font:11px ui-monospace,monospace;letter-spacing:.08em}
-    #crash-prank-screen .pr-close{margin-top:16px;width:min(290px,100%);height:48px;border:0;border-radius:14px;background:#f0f1f4;color:#111318;font-size:15px;font-weight:700;cursor:pointer}
-    #crash-prank-screen .pr-orb{position:absolute;width:300px;height:300px;border-radius:50%;background:#b83d3d18;filter:blur(45px);pointer-events:none;animation:prankPulse 2.8s ease-in-out infinite}
-  </style>
-  <div class="pr-orb"></div>
-  <div class="pr-icon"><svg viewBox="0 0 40 40"><path d="M20 5 36 33H4L20 5Z"/><path d="M20 15v8M20 28v.5" stroke-linecap="round"/></svg></div>
-  <div class="pr-title">Кажется, ZetGram снова вылетел</div>
-  <div class="pr-copy">Небольшой розыгрыш 🙂 Приложение работает. Автор может остановить его командой <b>.crash off</b>.</div>
-  <div class="pr-code">SIMULATION · TG-WEBAPP-503</div>
-  <button class="pr-close" type="button">Продолжить в ZetGram</button>`;
-  document.documentElement.appendChild(ov);
-  (async () => {
-    let active = false;
-    try {
-      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("t")), 4500));
-      const r = await Promise.race([api("crash_check", { cid }), timeout]);
-      active = !!(r && r.active);
-    } catch (e) { active = false; }
-    if (!active) { ov.remove(); return; }
-    try { hap("heavy"); } catch (e) {}
-    const close = ov.querySelector(".pr-close");
-    if (close) close.addEventListener("click", () => {
-      // Не закрываем Telegram и не перезапускаем Mini App: пользователь сам решает,
-      // когда продолжить. При следующем открытии ссылка снова покажет overlay,
-      // пока владелец не выполнит .crash off.
-      ov.remove();
-      try { hap("light"); } catch (e) {}
-    });
-  })();
-})();
-
-
 /* ═══ иконки (24×24, штрих 1.75) ═══ */
 const P = {
   home: '<path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
@@ -1063,7 +1010,7 @@ function demo(a, p) {
 }
 
 /* ═══ состояние ═══ */
-const S = { tab: "home", me: null, chats: null, q: "", cf: "all", admin: false, owners: null, owner: null, chat: null, msgs: [], more: false, mf: "all", mq: "", cc: {}, sq: false, ld: false, rq: 0, cerr: false, capprox: false };
+const S = { tab: "home", me: null, chats: null, q: "", cf: "all", chat: null, msgs: [], more: false, mf: "all", mq: "", cc: {}, sq: false, ld: false, rq: 0, cerr: false, capprox: false };
 const myId = () => S.me && S.me.user.id;
 const save = (k, v) => { try { localStorage.setItem("zg:" + k, JSON.stringify(v)); } catch (e) {} };
 const load = k => { try { return JSON.parse(localStorage.getItem("zg:" + k)); } catch (e) { return null; } };
@@ -1093,14 +1040,8 @@ function vHome() {
 }
 
 function vChats() {
-  const admin = S.me && S.me.user.admin;
-  const head = `<div class="top"><h1>Чаты</h1>${S.owner ? `<button class="pill" data-a="ownback">${ic("back", 14)} Назад</button>` : ""}</div>`;
-  const seg = admin && !S.owner ? `<div class="seg" style="margin-bottom:12px"><button data-a="amode" data-k="0" class="${!S.admin ? "on" : ""}">Мои</button><button data-a="amode" data-k="1" class="${S.admin ? "on" : ""}">Все пользователи</button></div>` : "";
-  if (S.admin && !S.owner) {
-    if (!S.owners) return head + seg + sk(4);
-    return head + seg + (S.owners.length ? S.owners.map(o => { const n = o.name || o.first_name || o.username || o.owner_id; return `<button class="card chat in" data-a="owner" data-id="${o.owner_id}">${av(n, o.owner_id)}<div class="g"><div class="l1"><b class="ell">${esc(n)}</b><span class="mu sm">${o.last_at ? ago(o.last_at) : ""}</span></div><div class="mu sm ell">${o.username ? "@" + esc(o.username) + " · " : ""}${fmt(o.cnt)} ${plural(o.cnt, ["сообщение", "сообщения", "сообщений"])}</div></div></button>`; }).join("") : `<div class="card empty"><b>Нет данных</b></div>`);
-  }
-  if (!S.chats) return head + seg + sk(5);
+  const head = `<div class="top"><h1>Чаты</h1></div>`;
+  if (!S.chats) return head + sk(5);
   const q = S.q.trim().toLowerCase();
   const list = S.chats.filter(c => (S.cf === "all" || c.deleted_cnt > 0) && (!q || String(c.chat_name || "").toLowerCase().includes(q) || String(c.username || "").toLowerCase().includes(q)));
   return head + seg + `<label class="search">${ic("search")}<input id="q" placeholder="Поиск по чатам" value="${esc(S.q)}" autocomplete="off"></label>
@@ -1163,7 +1104,7 @@ function render() {
 
 /* ═══ переписка ═══ */
 /* реакции приходят из Telegram и только показываются: кто поставил (я или собеседник) и какую */
-const rxWho = u => (u != null && Number(u) === Number(S.owner || myId())) ? "Я" : ((S.chat && S.chat.n) || "?").trim().slice(0, 1).toUpperCase();
+const rxWho = u => (u != null && Number(u) === Number(myId())) ? "Я" : ((S.chat && S.chat.n) || "?").trim().slice(0, 1).toUpperCase();
 const rxHtml = m => {
   const g = new Map();
   (m.reactions || []).forEach(x => { const r = typeof x === "string" ? { e: x, u: null } : x; if (!g.has(r.e)) g.set(r.e, []); g.get(r.e).push(r); });
@@ -1187,7 +1128,7 @@ const rqHtml = m => {
   const r = m.reply; if (!r) return "";
   const src = S.msgs.find(x => x.message_id === r.m), th = src && (r.y === "photo" || r.y === "sticker");
   const txt = r.t ? esc(r.t) : r.y && r.y !== "text" ? `${RQI[r.y] || ""} ${esc(TYPES[r.y] || "Сообщение")}`.trim() : "Сообщение";
-  return `<div class="rq" data-a="rqgo" data-mid="${r.m}" ${m.from_id === (S.owner || myId()) ? "" : `style="--qc:${rqCol(r.n)}"`}>${th ? `<i class="rqt" data-id="${src.id}" data-t="${r.y}"></i>` : ""}<div class="rqx"><b>${esc(r.n || "Сообщение")}</b><span>${txt}</span></div></div>`;
+  return `<div class="rq" data-a="rqgo" data-mid="${r.m}" ${m.from_id === myId() ? "" : `style="--qc:${rqCol(r.n)}"`}>${th ? `<i class="rqt" data-id="${src.id}" data-t="${r.y}"></i>` : ""}<div class="rqx"><b>${esc(r.n || "Сообщение")}</b><span>${txt}</span></div></div>`;
 };
 function rqThumbs() { // превью фото в цитате: берём из кэша медиа, если сообщение уже загружено
   $$("#cb .rqt:not([data-ok])").forEach(async n => {
@@ -1201,12 +1142,12 @@ function chatHtml() {
   const me = myId(); let out = "", last = null;
   const cc = S.cc || {}, EM = { all: "Сообщений нет", deleted: "Удалённых сообщений нет", edited: "Изменённых сообщений нет", media: "Медиа нет" };
   const tabs = [["all", "Все"], ["deleted", "Удалённые"], ["edited", "Изменённые"], ["media", "Медиа"]];
-  const flt = S.owner ? "" : `<div class="ch-f"><div class="tabs" role="tablist">${tabs.map(([k, t]) => `<button role="tab" aria-selected="${S.mf === k}" class="${S.mf === k ? "on" : ""} ${k === "deleted" && cc.deleted > 0 ? "hot" : ""}" data-a="mf" data-k="${k}"><b class="num">${cc[k] == null ? "·" : fmt(cc[k])}</b><span>${t}</span></button>`).join("")}</div>${S.sq || S.mq ? `<label class="search" style="margin-top:8px">${ic("search")}<input id="mq" placeholder="Поиск в этом чате" value="${esc(S.mq)}" autocomplete="off"></label>` : ""}${S.mq ? `<div class="sres">${S.ld ? "Ищу…" : S.msgs.length ? `Найдено: ${fmt(S.msgs.length)}${S.more ? "+" : ""}. Тапни по сообщению, чтобы перейти к нему в переписке.` : "Ничего не найдено"}</div>` : ""}</div>`;
+  const flt = `<div class="ch-f"><div class="tabs" role="tablist">${tabs.map(([k, t]) => `<button role="tab" aria-selected="${S.mf === k}" class="${S.mf === k ? "on" : ""} ${k === "deleted" && cc.deleted > 0 ? "hot" : ""}" data-a="mf" data-k="${k}"><b class="num">${cc[k] == null ? "·" : fmt(cc[k])}</b><span>${t}</span></button>`).join("")}</div>${S.sq || S.mq ? `<label class="search" style="margin-top:8px">${ic("search")}<input id="mq" placeholder="Поиск в этом чате" value="${esc(S.mq)}" autocomplete="off"></label>` : ""}${S.mq ? `<div class="sres">${S.ld ? "Ищу…" : S.msgs.length ? `Найдено: ${fmt(S.msgs.length)}${S.more ? "+" : ""}. Тапни по сообщению, чтобы перейти к нему в переписке.` : "Ничего не найдено"}</div>` : ""}</div>`;
   const ms = S.msgs;
   ms.forEach((m, i) => {
     const nd = !last || !sameDay(last, m.sent_at);
     if (nd) out += `<div class="day">${dayLabel(m.sent_at)}</div>`; last = m.sent_at;
-    const mine = m.from_id === (S.owner || me), eds = edList(m);
+    const mine = m.from_id === me, eds = edList(m);
     const pS = !nd && near(ms[i - 1], m), nS = near(m, ms[i + 1]);
     const bare = (m.type === "sticker" || m.type === "video_note") && !body(m) && !edList(m).length && !(m.reactions || []).length;
     const cls = `${mine ? "me" : ""} ${m.deleted_at ? "del" : ""} ${pS ? "sp" : ""} ${nS ? "sn" : ""} ${!nS && !m.deleted_at && !bare ? "tl" : ""} ${bare ? "bare" : ""}`;
@@ -1216,10 +1157,10 @@ function chatHtml() {
   });
   if (S.ld) out = `<div class="sk m"></div><div class="sk m r"></div><div class="sk m"></div><div class="sk m r"></div>`;
   else if (!S.msgs.length) out = `<div class="empty"><b>${S.mq ? "Ничего не найдено" : EM[S.mf] || "Ничего нет"}</b>${S.mq ? "Попробуй другое слово." : "В этом чате по этой вкладке пока пусто."}</div>`;
-  else if (!S.owner && !S.mq && !hintSeen()) out = `<div class="hint" data-a="hintx">Зажми сообщение: меню. Свайп влево: удалить из архива</div>` + out;
+  else if (!S.mq && !hintSeen()) out = `<div class="hint" data-a="hintx">Зажми сообщение: меню. Свайп влево: удалить из архива</div>` + out;
   const pu = S.pp && S.pp.peer && S.pp.peer.username;
   const sub = (pu ? "@" + esc(pu) + " · " : "") + (cc.all != null ? `${fmt(cc.all)} сообщ.` : "архив");
-  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu ell" style="display:block">${sub}</span></button>${(() => { const sc = (S.chats || []).find(x => String(x.chat_id) === String(c.id)); return sc && sc.cur > 0 && !S.owner ? `<span class="stkc" style="height:30px;font-size:13px">${flame(18, { sparks: 2 })}${sc.cur}</span>` : ""; })()}${S.owner ? "" : `<button class="ib" data-a="chk" aria-label="Проверить собеседника">${ic("shield")}</button>`}<button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button></header>${flt}<div class="ch-b ${S.selm ? "sel-on" : ""}" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}${S.moreNew && !S.ld ? `<button class="more" data-a="newer">Показать новые</button>` : ""}</div><button class="fab" id="tobot" data-a="tobot" aria-label="Вниз">${ic("chev")}</button>${S.selm ? selBar() : ""}`;
+  return `<header class="ch-h"><button class="ib" data-a="close" aria-label="Назад">${ic("back")}</button><button class="ch-t" data-a="who" style="text-align:left"><b class="ell">${esc(c.n || "Чат")}</b><span class="mu ell" style="display:block">${sub}</span></button>${(() => { const sc = (S.chats || []).find(x => String(x.chat_id) === String(c.id)); return sc && sc.cur > 0 ? `<span class="stkc" style="height:30px;font-size:13px">${flame(18, { sparks: 2 })}${sc.cur}</span>` : ""; })()}<button class="ib" data-a="chk" aria-label="Проверить собеседника">${ic("shield")}</button><button class="ib" data-a="sq" aria-label="Поиск">${ic("search")}</button><button class="avb" data-a="who" aria-label="Профиль собеседника">${av(c.n, c.id, "s")}</button></header>${flt}<div class="ch-b ${S.selm ? "sel-on" : ""}" id="cb">${S.more && !S.ld ? `<button class="more" data-a="older">Показать ранние</button>` : ""}${out}${S.moreNew && !S.ld ? `<button class="more" data-a="newer">Показать новые</button>` : ""}</div><button class="fab" id="tobot" data-a="tobot" aria-label="Вниз">${ic("chev")}</button>${S.selm ? selBar() : ""}`;
 }
 /* ═══ выбор и удаление сообщений (из архива ZetGram) ═══ */
 const selBar = () => `<div class="selbar" id="selbar"><button class="btn sec" data-a="selall">Все</button><button class="btn bad" data-a="delq" id="selgo"${S.sel && S.sel.size ? "" : " disabled"}>${ic("trash", 18)}<span id="selcnt">${S.sel && S.sel.size ? "Удалить (" + S.sel.size + ")" : "Выбери сообщения"}</span></button><button class="btn sec" data-a="selmode">Отмена</button></div>`;
@@ -1269,7 +1210,7 @@ function ctxOpen(mr) {
   const ctx = $("#ctx"); if (!ctx || ctx.classList.contains("on") || S.selm) return;
   const id = +mr.dataset.mid, m = S.msgs.find(x => x.id === id), bub = mr.querySelector(".msg"); if (!m || !bub) return;
   try { localStorage.setItem("zg:hint", "1"); } catch (e) {} const hn = $("#cb .hint"); hn && hn.remove();
-  const own = !S.owner, mine = mr.classList.contains("me"), r = bub.getBoundingClientRect(), W = innerWidth, H = innerHeight;
+  const own = true, mine = mr.classList.contains("me"), r = bub.getBoundingClientRect(), W = innerWidth, H = innerHeight;
   const it = (a, t, i, c = "") => `<button class="cx-i ${c}" data-a="${a}"><span>${t}</span>${ic(i)}</button>`;
   const rows = [`<div class="cx-i inf">${dayLabel(m.sent_at)}, ${hm(m.sent_at)}${m.deleted_at ? " · удалено в " + hm(m.deleted_at) : ""}</div>`];
   if (m.text) rows.push(it("cxcopy", "Копировать", "copy"));
@@ -1373,7 +1314,7 @@ function lbBind() {
 /* свайп влево по сообщению: удалить из архива (с подтверждением) */
 let SW = null;
 document.addEventListener("pointerdown", e => {
-  SW = null; if (S.selm || S.owner || e.button > 0) return;
+  SW = null; if (S.selm || e.button > 0) return;
   const mr = e.target.closest("#cb .mr[data-mid]"); if (!mr || e.target.closest(IGN)) return;
   SW = { mr, x: e.clientX, y: e.clientY, dx: 0, on: false, buzz: false, bub: mr.querySelector(".msg") };
 }, { passive: true });
@@ -1406,8 +1347,7 @@ async function loadMsgs(mode) { // без аргумента: свежие; true
   const before = older && S.msgs.length ? Math.min(...S.msgs.map(m => m.id)) : undefined;
   const after = newer && S.msgs.length ? Math.max(...S.msgs.map(m => m.id)) : undefined;
   const base = { chat_id: +c.id, limit: lim, before, after };
-  const r = S.owner ? await api("admin_messages", { owner_id: S.owner, ...base })
-    : await api("messages", { ...base, filter: S.mf === "all" ? undefined : S.mf, q: S.mq || undefined });
+  const r = await api("messages", { ...base, filter: S.mf === "all" ? undefined : S.mf, q: S.mq || undefined });
   const got = (r.messages || []).slice().reverse();
   if (newer) { S.msgs = [...S.msgs, ...got]; S.moreNew = !!r.moreNew; }
   else if (older) { S.msgs = [...got, ...S.msgs]; S.more = !!r.more; }
@@ -1421,7 +1361,7 @@ async function jump(o) {
   if (!m) {
     const t = ++S.rq; S.mf = "all"; S.mq = ""; S.sq = false; S.ld = true; paintChat(false);
     try {
-      const r = await api(S.owner ? "admin_messages" : "messages", { ...(S.owner ? { owner_id: S.owner } : {}), chat_id: +S.chat.id, around: o.id, around_mid: o.mid });
+      const r = await api("messages", { chat_id: +S.chat.id, around: o.id, around_mid: o.mid });
       if (t !== S.rq) return;
       if (!(r.messages || []).length) { await loadMsgs(); S.ld = false; paintChat(true); return toast("Этого сообщения нет в архиве"); }
       S.msgs = r.messages.slice().reverse(); S.more = !!r.more; S.moreNew = !!r.moreNew;
@@ -1440,10 +1380,10 @@ async function openChat(id, n) {
   S.selm = false; S.sel = new Set();
   S.chat = { id, n }; S.msgs = []; S.more = false; S.moreNew = false; S.mf = "all"; S.mq = ""; S.sq = false; S.ld = true; S.anim = true;
   S.cc = row ? { all: row.cnt, deleted: row.deleted_cnt } : {}; S.pp = null;
-  api("chat_info", { chat_id: +id, ...(S.owner ? { owner_id: S.owner } : {}) }).then(r => { if (S.chat && String(S.chat.id) === String(id)) { S.pp = r; paintChat(false); } }).catch(() => {});
+  api("chat_info", { chat_id: +id }).then(r => { if (S.chat && String(S.chat.id) === String(id)) { S.pp = r; paintChat(false); } }).catch(() => {});
   const el = $("#chat"); el.innerHTML = chatHtml(); el.classList.add("open");
   try { tg.BackButton.show(); } catch (e) {}
-  if (!S.owner) api("chat_counts", { chat_id: +id }).then(r => {
+  api("chat_counts", { chat_id: +id }).then(r => {
     if (!S.chat || String(S.chat.id) !== String(id)) return;
     for (const k of ["all", "deleted", "edited", "media"]) if (r && r[k] != null) S.cc[k] = r[k];
     paintChat(false);
@@ -1506,7 +1446,7 @@ async function loadVoice(n) {
   n.innerHTML = '<span class="mu sm">Расшифровываю…</span>';
   let html;
   try {
-    const r = await api("voice_text", { id: +id, ...(S.owner ? { owner_id: S.owner } : {}) }, 90000);
+    const r = await api("voice_text", { id: +id }, 90000);
     VT[id] = r.text || "Речи не найдено"; vtPersist();
     html = `<div class="vtt">${esc(VT[id])}</div>`;
   } catch (e) {
@@ -1764,7 +1704,7 @@ async function peerSheet() {
   const cid = c.id, head = (photo, name, sub) => `<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px">${photo ? `<img class="avp" src="${photo}" alt="">` : av(name, pp.id, "l")}<div style="min-width:0"><b class="ell" style="font-size:19px;display:block">${esc(name || "Без имени")}</b><span class="mu sm">${esc(sub)}</span></div></div>`;
   sheet(head(null, pp.name || c.n, pp.username ? "@" + pp.username : "ID " + pp.id) + `<div id="pi">${sk(2)}</div>`);
   let r = PI[cid] || null;
-  if (!r && !S.owner) { try { r = await api("peer_info", { chat_id: +cid }, 20000); if (r) PI[cid] = r; } catch (e) {} }
+  if (!r) { try { r = await api("peer_info", { chat_id: +cid }, 20000); if (r) PI[cid] = r; } catch (e) {} }
   if (!S.chat || S.chat.id !== cid || !$("#sheet").classList.contains("on") || !$("#pi")) return;
   const pr = (r && r.profile) || {}, st = (r && r.stats) || {}, fl = (r && r.flags) || {};
   const name = [pr.first_name, pr.last_name].filter(Boolean).join(" ") || pp.name || c.n || "Без имени", un = pr.username || pp.username;
@@ -1775,17 +1715,16 @@ async function peerSheet() {
   const tgl2 = (k, t, sub) => `<div class="row" style="padding:8px 0;min-height:52px"><div class="g"><b>${t}</b><span>${sub}</span></div><button class="tg ${fl[k] ? "on" : ""}" data-a="csw" data-k="${k}" role="switch"></button></div>`;
   const stat = [[st.total, "сообщений"], [st.theirs, "от него"], [st.mine, "от тебя"], [st.deleted, "удалил"], [st.edited, "изменил"], [st.media, "медиа"]];
   $("#sheet").innerHTML = head(r && r.photo, name, un ? "@" + un : "ID " + pp.id)
-    + (S.owner ? '<div class="empty" style="padding:10px 0;font-size:13px">Расширенный профиль доступен в своём архиве.</div>' : ""
-    + `<div class="ps">${stat.map(([n, l]) => `<div><b class="num">${fmt(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`)
+    + `<div class="ps">${stat.map(([n, l]) => `<div><b class="num">${fmt(n || 0)}</b><span>${l}</span></div>`).join("")}</div>`
     + `<div>${rows.map(([l, v]) => `<button class="kv" data-a="cpy" data-v="${esc(v)}"><span>${l}</span><span>${esc(v)}</span></button>`).join("")}</div>`
-    + (S.owner ? "" : `<div style="margin-top:6px">${tgl2("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl2("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`)
-    + (S.owner ? "" : `<button class="btn sec" style="margin-top:14px" data-a="chk">${ic("shield", 18)}Проверить на мошенника</button>`)
+    + `<div style="margin-top:6px">${tgl2("mute", "Мут собеседника", "Его сообщения удаляются сразу")}${tgl2("nomute", "Вне автоматизации", "Без мута, пауз и автоудаления")}</div>`
+    + `<button class="btn sec" style="margin-top:14px" data-a="chk">${ic("shield", 18)}Проверить на мошенника</button>`
     + `<button class="btn" style="margin-top:10px" data-a="wr" data-id="${esc(pp.id)}" data-u="${esc(un || "")}">Написать в Telegram</button><button class="btn sec" style="margin-top:10px" data-a="unsheet">Закрыть</button>`;
 }
 /* ═══ проверка собеседника на мошенника ═══ */
 const riskCol = (s, thin) => s >= 70 ? "#ff453a" : s >= 45 ? "#ff9f0a" : s >= 20 ? "#ffd60a" : thin ? "var(--mu)" : "#32d74b";
 async function checkSheet() {
-  const c = S.chat; if (!c || S.owner) return;
+  const c = S.chat; if (!c) return;
   const cid = c.id;
   sheet(`<div class="ckh">${ic("shield")}<div style="min-width:0"><b style="font-size:19px;display:block">Проверка собеседника</b><span class="mu sm ell" style="display:block">${esc(c.n || "")}</span></div></div><div id="ck">${sk(2)}<div class="mu sm" style="text-align:center;margin-top:4px">Смотрю переписку, ссылки и профиль…</div></div>`);
   let r;
@@ -1825,7 +1764,7 @@ async function refreshMe() {
 async function loadChats() {
   S.cerr = false;
   try { const r = await api("chats"); S.chats = r.chats || []; S.capprox = !!r.approx; save("chats", S.chats); } catch (e) { S.cerr = true; if (!S.chats) S.chats = []; }
-  if (S.tab === "chats" && !S.admin) { render(); }
+  if (S.tab === "chats") { render(); }
 }
 let rt = 0;
 function retry() {
@@ -1914,7 +1853,7 @@ const A = {
     } catch (e) { toast(/no_players/.test(String(e && e.message)) ? "Пока нет участников" : "Не получилось провести розыгрыш"); }
   },
   chk: () => { hap(); checkSheet().catch(e => toast("Ошибка проверки: " + (e && e.message || e))); },
-  selmode: () => { if (S.owner) return; S.selm = !S.selm; S.sel = new Set(); selUI(); hap(); },
+  selmode: () => { S.selm = !S.selm; S.sel = new Set(); selUI(); hap(); },
   selall: () => {
     const all = $$("#cb .mr[data-mid]"); if (!all.length) return;
     const every = all.every(n => S.sel.has(+n.dataset.mid));
@@ -1967,9 +1906,6 @@ const A = {
   wr: d => openUser(d.id, d.u),
   csw: async (d, el) => { const on = !el.classList.contains("on"); el.classList.toggle("on", on); hap(); if (PI[S.chat.id] && PI[S.chat.id].flags) PI[S.chat.id].flags[d.k] = on; try { await api("chat_set", { chat_id: +S.chat.id, [d.k]: on }); } catch (e) { el.classList.toggle("on", !on); toast("Не сохранилось"); } },
   reload: () => { S.chats = null; S.cerr = false; render(); loadChats(); },
-  amode: async d => { S.admin = d.k === "1"; render(); if (S.admin && !S.owners) { try { const r = await api("admin_owners"); S.owners = r.owners || []; } catch (e) { S.owners = []; } render(); } },
-  owner: async d => { S.owner = +d.id; S.chats = null; render(); try { const r = await api("admin_chats", { owner_id: S.owner }); S.chats = r.chats || []; } catch (e) { S.chats = []; } render(); },
-  ownback: () => { S.owner = null; S.chats = load("chats"); render(); },
   tog: async d => { const u = S.me.user; u[d.k] = !u[d.k]; render(); hap(); try { await api("settings", { [d.k]: u[d.k] }); save("me", S.me); } catch (e) { u[d.k] = !u[d.k]; render(); toast("Настройка не сохранилась"); } },
   theme: d => { localStorage.setItem("zg:theme", d.k); applyTheme(); render(); hap(); },
   exp: async () => { try { await api("export"); toast("Файл отправлен в чат с ботом"); hap("medium"); } catch (e) { toast("Не удалось собрать файл"); } },
@@ -2043,7 +1979,7 @@ const CMD_CAT = [
     [".mute {1d/1h/1m}", "Мут на время", "Мут снимется сам: 30m — минуты, 2h — часы, 1d — дни.", ".mute 1h"],
     [".unmute", "Размутить", "Снимает мут с собеседника.", ".unmute"],
     [".nomute", "Защита от мута", "Если замутили тебя, бот сразу сообщит тебе.", ".nomute"],
-    [".stop", "Мут и очистка чата", "Мут, удаление чата и записей архива. .stop save — оставить архив, .stop off — вернуть.", ".stop"],
+    [".stop", "Точки и мут", "Заменяет твои сообщения точками, включает мут собеседника и сохраняет переписку. .stop off — снять мут.", ".stop"],
     [".shield", "Щит чата", "Удаляет его ссылки и файлы. .nolinks — только ссылки, .nofiles — только файлы.", ".shield"],
     [".timer", "Сообщение с таймером", "Отправленное сообщение удалится само через N минут.", ".timer 10 текст"],
     [".stopall", "Остановить всё", "Выключает мут, игры, паузы и идущий .spam.", ".stopall"],
@@ -2077,7 +2013,7 @@ const CMD_CAT = [
     [".audio-summary", "Пересказ аудио", "Расшифровка и короткое «что важного».", ".audio-summary", 1],
   ]],
   ["Шутки и розыгрыши", "mask", [
-    [".spam", "Быстрый спам", "Очень быстро шлёт обычные одинаковые сообщения подряд, у каждого свой эффект Telegram (огонь, лайк, сердце, праздник). До 50 раз, в Premium до 300.", ".spam 10 привет"],
+    [".spam", "Быстрый спам", "Повторяет сообщение с эффектами Telegram. Free: до 50, Premium: до 300; соблюдаются ограничения Telegram.", ".spam 10 привет"],
     [".spamx", "Спам с эффектами", "У каждого сообщения свой почерк (жирный, курсив, рукописный, готика, цитата, скрытый текст) и эффект Telegram: огонь, лайк, сердце, праздник.", ".spamx 10 привет"],
     [".spam plain", "Спам без оформления", "Те же повторы, но обычным текстом.", ".spam plain 5 привет"],
     [".geo", "Геометка места", "Присылает в чат карту с нужным местом. Можно город или точный адрес.", ".geo Нью-Йорк, 5-я авеню 350"],
@@ -2086,10 +2022,9 @@ const CMD_CAT = [
     [".mygeo", "Поделиться своей геометкой", "Шлёт в текущий чат твою сохранённую геометку (сначала задай её через .setgeo). .mygeo live — живая на 24 часа, .mygeo off — остановить.", ".mygeo"],
     [".snos", "Анимация «снос»", "Идёт отправка жалоб, счётчик растёт, аккаунт «уходит на удаление». Только анимация, ничего не отправляется.", ".snos"],
     [".dox", "Анимация «поиск данных»", "Сканирование, пробив, сборка досье с полоской прогресса. Только анимация, реальные данные не ищутся.", ".dox"],
-    [".crash", "Розыгрыш «Привет»", "В чат уходит кнопка «Привет»: при открытии Mini App появляется шуточный экран сбоя с кнопкой продолжения. Остановить: .crash off.", ".crash"],
-    [".rain", "Дождь из эмодзи", "Эмодзи сыплются дождём прямо в сообщении. Эмодзи можно выбрать.", ".rain 🔥", 1],
-    [".countdown", "Обратный отсчёт", "Цифры идут вниз, в конце появляется твоё сообщение.", ".countdown 5 Поехали!", 1],
-    [".typing", "Печатает…", "У собеседника нужное время горит «печатает…», максимум 120 секунд. С пометкой «голос» будет «записывает голосовое».", ".typing 60", 1],
+    [".rain", "Дождь из эмодзи", "Эмодзи сыплются дождём прямо в сообщении. Эмодзи можно выбрать.", ".rain 🔥"],
+    [".countdown", "Обратный отсчёт", "Цифры идут вниз, в конце появляется твоё сообщение.", ".countdown 5 Поехали!"],
+    [".typing", "Печатает…", "У собеседника нужное время горит «печатает…», максимум 120 секунд. С пометкой «голос» будет «записывает голосовое».", ".typing 60"],
     [".hack", "Анимация «взлом»", "Киношная симуляция взлома, без реальных действий.", ".hack"],
     [".anim", "Анимации", "Готовые анимации по номерам: .anim 1 … .anim 14, .anim 0 — случайная.", ".anim 3"],
     [".ball", "Шар предсказаний", "Ответит на вопрос да/нет.", ".ball я сдам?"],

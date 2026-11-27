@@ -1044,7 +1044,7 @@ function vChats() {
   if (!S.chats) return head + sk(5);
   const q = S.q.trim().toLowerCase();
   const list = S.chats.filter(c => (S.cf === "all" || c.deleted_cnt > 0) && (!q || String(c.chat_name || "").toLowerCase().includes(q) || String(c.username || "").toLowerCase().includes(q)));
-  return head + seg + `<label class="search">${ic("search")}<input id="q" placeholder="Поиск по чатам" value="${esc(S.q)}" autocomplete="off"></label>
+  return head + `<label class="search">${ic("search")}<input id="q" placeholder="Поиск по чатам" value="${esc(S.q)}" autocomplete="off"></label>
   <div class="chips"><button class="chip ${S.cf === "all" ? "on" : ""}" data-a="cf" data-k="all">Все</button><button class="chip ${S.cf === "del" ? "on" : ""}" data-a="cf" data-k="del">С удалёнными</button></div>
   ${S.capprox ? `<div class="mu sm" style="margin:0 4px 10px">Счётчики по чатам приблизительные: считаю по последним сообщениям.</div>` : ""}<div id="cl">${chatRows(list)}</div>`;
 }

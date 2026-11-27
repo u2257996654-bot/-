@@ -587,6 +587,27 @@ mark{background:rgba(255,204,0,.5);color:inherit;border-radius:3px;padding:0 1px
 .cso-big{font-size:88px}
 @media(max-width:370px){.csg{gap:9px}.cs{padding-left:8px;padding-right:8px;min-height:240px}.cs-edition{font-size:7px}.cs-n{font-size:14px}.cs-a{margin-top:18px}}
 @media(prefers-reduced-motion:reduce){.cs,.cs .crt,.cs::after,.cso-art .crt,.cso-ti,.cso-card::after{animation:none!important;transition:none!important}}
+
+/* ═══ ZetGram archive layout fix: media, stickers, GIFs and captions ═══ */
+#chat #cb .msg{min-width:0;max-width:min(82%,420px);overflow-wrap:anywhere}
+#chat #cb .msg .tx{display:block;max-width:100%;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.42}
+#chat #cb .msg .am{display:block;position:relative;clear:both;width:fit-content;max-width:100%;min-width:0;height:auto;margin:7px 0 0;vertical-align:top}
+#chat #cb .msg .am img,
+#chat #cb .msg .am video{display:block;width:auto;height:auto;max-width:100%;max-height:340px;object-fit:contain}
+#chat #cb .msg .am video.vn{width:210px;height:210px;max-width:100%;max-height:none;object-fit:cover}
+#chat #cb .msg .am .tgs{display:block;width:180px;height:180px;max-width:100%;margin:0}
+#chat #cb .msg .am .tgs svg{display:block;width:100%;height:100%}
+#chat #cb .msg .am .mt{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+#chat #cb .msg .ed{display:block;clear:both;max-width:100%;overflow-wrap:anywhere}
+#chat #cb .msg .mf{display:flex;clear:both;align-items:flex-end;gap:8px;max-width:100%;margin-top:5px}
+#chat #cb .msg.bare{width:fit-content;max-width:82%;min-width:0;overflow:visible}
+#chat #cb .msg.bare .am{margin-top:0}
+@media(max-width:380px){
+  #chat #cb .msg{max-width:88%}
+  #chat #cb .msg .am img,
+  #chat #cb .msg .am video{max-height:280px}
+  #chat #cb .msg .am .tgs{width:160px;height:160px}
+}
 </style>
 </head>
 <body>
@@ -922,7 +943,7 @@ function chatHtml() {
     if (nd) out += `<div class="day">${dayLabel(m.sent_at)}</div>`; last = m.sent_at;
     const mine = m.from_id === (S.owner || me), eds = edList(m);
     const pS = !nd && near(ms[i - 1], m), nS = near(m, ms[i + 1]);
-    const bare = m.type === "sticker" || m.type === "video_note";
+    const bare = (m.type === "sticker" || m.type === "video_note") && !body(m) && !edList(m).length && !(m.reactions || []).length;
     const cls = `${mine ? "me" : ""} ${m.deleted_at ? "del" : ""} ${pS ? "sp" : ""} ${nS ? "sn" : ""} ${!nS && !m.deleted_at && !bare ? "tl" : ""} ${bare ? "bare" : ""}`;
     const t = txInner(m);
     const an = S.anim && !S.ld && i >= ms.length - 14;
@@ -1269,8 +1290,10 @@ async function loadMedia(n) {
   try { m = await getMedia(id, t); }
   catch (e) {
     n.innerHTML = e && e.message === "too_big"
-      ? `<div class="fcard"><i>${ic("file", 18)}</i><div class="g"><b>Файл больше 20 МБ</b><span class="mu sm" style="display:block">Бот пришлёт его в чат</span></div></div>${saveBar(id, false).replace("Сохранить", "Прислать в чат")}`
-      : retryBtn(n, "Не загрузилось, повторить");
+      ? `<div class="fcard"><i>${ic("file", 18)}</i><div class="g"><b>Файл больше 20 МБ</b><span class="mu sm" style="display:block">Для просмотра прямо в архиве настрой локальный Telegram Bot API Server через BOT_API_BASE</span></div></div>${saveBar(id, false).replace("Сохранить", "Прислать в чат")}`
+      : /20.?МБ|too big|file is too big/i.test(String(e && e.message || e))
+        ? `<div class="fcard"><i>${ic("file", 18)}</i><div class="g"><b>Файл больше лимита облачного Bot API</b><span class="mu sm" style="display:block">Для просмотра в архиве нужен локальный Telegram Bot API Server и BOT_API_BASE</span></div></div>`
+        : retryBtn(n, "Не загрузилось, повторить");
     return;
   }
   if (!n.isConnected) return;
